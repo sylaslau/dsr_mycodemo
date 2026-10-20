@@ -1,61 +1,24 @@
 # dsr_mycodemo
 
-<a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
-    <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
-</a>
+A grow planner for mushrooms and mycelium materials (demo at DSR). Pick what to grow, describe where you grow it, and the app gives a starter recipe, a stage timeline (colonisation, then fruiting), warnings, and a Monitor page where you log photos, conditions and harvests. Photos update the colonisation forecast. The app gives no yield estimate: you record your own harvest in Monitor.
 
-for demo at DSR
+Timings, stages, growing conditions and recipes come from a consensus of mycology and agricultural-science sources: `data/processed/cultivation_baseline.csv`. Other sources of ideas are listed in `THIRD_PARTY_NOTICES.md`.
 
-## Project Organization
+## Run
 
-```
-├── LICENSE            <- Open-source license if one is chosen
-├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
-│
-├── docs               <- A default mkdocs project; see www.mkdocs.org for details
-│
-├── models             <- Trained and serialized models, model predictions, or model summaries
-│
-├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-│                         the creator's initials, and a short `-` delimited description, e.g.
-│                         `1.0-jqp-initial-data-exploration`.
-│
-├── pyproject.toml     <- Project configuration file with package metadata for 
-│                         dsr_mycodemo and configuration for tools like black
-│
-├── references         <- Data dictionaries, manuals, and all other explanatory materials.
-│
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures to be used in reporting
-│
-├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-│                         generated with `pip freeze > requirements.txt`
-│
-├── setup.cfg          <- Configuration file for flake8
-│
-└── dsr_mycodemo   <- Source code for use in this project.
-    │
-    ├── __init__.py             <- Makes dsr_mycodemo a Python module
-    │
-    ├── config.py               <- Store useful variables and configuration
-    │
-    ├── dataset.py              <- Scripts to download or generate data
-    │
-    ├── features.py             <- Code to create features for modeling
-    │
-    ├── modeling                
-    │   ├── __init__.py 
-    │   ├── predict.py          <- Code to run model inference with trained models          
-    │   └── train.py            <- Code to train models
-    │
-    └── plots.py                <- Code to create visualizations
+```bash
+uv venv --python 3.13 && source .venv/bin/activate
+uv pip install -e .
+streamlit run dsr_mycodemo/app/Welcome.py
+python -m pytest -q
 ```
 
---------
+## Layout
 
+- `dsr_mycodemo/app/`: the Streamlit app (Welcome and pages).
+- `dsr_mycodemo/pipeline.py`: one batch in, recipe, dates, warnings and outcome out.
+- `dsr_mycodemo/cultivation/`: the consensus table lookup (`baseline_guide.py`) and recipe maths (`recipe.py`).
+- `dsr_mycodemo/growth/`: colonisation estimate, photo coverage and forecast.
+- `data/`: the data files the app reads (the folder is git-ignored; files are added with `git add -f`).
+- `models/colonisation/`: the saved colonisation estimate model.
+- `tests/`: pytest.
