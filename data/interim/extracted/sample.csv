@@ -1,0 +1,401 @@
+sample_id,dataset_id,replicate_no,n_specimens,growth_outcome,substrate_id,fermentation_id,initial_fill_weight_g,notes
+d005-S-HL-C-1,d005,1,1,True,SUB-001,FER-001,51.4,
+d005-S-HL-C-2,d005,2,1,True,SUB-001,FER-001,56.5,
+d005-S-HL-C-3,d005,3,1,True,SUB-001,FER-001,53.8,
+d005-S-HC-C-1,d005,1,1,True,SUB-002,FER-002,,
+d005-S-HC-C-2,d005,2,1,True,SUB-002,FER-002,,
+d005-S-HC-C-3,d005,3,1,True,SUB-002,FER-002,,
+d005-S-HC-Tc-1,d005,1,1,True,SUB-002,FER-003,,
+d005-S-HC-Tc-2,d005,2,1,True,SUB-002,FER-003,,
+d005-S-HC-Tc-3,d005,3,1,True,SUB-002,FER-003,,
+d005-S-HC-Aw-1,d005,1,1,True,SUB-002,FER-004,,preparation document 180202_HM_Cv
+d005-S-HC-Aw-2,d005,2,1,True,SUB-002,FER-004,,preparation document 180202_HM_Cv
+d005-S-HC-Aw-3,d005,3,1,True,SUB-002,FER-004,,preparation document 180202_HM_Cv
+d005-S-PHL-C-1,d005,1,1,True,SUB-001,FER-005,,
+d005-S-PHL-C-2,d005,2,1,True,SUB-001,FER-005,,
+d005-S-PHL-C-3,d005,3,1,True,SUB-001,FER-005,,
+d005-S-FL-C-1,d005,1,1,True,SUB-003,FER-001,52.9,
+d005-S-FL-C-2,d005,2,1,True,SUB-003,FER-001,43.8,
+d005-S-FL-C-3,d005,3,1,True,SUB-003,FER-001,49.4,
+d005-S-FC-C-1,d005,1,1,True,SUB-004,FER-002,,
+d005-S-FC-C-2,d005,2,1,True,SUB-004,FER-002,,
+d005-S-FC-C-3,d005,3,1,True,SUB-004,FER-002,,
+d005-S-FC-Tc-1,d005,1,1,True,SUB-004,FER-003,,
+d005-S-FC-Tc-2,d005,2,1,True,SUB-004,FER-003,,
+d005-S-FC-Tc-3,d005,3,1,True,SUB-004,FER-003,,
+d005-S-FC-Aw-1,d005,1,1,True,SUB-004,FER-006,,preparation document 180126_FX2_Cv
+d005-S-FC-Aw-2,d005,2,1,True,SUB-004,FER-006,,preparation document 180126_FX2_Cv
+d005-S-FC-Aw-3,d005,3,1,True,SUB-004,FER-006,,preparation document 180126_FX2_Cv
+d005-S-FTT-C-1,d005,1,1,True,SUB-005,FER-001,68.7,
+d005-S-FTT-C-2,d005,2,1,True,SUB-005,FER-001,100.9,
+d005-S-FTT-C-3,d005,3,1,False,SUB-005,FER-001,89.0,contaminated in diary; explains 2 FTT compression specimens
+d005-S-FUT-C-1,d005,1,1,True,SUB-006,FER-001,84.6,
+d005-S-FUT-C-2,d005,2,1,True,SUB-006,FER-001,71.7,
+d005-S-FUT-C-3,d005,3,1,True,SUB-006,FER-001,61.6,day-5 weight not readable in diary; grown
+d005-S-FD-C-1,d005,1,1,False,SUB-007,FER-001,113.5,contaminated; article: systematic contamination
+d005-S-FD-C-2,d005,2,1,False,SUB-007,FER-001,107.0,contaminated; article: systematic contamination
+d005-S-FD-C-3,d005,3,1,False,SUB-007,FER-001,115.7,contaminated; article: systematic contamination
+d005-S-PFL-C-1,d005,1,1,True,SUB-003,FER-005,,
+d005-S-PFL-C-2,d005,2,1,True,SUB-003,FER-005,,
+d005-S-PFL-C-3,d005,3,1,True,SUB-003,FER-005,,
+d005-S-FWL-C-1,d005,1,1,True,SUB-008,FER-001,75.8,
+d005-S-FWL-C-2,d005,2,1,True,SUB-008,FER-001,69.1,
+d005-S-FWL-C-3,d005,3,1,True,SUB-008,FER-001,75.8,
+d005-S-PFWL-C-1,d005,1,1,True,SUB-008,FER-007,,
+d005-S-PFWL-C-2,d005,2,1,True,SUB-008,FER-007,,
+d005-S-PFWL-C-3,d005,3,1,True,SUB-008,FER-007,,
+d005-S-WL-C-1,d005,1,1,True,SUB-009,FER-001,38.2,
+d005-S-WL-C-2,d005,2,1,True,SUB-009,FER-001,45.3,
+d005-S-WL-C-3,d005,3,1,True,SUB-009,FER-001,44.3,
+d005-S-SL-C-1,d005,1,1,False,SUB-010,FER-001,32.2,contaminated at day 16 in diary; article: failed to grow
+d005-S-SL-C-2,d005,2,1,False,SUB-010,FER-001,26.6,contaminated at day 16 in diary; article: failed to grow
+d005-S-SL-C-3,d005,3,1,False,SUB-010,FER-001,34.4,contaminated at day 16 in diary; article: failed to grow
+d005-S-SC-Tc-1,d005,1,1,True,SUB-011,FER-003,,
+d005-S-SC-Tc-2,d005,2,1,True,SUB-011,FER-003,,
+d005-S-SC-Tc-3,d005,3,1,True,SUB-011,FER-003,,
+d005-S-SC-Aw-1,d005,1,1,True,SUB-011,FER-008,,preparation document 180209_ST_Cv
+d005-S-SC-Aw-2,d005,2,1,True,SUB-011,FER-008,,preparation document 180209_ST_Cv
+d005-S-SC-Aw-3,d005,3,1,True,SUB-011,FER-008,,preparation document 180209_ST_Cv
+d005-S-SD-C-1,d005,1,1,False,SUB-012,FER-002,,"article: failed, systematic contamination"
+d005-S-SD-C-2,d005,2,1,False,SUB-012,FER-002,,"article: failed, systematic contamination"
+d005-S-SD-C-3,d005,3,1,False,SUB-012,FER-002,,"article: failed, systematic contamination"
+d005-S-HD-C-1,d005,1,1,False,SUB-013,FER-009,147.1,diary only; contaminated
+d005-S-HD-C-2,d005,2,1,False,SUB-013,FER-009,142.1,diary only; contaminated
+d005-S-HD-C-3,d005,3,1,False,SUB-013,FER-009,153.8,diary only; contaminated
+d005-S-FL-PD-1,d005,1,1,True,SUB-003,FER-010,69.1,
+d005-S-WL-PD-1,d005,1,1,True,SUB-009,FER-010,43.7,
+d005-S-HL-PD-1,d005,1,1,True,SUB-001,FER-010,63.0,
+d005-S-FD-PD-1,d005,1,1,False,SUB-007,FER-010,98.0,
+d005-S-FTT-PD-1,d005,1,1,True,SUB-005,FER-010,38.5,
+d005-S-FUT-PD-1,d005,1,1,True,SUB-006,FER-010,80.9,
+d005-S-FWL-PD-1,d005,1,1,True,SUB-008,FER-010,91.0,
+d005-S-HD-PD-1,d005,1,1,False,SUB-013,FER-010,192.7,
+d005-S-SL-PD-1,d005,1,1,False,SUB-010,FER-010,44.2,
+d004-S-P-1to2-01,d004,1,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-02,d004,2,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-03,d004,3,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-04,d004,4,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-05,d004,5,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-06,d004,6,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-07,d004,7,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-08,d004,8,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-09,d004,9,1,True,SUB-014,FER-011,,
+d004-S-P-1to2-10,d004,10,1,True,SUB-014,FER-011,,
+d004-S-P-1to4-01,d004,1,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-02,d004,2,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-03,d004,3,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-04,d004,4,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-05,d004,5,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-06,d004,6,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-07,d004,7,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-08,d004,8,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-09,d004,9,1,True,SUB-014,FER-012,,
+d004-S-P-1to4-10,d004,10,1,True,SUB-014,FER-012,,
+d004-S-G-1to2-01,d004,1,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-02,d004,2,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-03,d004,3,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-04,d004,4,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-05,d004,5,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-06,d004,6,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-07,d004,7,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-08,d004,8,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-09,d004,9,1,True,SUB-014,FER-013,,
+d004-S-G-1to2-10,d004,10,1,True,SUB-014,FER-013,,
+d004-S-G-1to4-01,d004,1,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-02,d004,2,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-03,d004,3,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-04,d004,4,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-05,d004,5,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-06,d004,6,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-07,d004,7,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-08,d004,8,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-09,d004,9,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-10,d004,10,1,True,SUB-014,FER-014,,
+d004-S-G-1to4-11,d004,11,1,True,SUB-014,FER-014,,
+d004-S-T-1to4-01,d004,1,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-02,d004,2,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-03,d004,3,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-04,d004,4,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-05,d004,5,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-06,d004,6,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-07,d004,7,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-08,d004,8,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-09,d004,9,1,True,SUB-014,FER-015,,
+d004-S-T-1to4-10,d004,10,1,True,SUB-014,FER-015,,
+d004-S-T-1to2-01,d004,1,1,True,SUB-014,FER-016,,
+d004-S-T-1to2-02,d004,2,1,True,SUB-014,FER-016,,
+d004-S-T-1to2-03,d004,3,1,True,SUB-014,FER-016,,
+d004-S-T-1to2-04,d004,4,1,True,SUB-014,FER-016,,
+d004-S-T-1to2-05,d004,5,1,True,SUB-014,FER-016,,
+d004-S-T-1to2-06,d004,6,1,True,SUB-014,FER-016,,
+d004-S-T-1to2-07,d004,7,1,True,SUB-014,FER-016,,
+d005-S-FL-C-4,d005,4,1,True,SUB-003,FER-017,,"extra loose flax specimen F1 (area about 6,600 mm2); container unknown"
+d005-S-FL-C-5,d005,5,1,True,SUB-003,FER-017,,"extra loose flax specimen F2 (area about 6,600 mm2); container unknown"
+d005-S-FL-C-6,d005,6,1,True,SUB-003,FER-017,,"extra loose flax specimen F3 (area about 6,600 mm2); container unknown"
+d005-S-FL-C-7,d005,7,1,True,SUB-003,FER-017,,"extra loose flax specimen F4 (area about 6,600 mm2); container unknown"
+d005-S-PFL-C-4,d005,4,1,True,SUB-003,FER-017,,"specimen LF_1, left out of the group mean; container and treatment unknown"
+d005-S-PFL-C-5,d005,5,1,True,SUB-003,FER-017,,"specimen LF_2, left out of the group mean; container and treatment unknown"
+d005-S-FC-V-1,d005,1,1,True,SUB-004,FER-017,,vibration batch FC_B1; container unknown
+d005-S-FC-V-2,d005,2,1,True,SUB-004,FER-017,,vibration batch FC_B2; container unknown
+d005-S-FC-V-3,d005,3,1,True,SUB-004,FER-017,,vibration batch FC_B3; container unknown
+d005-S-FC-V-4,d005,4,1,True,SUB-004,FER-017,,vibration batch FC_B4; container unknown
+d005-S-FC-V-5,d005,5,1,True,SUB-004,FER-017,,vibration batch FC_B5; container unknown
+d005-S-HC-V-1,d005,1,1,True,SUB-002,FER-017,,vibration batch HC_B1; container unknown
+d005-S-HC-V-2,d005,2,1,True,SUB-002,FER-017,,vibration batch HC_B2; container unknown
+d005-S-HC-V-3,d005,3,1,True,SUB-002,FER-017,,vibration batch HC_B3; container unknown
+d005-S-HC-V-4,d005,4,1,True,SUB-002,FER-017,,vibration batch HC_B4; container unknown
+d005-S-HC-V-5,d005,5,1,True,SUB-002,FER-017,,vibration batch HC_B5; container unknown
+d005-S-SC-V-1,d005,1,1,True,SUB-011,FER-017,,vibration batch SC_B1; container unknown
+d005-S-SC-V-2,d005,2,1,True,SUB-011,FER-017,,vibration batch SC_B2; container unknown
+d005-S-SC-V-3,d005,3,1,True,SUB-011,FER-017,,vibration batch SC_B3; container unknown
+d005-S-SC-V-4,d005,4,1,True,SUB-011,FER-017,,vibration batch SC_B4; container unknown
+d005-S-SC-V-5,d005,5,1,True,SUB-011,FER-017,,vibration batch SC_B5; container unknown
+d006-S-Gl-RW-1,d006,1,1,True,SUB-016,FER-019,,workbook row 2
+d006-S-Gl-RW-2,d006,2,1,True,SUB-016,FER-019,,workbook row 3
+d006-S-Gl-RW-3,d006,3,1,True,SUB-016,FER-019,,workbook row 4
+d006-S-Gl-RW-4,d006,4,1,True,SUB-016,FER-019,,workbook row 5
+d006-S-Gl-RW-5,d006,5,1,True,SUB-016,FER-019,,workbook row 6
+d006-S-Gl-RW-6,d006,6,1,True,SUB-016,FER-019,,workbook row 7
+d006-S-Gl-RWL-1,d006,1,1,True,SUB-017,FER-019,,workbook row 8
+d006-S-Gl-RWL-2,d006,2,1,True,SUB-017,FER-019,,workbook row 9
+d006-S-Gl-RWL-3,d006,3,1,True,SUB-017,FER-019,,workbook row 10
+d006-S-Gl-RWL-4,d006,4,1,True,SUB-017,FER-019,,workbook row 11
+d006-S-Gl-RWL-5,d006,5,1,True,SUB-017,FER-019,,workbook row 12
+d006-S-Gl-RWL-6,d006,6,1,True,SUB-017,FER-019,,workbook row 13
+d006-S-Gl-REF-1,d006,1,1,True,SUB-015,FER-019,,workbook row 14
+d006-S-Gl-REF-2,d006,2,1,True,SUB-015,FER-019,,workbook row 15
+d006-S-Gl-REF-3,d006,3,1,True,SUB-015,FER-019,,workbook row 16
+d006-S-Gl-REF-4,d006,4,1,True,SUB-015,FER-019,,workbook row 17
+d006-S-Gl-REF-5,d006,5,1,True,SUB-015,FER-019,,workbook row 18
+d006-S-Gl-REF-6,d006,6,1,True,SUB-015,FER-019,,workbook row 19
+d006-S-Gs-RW-1,d006,1,1,True,SUB-016,FER-018,,workbook row 20
+d006-S-Gs-RW-2,d006,2,1,True,SUB-016,FER-018,,workbook row 21
+d006-S-Gs-RW-3,d006,3,1,True,SUB-016,FER-018,,workbook row 22
+d006-S-Gs-RW-4,d006,4,1,True,SUB-016,FER-018,,workbook row 23
+d006-S-Gs-RW-5,d006,5,1,True,SUB-016,FER-018,,workbook row 24
+d006-S-Gs-RW-6,d006,6,1,True,SUB-016,FER-018,,workbook row 25
+d006-S-Gs-RWL-1,d006,1,1,True,SUB-017,FER-018,,workbook row 26
+d006-S-Gs-RWL-2,d006,2,1,True,SUB-017,FER-018,,workbook row 27
+d006-S-Gs-RWL-3,d006,3,1,True,SUB-017,FER-018,,workbook row 28
+d006-S-Gs-RWL-4,d006,4,1,True,SUB-017,FER-018,,workbook row 29
+d006-S-Gs-RWL-5,d006,5,1,True,SUB-017,FER-018,,workbook row 30
+d006-S-Gs-RWL-6,d006,6,1,True,SUB-017,FER-018,,workbook row 31
+d006-S-Gs-REF-1,d006,1,1,True,SUB-015,FER-018,,workbook row 32
+d006-S-Gs-REF-2,d006,2,1,True,SUB-015,FER-018,,workbook row 33
+d006-S-Gs-REF-3,d006,3,1,True,SUB-015,FER-018,,workbook row 34
+d006-S-Gs-REF-4,d006,4,1,True,SUB-015,FER-018,,workbook row 35
+d006-S-Gs-REF-5,d006,5,1,True,SUB-015,FER-018,,workbook row 36
+d006-S-Gs-REF-6,d006,6,1,True,SUB-015,FER-018,,workbook row 37
+d006-S-Tv-RW-1,d006,1,1,True,SUB-016,FER-020,,workbook row 38
+d006-S-Tv-RW-2,d006,2,1,True,SUB-016,FER-020,,workbook row 39
+d006-S-Tv-RW-3,d006,3,1,True,SUB-016,FER-020,,workbook row 40
+d006-S-Tv-RW-4,d006,4,1,True,SUB-016,FER-020,,workbook row 41
+d006-S-Tv-RW-5,d006,5,1,True,SUB-016,FER-020,,workbook row 42
+d006-S-Tv-RW-6,d006,6,1,True,SUB-016,FER-020,,workbook row 43
+d006-S-Tv-RWL-1,d006,1,1,True,SUB-017,FER-020,,workbook row 44
+d006-S-Tv-RWL-2,d006,2,1,True,SUB-017,FER-020,,workbook row 45
+d006-S-Tv-RWL-3,d006,3,1,True,SUB-017,FER-020,,workbook row 46
+d006-S-Tv-RWL-4,d006,4,1,True,SUB-017,FER-020,,workbook row 47
+d006-S-Tv-RWL-5,d006,5,1,True,SUB-017,FER-020,,workbook row 48
+d006-S-Tv-RWL-6,d006,6,1,True,SUB-017,FER-020,,workbook row 49
+d006-S-Tv-REF-1,d006,1,1,True,SUB-015,FER-020,,workbook row 50
+d006-S-Tv-REF-2,d006,2,1,True,SUB-015,FER-020,,workbook row 51
+d006-S-Tv-REF-3,d006,3,1,True,SUB-015,FER-020,,workbook row 52
+d006-S-Tv-REF-4,d006,4,1,True,SUB-015,FER-020,,workbook row 53
+d006-S-Tv-REF-5,d006,5,1,True,SUB-015,FER-020,,workbook row 54
+d006-S-Tv-REF-6,d006,6,1,True,SUB-015,FER-020,,workbook row 55
+d003-S-2,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-3,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-5,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-7,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-8,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-9,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-12,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-13,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-16,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-19,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-20,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-25,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-27,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-28,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-29,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d003-S-30,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: no
+d003-S-32,d003,1,1,,SUB-018,FER-021,,printed specimen; geometry in 00_curve_segments_parameters / 00_samples_parameters; compression curve: yes; growth images: yes
+d007-G-BSD1-C0,d007,,5,True,SUB-019,FER-022,,"blend BSD1, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD1-C2,d007,,5,True,SUB-019,FER-023,,"blend BSD1, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD2-C0,d007,,5,True,SUB-020,FER-022,,"blend BSD2, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD2-C2,d007,,5,True,SUB-020,FER-023,,"blend BSD2, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD2-C4,d007,,5,True,SUB-020,FER-024,,"blend BSD2, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD3-C0,d007,,5,True,SUB-021,FER-022,,"blend BSD3, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD3-C2,d007,,5,True,SUB-021,FER-023,,"blend BSD3, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD3-C4,d007,,5,True,SUB-021,FER-024,,"blend BSD3, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD4-C0,d007,,5,True,SUB-022,FER-022,,"blend BSD4, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD4-C2,d007,,5,True,SUB-022,FER-023,,"blend BSD4, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-BSD4-C4,d007,,5,True,SUB-022,FER-024,,"blend BSD4, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS1-C0,d007,,5,True,SUB-023,FER-022,,"blend WS1, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS1-C2,d007,,5,True,SUB-023,FER-023,,"blend WS1, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS1-C4,d007,,5,True,SUB-023,FER-024,,"blend WS1, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS2-C0,d007,,5,True,SUB-024,FER-022,,"blend WS2, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS2-C2,d007,,5,True,SUB-024,FER-023,,"blend WS2, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS2-C4,d007,,5,True,SUB-024,FER-024,,"blend WS2, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS3-C0,d007,,5,True,SUB-025,FER-022,,"blend WS3, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS3-C2,d007,,5,True,SUB-025,FER-023,,"blend WS3, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS3-C4,d007,,5,True,SUB-025,FER-024,,"blend WS3, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS4-C0,d007,,5,True,SUB-026,FER-022,,"blend WS4, 0 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS4-C2,d007,,5,True,SUB-026,FER-023,,"blend WS4, 2 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d007-G-WS4-C4,d007,,5,True,SUB-026,FER-024,,"blend WS4, 4 chitosan layers; group mean of 5 specimens (30 mm cubes)"
+d016-S-FS-PO-01,d016,1,1,True,SUB-027,FER-027,,10 cm cube mould
+d016-S-FS-PO-02,d016,2,1,True,SUB-027,FER-027,,10 cm cube mould
+d016-S-FS-PO-03,d016,3,1,True,SUB-027,FER-025,,10 cm cube mould
+d016-S-FS-PO-04,d016,4,1,True,SUB-027,FER-027,,10 cm cube mould
+d016-S-FS-PO-05,d016,5,1,True,SUB-027,FER-026,,10 cm cube mould
+d016-S-FS-PO-06,d016,6,1,True,SUB-027,FER-027,,10 cm cube mould
+d016-S-FS-PO-07,d016,7,1,True,SUB-027,FER-025,,10 cm cube mould
+d016-S-FS-PO-10,d016,8,1,True,SUB-027,FER-026,,10 cm cube mould
+d017-G-TL,d017,,10,True,SUB-028,FER-028,,formulation TL; group mean (n>=10)
+d017-G-TH,d017,,10,True,SUB-029,FER-028,,formulation TH; group mean (n>=10)
+d017-G-F1L,d017,,10,True,SUB-030,FER-028,,formulation F1L; group mean (n>=10)
+d017-G-F1H,d017,,10,True,SUB-031,FER-028,,formulation F1H; group mean (n>=10)
+d017-G-F2L,d017,,10,True,SUB-032,FER-028,,formulation F2L; group mean (n>=10)
+d017-G-F2H,d017,,10,True,SUB-033,FER-028,,formulation F2H; group mean (n>=10)
+d023-G-PO-SNCD,d023,,3,True,SUB-034,FER-029,,group PO_SNCD; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-SNCB,d023,,3,True,SUB-034,FER-030,,group PO_SNCB; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-SCD,d023,,3,True,SUB-034,FER-031,,group PO_SCD; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-SCB,d023,,3,True,SUB-034,FER-032,,group PO_SCB; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-LNCD,d023,,3,True,SUB-035,FER-029,,group PO_LNCD; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-LNCB,d023,,3,True,SUB-035,FER-030,,group PO_LNCB; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-LCD,d023,,3,True,SUB-035,FER-031,,group PO_LCD; group mean (n=3); cylinder 7 cm x 11 cm
+d023-G-PO-LCB,d023,,4,True,SUB-035,FER-032,,group PO_LCB; group mean (n=4); cylinder 7 cm x 11 cm
+d023-G-CC-SNCD,d023,,10,True,SUB-036,FER-033,,group CC_SNCD; group mean (n=10); cylinder 7 cm x 11 cm
+d023-G-CC-SNCB,d023,,10,True,SUB-036,FER-034,,group CC_SNCB; group mean (n=10); cylinder 7 cm x 11 cm
+d023-G-CC-SCD,d023,,10,True,SUB-036,FER-035,,group CC_SCD; group mean (n=10); cylinder 7 cm x 11 cm
+d023-G-CC-SCB,d023,,10,True,SUB-036,FER-036,,group CC_SCB; group mean (n=10); cylinder 7 cm x 11 cm
+d002-G-R1,d002,,3,True,SUB-037,FER-037,,recipe 1; group mean of 3 bags
+d002-G-R2,d002,,3,True,SUB-038,FER-037,,recipe 2; group mean of 3 bags
+d002-G-R3,d002,,3,True,SUB-039,FER-037,,recipe 3; group mean of 3 bags
+d002-G-R4,d002,,3,True,SUB-040,FER-037,,recipe 4; group mean of 3 bags
+d002-G-R5,d002,,3,True,SUB-041,FER-037,,recipe 5; group mean of 3 bags
+d002-G-R6,d002,,3,True,SUB-042,FER-037,,recipe 6; group mean of 3 bags
+d002-G-R7,d002,,3,True,SUB-043,FER-037,,recipe 7; group mean of 3 bags
+d009-G-NC0,d009,,3,True,SUB-044,FER-038,,0 wt% nanoclay; group mean of 3 Petri dishes
+d009-G-NC1,d009,,3,True,SUB-045,FER-038,,1 wt% nanoclay; group mean of 3 Petri dishes
+d009-G-NC2p5,d009,,3,True,SUB-046,FER-038,,2.5 wt% nanoclay; group mean of 3 Petri dishes
+d009-G-NC3p5,d009,,3,True,SUB-047,FER-038,,3.5 wt% nanoclay; group mean of 3 Petri dishes
+d009-G-NC5,d009,,3,True,SUB-048,FER-038,,5 wt% nanoclay; group mean of 3 Petri dishes
+d006-S-RW-D-1,d006,1,1,True,SUB-016,,,density block; Density raw data.txt row 2; fungus not recorded
+d006-S-RW-D-2,d006,2,1,True,SUB-016,,,density block; Density raw data.txt row 3; fungus not recorded
+d006-S-RW-D-3,d006,3,1,True,SUB-016,,,density block; Density raw data.txt row 4; fungus not recorded
+d006-S-RW-D-4,d006,4,1,True,SUB-016,,,density block; Density raw data.txt row 5; fungus not recorded
+d006-S-RW-D-5,d006,5,1,True,SUB-016,,,density block; Density raw data.txt row 6; fungus not recorded
+d006-S-RW-D-6,d006,6,1,True,SUB-016,,,density block; Density raw data.txt row 7; fungus not recorded
+d006-S-RW-D-7,d006,7,1,True,SUB-016,,,density block; Density raw data.txt row 8; fungus not recorded
+d006-S-RW-D-8,d006,8,1,True,SUB-016,,,density block; Density raw data.txt row 9; fungus not recorded
+d006-S-RW-D-9,d006,9,1,True,SUB-016,,,density block; Density raw data.txt row 10; fungus not recorded
+d006-S-RW-D-10,d006,10,1,True,SUB-016,,,density block; Density raw data.txt row 11; fungus not recorded
+d006-S-RW-D-11,d006,11,1,True,SUB-016,,,density block; Density raw data.txt row 12; fungus not recorded
+d006-S-RW-D-12,d006,12,1,True,SUB-016,,,density block; Density raw data.txt row 13; fungus not recorded
+d006-S-RW-D-13,d006,13,1,True,SUB-016,,,density block; Density raw data.txt row 14; fungus not recorded
+d006-S-RW-D-14,d006,14,1,True,SUB-016,,,density block; Density raw data.txt row 15; fungus not recorded
+d006-S-RW-D-15,d006,15,1,True,SUB-016,,,density block; Density raw data.txt row 16; fungus not recorded
+d006-S-RW-D-16,d006,16,1,True,SUB-016,,,density block; Density raw data.txt row 17; fungus not recorded
+d006-S-RW-D-17,d006,17,1,True,SUB-016,,,density block; Density raw data.txt row 18; fungus not recorded
+d006-S-RW-D-18,d006,18,1,True,SUB-016,,,density block; Density raw data.txt row 19; fungus not recorded
+d006-S-RW-D-19,d006,19,1,True,SUB-016,,,density block; Density raw data.txt row 20; fungus not recorded
+d006-S-RWL-D-1,d006,1,1,True,SUB-017,,,density block; Density raw data.txt row 21; fungus not recorded
+d006-S-RWL-D-2,d006,2,1,True,SUB-017,,,density block; Density raw data.txt row 22; fungus not recorded
+d006-S-RWL-D-3,d006,3,1,True,SUB-017,,,density block; Density raw data.txt row 23; fungus not recorded
+d006-S-RWL-D-4,d006,4,1,True,SUB-017,,,density block; Density raw data.txt row 24; fungus not recorded
+d006-S-RWL-D-5,d006,5,1,True,SUB-017,,,density block; Density raw data.txt row 25; fungus not recorded
+d006-S-RWL-D-6,d006,6,1,True,SUB-017,,,density block; Density raw data.txt row 26; fungus not recorded
+d006-S-RWL-D-7,d006,7,1,True,SUB-017,,,density block; Density raw data.txt row 27; fungus not recorded
+d006-S-RWL-D-8,d006,8,1,True,SUB-017,,,density block; Density raw data.txt row 28; fungus not recorded
+d006-S-RWL-D-9,d006,9,1,True,SUB-017,,,density block; Density raw data.txt row 29; fungus not recorded
+d006-S-RWL-D-10,d006,10,1,True,SUB-017,,,density block; Density raw data.txt row 30; fungus not recorded
+d006-S-RWL-D-11,d006,11,1,True,SUB-017,,,density block; Density raw data.txt row 31; fungus not recorded
+d006-S-RWL-D-12,d006,12,1,True,SUB-017,,,density block; Density raw data.txt row 32; fungus not recorded
+d006-S-RWL-D-13,d006,13,1,True,SUB-017,,,density block; Density raw data.txt row 33; fungus not recorded
+d006-S-RWL-D-14,d006,14,1,True,SUB-017,,,density block; Density raw data.txt row 34; fungus not recorded
+d006-S-RWL-D-15,d006,15,1,True,SUB-017,,,density block; Density raw data.txt row 35; fungus not recorded
+d006-S-RWL-D-16,d006,16,1,True,SUB-017,,,density block; Density raw data.txt row 36; fungus not recorded
+d006-S-RWL-D-17,d006,17,1,True,SUB-017,,,density block; Density raw data.txt row 37; fungus not recorded
+d006-S-RWL-D-18,d006,18,1,True,SUB-017,,,density block; Density raw data.txt row 38; fungus not recorded
+d012-S-CF20-1,d012,1,1,True,SUB-049,FER-039,4565,"treatment T1; wet substrate mass after hydration, 1000 g dry (78% water)"
+d012-S-CF20-2,d012,2,1,True,SUB-049,FER-039,4570,"treatment T1; wet substrate mass after hydration, 1000 g dry (78% water)"
+d012-S-CF20-3,d012,3,1,True,SUB-049,FER-039,4565,"treatment T1; wet substrate mass after hydration, 1000 g dry (78% water)"
+d012-S-CF40-1,d012,1,1,True,SUB-050,FER-039,4400,"treatment T2; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-CF40-2,d012,2,1,True,SUB-050,FER-039,4375,"treatment T2; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-CF40-3,d012,3,1,True,SUB-050,FER-039,4395,"treatment T2; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-CF60-1,d012,1,1,True,SUB-051,FER-039,4225,"treatment T3; wet substrate mass after hydration, 1000 g dry (76% water)"
+d012-S-CF60-2,d012,2,1,True,SUB-051,FER-039,4225,"treatment T3; wet substrate mass after hydration, 1000 g dry (76% water)"
+d012-S-CF60-3,d012,3,1,True,SUB-051,FER-039,4230,"treatment T3; wet substrate mass after hydration, 1000 g dry (76% water)"
+d012-S-CF80-1,d012,1,1,True,SUB-052,FER-039,4005,"treatment T4; wet substrate mass after hydration, 1000 g dry (75% water)"
+d012-S-CF80-2,d012,2,1,True,SUB-052,FER-039,3965,"treatment T4; wet substrate mass after hydration, 1000 g dry (75% water)"
+d012-S-CF80-3,d012,3,1,True,SUB-052,FER-039,4020,"treatment T4; wet substrate mass after hydration, 1000 g dry (75% water)"
+d012-S-CF100-1,d012,1,1,True,SUB-053,FER-039,3025,"treatment T5; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-CF100-2,d012,2,1,True,SUB-053,FER-039,3015,"treatment T5; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-CF100-3,d012,3,1,True,SUB-053,FER-039,3020,"treatment T5; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-TW20-1,d012,1,1,True,SUB-054,FER-039,4435,"treatment T6; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-TW20-2,d012,2,1,True,SUB-054,FER-039,4435,"treatment T6; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-TW20-3,d012,3,1,True,SUB-054,FER-039,4425,"treatment T6; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-TW40-1,d012,1,1,True,SUB-055,FER-039,4030,"treatment T7; wet substrate mass after hydration, 1000 g dry (75% water)"
+d012-S-TW40-2,d012,2,1,True,SUB-055,FER-039,4030,"treatment T7; wet substrate mass after hydration, 1000 g dry (75% water)"
+d012-S-TW40-3,d012,3,1,True,SUB-055,FER-039,3805,"treatment T7; wet substrate mass after hydration, 1000 g dry (74% water)"
+d012-S-TW60-1,d012,1,1,True,SUB-056,FER-039,3680,"treatment T8; wet substrate mass after hydration, 1000 g dry (73% water)"
+d012-S-TW60-2,d012,2,1,True,SUB-056,FER-039,3730,"treatment T8; wet substrate mass after hydration, 1000 g dry (73% water)"
+d012-S-TW60-3,d012,3,1,True,SUB-056,FER-039,3745,"treatment T8; wet substrate mass after hydration, 1000 g dry (73% water)"
+d012-S-TW80-1,d012,1,1,True,SUB-057,FER-039,3400,"treatment T9; wet substrate mass after hydration, 1000 g dry (71% water)"
+d012-S-TW80-2,d012,2,1,True,SUB-057,FER-039,2795,"treatment T9; wet substrate mass after hydration, 1000 g dry (64% water)"
+d012-S-TW80-3,d012,3,1,True,SUB-057,FER-039,2785,"treatment T9; wet substrate mass after hydration, 1000 g dry (64% water)"
+d012-S-TW100-1,d012,1,1,True,SUB-058,FER-039,3000,"treatment T10; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-TW100-2,d012,2,1,True,SUB-058,FER-039,3000,"treatment T10; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-TW100-3,d012,3,1,True,SUB-058,FER-039,3000,"treatment T10; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-CH20-1,d012,1,1,True,SUB-059,FER-039,4445,"treatment T11; wet substrate mass after hydration, 1000 g dry (78% water)"
+d012-S-CH20-2,d012,2,1,True,SUB-059,FER-039,4390,"treatment T11; wet substrate mass after hydration, 1000 g dry (77% water)"
+d012-S-CH20-3,d012,3,1,True,SUB-059,FER-039,4445,"treatment T11; wet substrate mass after hydration, 1000 g dry (78% water)"
+d012-S-CH40-1,d012,1,1,True,SUB-060,FER-039,4035,"treatment T12; wet substrate mass after hydration, 1000 g dry (75% water)"
+d012-S-CH40-2,d012,2,1,True,SUB-060,FER-039,4085,"treatment T12; wet substrate mass after hydration, 1000 g dry (76% water)"
+d012-S-CH40-3,d012,3,1,True,SUB-060,FER-039,4090,"treatment T12; wet substrate mass after hydration, 1000 g dry (76% water)"
+d012-S-CH60-1,d012,1,1,True,SUB-061,FER-039,3730,"treatment T13; wet substrate mass after hydration, 1000 g dry (73% water)"
+d012-S-CH60-2,d012,2,1,True,SUB-061,FER-039,3735,"treatment T13; wet substrate mass after hydration, 1000 g dry (73% water)"
+d012-S-CH60-3,d012,3,1,True,SUB-061,FER-039,3730,"treatment T13; wet substrate mass after hydration, 1000 g dry (73% water)"
+d012-S-CH80-1,d012,1,1,True,SUB-062,FER-039,3370,"treatment T14; wet substrate mass after hydration, 1000 g dry (70% water)"
+d012-S-CH80-2,d012,2,1,True,SUB-062,FER-039,3370,"treatment T14; wet substrate mass after hydration, 1000 g dry (70% water)"
+d012-S-CH80-3,d012,3,1,True,SUB-062,FER-039,3365,"treatment T14; wet substrate mass after hydration, 1000 g dry (70% water)"
+d012-S-CH100-1,d012,1,1,True,SUB-063,FER-039,3015,"treatment T15; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-CH100-2,d012,2,1,True,SUB-063,FER-039,3005,"treatment T15; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-CH100-3,d012,3,1,True,SUB-063,FER-039,3015,"treatment T15; wet substrate mass after hydration, 1000 g dry (67% water)"
+d012-S-BS100-1,d012,1,1,True,SUB-064,FER-039,4095,"treatment T16; wet substrate mass after hydration, 1000 g dry (76% water)"
+d012-S-BS100-2,d012,2,1,True,SUB-064,FER-039,4585,"treatment T16; wet substrate mass after hydration, 1000 g dry (78% water)"
+d012-S-BS100-3,d012,3,1,True,SUB-064,FER-039,4795,"treatment T16; wet substrate mass after hydration, 1000 g dry (79% water)"
+d024-G-PO-SS,d024,,3,True,SUB-065,FER-040,,P. ostreatus on SS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PO-PS,d024,,3,True,SUB-066,FER-040,,P. ostreatus on PS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PO-WS,d024,,3,True,SUB-067,FER-040,,P. ostreatus on WS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PO-MS,d024,,3,True,SUB-068,FER-040,,P. ostreatus on MS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PO-SB,d024,,3,True,SUB-069,FER-040,,P. ostreatus on SB; group mean of 3 bags; 1 kg dry substrate
+d024-G-PO-BL,d024,,3,True,SUB-070,FER-040,,P. ostreatus on BL; group mean of 3 bags; 1 kg dry substrate
+d024-G-PF-SS,d024,,3,True,SUB-065,FER-041,,P. florida on SS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PF-PS,d024,,3,True,SUB-066,FER-041,,P. florida on PS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PF-WS,d024,,3,True,SUB-067,FER-041,,P. florida on WS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PF-MS,d024,,3,True,SUB-068,FER-041,,P. florida on MS; group mean of 3 bags; 1 kg dry substrate
+d024-G-PF-SB,d024,,3,True,SUB-069,FER-041,,P. florida on SB; group mean of 3 bags; 1 kg dry substrate
+d024-G-PF-BL,d024,,3,True,SUB-070,FER-041,,P. florida on BL; group mean of 3 bags; 1 kg dry substrate
+d025-G-T1,d025,,,True,SUB-071,FER-042,1000,"Trt1; group mean, bag count not stated; 1 kg moist substrate"
+d025-G-T2,d025,,,True,SUB-072,FER-042,1000,"Trt2; group mean, bag count not stated; 1 kg moist substrate"
+d025-G-T3,d025,,,True,SUB-073,FER-042,1000,"Trt3; group mean, bag count not stated; 1 kg moist substrate"
+d025-G-T4,d025,,,True,SUB-074,FER-042,1000,"Trt4; group mean, bag count not stated; 1 kg moist substrate"
+d025-G-T5,d025,,,True,SUB-075,FER-042,1000,"Trt5; group mean, bag count not stated; 1 kg moist substrate"
+d025-G-T6,d025,,,True,SUB-076,FER-042,1000,"Trt6; group mean, bag count not stated; 1 kg moist substrate"
+d025-G-T7,d025,,,True,SUB-077,FER-042,1000,"Trt7; group mean, bag count not stated; 1 kg moist substrate"
+d026-G-HB,d026,,5,True,SUB-078,FER-043,1000,HB; group mean of 5 bags; 1 kg moist compost
+d026-G-HH,d026,,5,True,SUB-079,FER-043,1000,HH; group mean of 5 bags; 1 kg moist compost
+d026-G-WS,d026,,5,True,SUB-080,FER-043,1000,WS; group mean of 5 bags; 1 kg moist compost
+d026-G-CG,d026,,5,True,SUB-081,FER-043,1000,CG; group mean of 5 bags; 1 kg moist compost
+d026-G-RH,d026,,5,True,SUB-082,FER-043,1000,RH; group mean of 5 bags; 1 kg moist compost
+d026-G-HBHH,d026,,5,True,SUB-083,FER-043,1000,HB1:1HH; group mean of 5 bags; 1 kg moist compost
+d026-G-HBWS,d026,,5,True,SUB-084,FER-043,1000,HB1:1WS; group mean of 5 bags; 1 kg moist compost
+d026-G-HBCG,d026,,5,True,SUB-085,FER-043,1000,HB1:1CG; group mean of 5 bags; 1 kg moist compost
+d026-G-HBRH,d026,,5,True,SUB-086,FER-043,1000,HB1:1RH; group mean of 5 bags; 1 kg moist compost
+d026-G-HHCG,d026,,5,True,SUB-087,FER-043,1000,HH1:1CG; group mean of 5 bags; 1 kg moist compost
+d026-G-WSHH,d026,,5,True,SUB-088,FER-043,1000,WS1:1HH; group mean of 5 bags; 1 kg moist compost
+d026-G-WSCG,d026,,5,True,SUB-089,FER-043,1000,WS1:1CG; group mean of 5 bags; 1 kg moist compost
+d026-G-RHCG,d026,,5,True,SUB-090,FER-043,1000,RH1:1CG; group mean of 5 bags; 1 kg moist compost

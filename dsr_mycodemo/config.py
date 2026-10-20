@@ -21,6 +21,9 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+# Training history (CSV + PNG per run) of every model, Kaggle or local; outside the repo
+HISTORY_DIR = Path.home() / "Desktop/MycoMaterials/kaggle/history"
+
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
 try:

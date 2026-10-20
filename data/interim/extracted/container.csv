@@ -1,0 +1,13 @@
+﻿container_id,container_type,container_shape,inner_diameter_mm,inner_length_mm,inner_width_mm,inner_height_mm,closure,notes
+C-001,mould,cylinder,75.0,,,37.5,perforated cellophane foil,Article M1; compression specimens. Quoted size is the specimen size
+C-002,mould,cylinder,75.0,,,100.0,perforated cellophane foil,Article M2; pre-compressed samples
+C-003,mould,cylinder,63.0,,,200.0,perforated cellophane foil,"Article M3; thermal conductivity (ASTM D5334). Article Table 1 reads 36 x 200 for flax, probably a typo (specimen diameter 53.8 mm)"
+C-004,mould,cylinder,20.0,,,100.0,perforated cellophane foil,Article M4; water absorption. Preparation documents say moulds closed with parafilm
+C-005,mould,cylinder,75.0,,,60.0,perforated cellophane foil,Article M5; PFWL
+C-006,petri_dish,square_prism,,120.0,120.0,17.0,sterile plastic film,"Square petri dish grown in parallel for daily scanning (diary, article)"
+C-007,micro_box,square_prism,,185.0,185.0,78.0,"depth-filtration lid, air flow",Micro box 185 x 185 x 78 mm (Sac O2): autoclaving and incubation of moulds and demoulded samples
+C-008,mould,square_prism,,75.0,75.0,,plastic bag in grow tent,"Bhaskar 2026 mould with 75 x 75 mm square inserts; mould height not stated, filled to 40 mm"
+C-009,mould,cylinder,75.0,,,35.0,sterile plastic film,Lab diary mould Type 3 (75 x 35 mm); used by diary-only HD samples
+C-010,mould,square_prism,,50,50,50,,Hysek 2025 cubic mould 50 mm side; compression and internal bonding specimens
+C-011,mould,cylinder,100,,,70,,"Hysek 2025 cylindrical samples 100 x 70 mm for thermal insulation tests; mould not described, size is the specimen size"
+C-012,crate,square_prism,,600,400,185,filters for air exchange,Hysek 2025 modified EURO crate for demoulded samples; size is the lid dimensions 60 x 40 x 18.5 cm
