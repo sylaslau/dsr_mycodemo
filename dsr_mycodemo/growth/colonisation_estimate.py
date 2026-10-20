@@ -2,7 +2,7 @@
 
 Notebook 2.2 fits and checks the model; this module holds what the app needs. A coefficients file written by
 the notebook (``COEFFICIENTS_PATH``) says whether the fitted model is used or the 2.1 band is kept
-(``use_model``). Without the file, ``estimate_days`` falls back to the usemycro.com 10-14 day range the app
+(``use_model``). Without the file, ``estimate_days`` falls back to the 10-14 day fallback range the app
 uses today.
 
 The model is a linear regression on log(typical days):
@@ -28,7 +28,7 @@ REFERENCE = {"group": GROUPS[0], "substrate": SUBSTRATE_GROUPS[0]}
 TEMP_FORMS = ("none", "distance", "cardinal")
 SPAWN_RANGE = (5.0, 20.0)                 # % of the total mix (spawn / (wet substrate + spawn))
 RATE_FLOOR = 0.15                         # slowest relative growth rate allowed by the cardinal rule
-FALLBACK_BAND = (10.0, 12.0, 14.0)        # usemycro.com guidance, used when there is no coefficients file
+FALLBACK_BAND = (10.0, 12.0, 14.0)        # fallback range, used when there is no coefficients file
 COEFFICIENTS_PATH = Path(__file__).with_name("colonisation_time_estimate.json")
 
 
@@ -151,7 +151,7 @@ def estimate_days(group, substrate_group, temp_c=None, spawn_pct_of_mix=None, co
     """(min, typical, max) days to colonise, plus the spawn warning and where the numbers came from.
 
     ``coefficients`` is the dict from the coefficients file; None reads the file, and without it the
-    usemycro.com 10-14 day range is returned. If the file says ``use_model`` is false (the fitted model did not
+    10-14 day fallback range is returned. If the file says ``use_model`` is false (the fitted model did not
     beat the 2.1 baseline) the group's 2.1 band is returned and the temperature and substrate are ignored.
     ``temp_c`` None means "at the optimum". Unknown group or substrate group: effect 0 (reference level).
     """

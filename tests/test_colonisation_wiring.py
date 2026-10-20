@@ -26,7 +26,7 @@ def cm():
 
 def food(**kw):
     kw.setdefault("temp_c", 19.0)
-    return Batch(goal="Food", choice="Blue Oyster", environment="Grow bag (about 3 kg)", inoc_date=START, **kw)
+    return Batch(goal="Food", choice="Pleurotus ostreatus", environment="Grow bag (about 3 kg)", inoc_date=START, **kw)
 
 
 def photos(days, k=0.8, t50=6.0):

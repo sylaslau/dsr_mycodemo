@@ -26,7 +26,7 @@ from dsr_mycodemo.growth.forecast import (
     MODELS,
     backup_to_json,
     batch_key,
-    biological_efficiency,
+    fresh_g_per_kg_dry,
     build_labels_html,
     cost_summary,
     forecast,
@@ -207,8 +207,8 @@ def fresh_g(cid):
     return float(sum(x["g"] for x in HARVEST.get(cid, [])))
 
 
-def container_be(cid):
-    return biological_efficiency(fresh_g(cid), DRY_G.get(cid))
+def container_fresh_g_per_kg_dry(cid):
+    return fresh_g_per_kg_dry(fresh_g(cid), DRY_G.get(cid))
 
 
 def na(x, fmt="{:.1f}"):
@@ -216,12 +216,16 @@ def na(x, fmt="{:.1f}"):
 
 
 def batch_figures(key, containers):
-    """Totals for one batch: containers, lost, harvested g, mean BE %, cost summary."""
+    """Totals for one batch, including fresh harvest per kg dry substrate from paired user logs."""
     harvest_g = sum(fresh_g(cid) for cid in containers)
-    bes = [b for b in (container_be(cid) for cid in containers) if not pd.isna(b)]
+    paired = [(fresh_g(cid), DRY_G[cid]) for cid in containers
+              if HARVEST.get(cid) and DRY_G.get(cid) and DRY_G[cid] > 0]
+    logged_harvest = sum(fresh for fresh, _ in paired)
+    logged_dry = sum(dry for _, dry in paired)
     cost = COSTS.get(key, {})
     return {"containers": len(containers), "lost": sum(cid in LOSSES for cid in containers),
-            "harvest_g": harvest_g, "mean_be": float(np.mean(bes)) if bes else np.nan,
+            "harvest_g": harvest_g,
+            "fresh_g_per_kg_dry": fresh_g_per_kg_dry(logged_harvest, logged_dry),
             "cost": cost_summary(cost, harvest_g, cost.get("price")), "currency": cost.get("currency", "EUR")}
 
 
@@ -229,7 +233,7 @@ def sync_pipeline(inoc, temp, stage_log, env_name=None):
     """Copy what this page knows into the one batch record (choices come from the earlier pages)."""
     b = flow.get_batch()
     if b.goal is None:                           # no plan from the earlier pages: the page's own default
-        b.goal, b.choice = GOAL, "Foam" if MATERIAL else "Blue Oyster"
+        b.goal, b.choice = GOAL, "Foam" if MATERIAL else "Pleurotus ostreatus"
     b.env_name = env_name
     b.inoc_date = inoc
     if temp is not None:
@@ -371,7 +375,7 @@ with batch_box:
         # --- harvest, losses, costs (session only) ----------------------------------------
         cur_batch = batch_of(sid)
         batch_containers = sorted(cov[cov["series_id"].map(batch_of) == cur_batch]["series_id"].unique())
-        if not MATERIAL:                       # harvest, flushes and BE are mushroom-only
+        if not MATERIAL:                       # harvest and flushes are mushroom-only
             st.markdown(f"**Harvest of {sid}** (fresh weight per flush)")
             h1, h2, h3, h4 = st.columns([1, 1, 1, 1])
             flush_date = h1.date_input("Flush date", date.today(), key=f"h_date_{dk}")
@@ -386,8 +390,9 @@ with batch_box:
             else:
                 DRY_G.pop(sid, None)
             h4.metric("Cumulative fresh harvest", f"{fresh_g(sid):.0f} g")
-            h4.metric("Biological efficiency (measured)",
-                      na(container_be(sid), "{:.1f} %"))
+            h4.metric("Fresh g per kg dry substrate",
+                      na(container_fresh_g_per_kg_dry(sid), "{:.0f}"))
+            st.caption("This uses only your logged fresh harvest and dry-substrate weight.")
             if HARVEST.get(sid):
                 st.dataframe(pd.DataFrame([{"Date": x["date"].isoformat(), "Fresh (g)": x["g"]}
                                            for x in HARVEST[sid]]), hide_index=True)
@@ -395,8 +400,7 @@ with batch_box:
                     HARVEST[sid].pop()
                     st.rerun()
             else:
-                st.caption("No harvest recorded yet. Biological efficiency = fresh harvest / dry substrate x 100, "
-                           "needs the dry substrate weight.")
+                st.caption("Record each flush's fresh weight and this container's dry substrate weight.")
 
         st.markdown(f"**Losses in {cur_batch}**")
         lost_now = LOSSES.get(sid)
@@ -467,7 +471,10 @@ with batch_box:
                 "harvest_flushes": "; ".join(f"{x['date'].isoformat()}:{x['g']:g}" for x in HARVEST.get(sid, [])),
                 "harvest_fresh_g": fresh_g(sid),
                 "dry_substrate_g": DRY_G.get(sid),
-                "be_measured_pct": None if pd.isna(container_be(sid)) else round(container_be(sid), 2),
+                "fresh_g_per_kg_dry_substrate": (
+                    None if pd.isna(container_fresh_g_per_kg_dry(sid))
+                    else round(container_fresh_g_per_kg_dry(sid), 2)
+                ),
                 "lost": sid in LOSSES,
                 "loss_stage": LOSSES.get(sid, {}).get("stage", ""),
                 "loss_cause": LOSSES.get(sid, {}).get("cause", ""),
@@ -660,11 +667,13 @@ if is_syldd and not MATERIAL:
         days = [day90_by[cid] for cid in members]
         fb = batch_figures(key, members)
         rows.append({"Batch": key, "Containers": fb["containers"], "Lost": fb["lost"],
-                     "Harvested (g)": fb["harvest_g"], "Mean BE (%, measured)": na(fb["mean_be"]),
+                     "Harvested (g)": fb["harvest_g"],
+                     "Fresh g per kg dry substrate": na(fb["fresh_g_per_kg_dry"], "{:.0f}"),
                      "Cost per kg": na(fb["cost"]["per_kg"], "{:.2f} " + fb["currency"]),
                      "Forecast 90% colonisation day": na(np.nanmean(days) if not np.all(np.isnan(days)) else np.nan)})
     st.dataframe(pd.DataFrame(rows), hide_index=True)
-    st.caption("Differences between batches are observations, not proof of cause.")
+    st.caption("Differences are observations, not proof of cause. The fresh-per-kg measure uses only your logged "
+               "harvests and dry weights.")
 
 # --- forecast as each photo is added ----------------------------------------------------
 with st.expander("Details"):

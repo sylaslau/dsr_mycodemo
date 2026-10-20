@@ -15,13 +15,13 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 
-from dsr_mycodemo.cultivation import FRUITING_CONDITIONS, SPECIES_BE, baseline_guide, substrate_recipe
-from dsr_mycodemo.cultivation.corrected import spawn_corrected
+from dsr_mycodemo.cultivation import baseline_guide
+from dsr_mycodemo.cultivation import recipe as recipe_maths
 from dsr_mycodemo.growth import consensus_estimate, forecast_update
 from dsr_mycodemo.growth.forecast import forecast, forecast_warnings
 
 # --- constants ------------------------------------------------------------------------------
-MATERIAL_SPECIES = "Blue Oyster"      # the species in our material data (Pleurotus ostreatus)
+MATERIAL_SPECIES = "Pleurotus ostreatus"   # the species in our material data
 PRODUCTS = ["Foam", "Acoustic board", "Game pieces"]
 # environment: label -> (containers, dry substrate per container in kg); sizes are our pretend defaults
 ENVIRONMENTS = {
@@ -31,25 +31,18 @@ ENVIRONMENTS = {
     "Shelf or grow tent": (10, 1.0),
     "Room": (100, 1.0),
 }
-# common name in FRUITING_CONDITIONS -> key in SPECIES_BE (species without a typical BE are not listed)
-BE_KEY = {"Blue Oyster": "Blue / Pearl Oyster", "Pearl Oyster": "Blue / Pearl Oyster",
-          "Pink Oyster": "Pink / Yellow Oyster", "Golden / Yellow Oyster": "Pink / Yellow Oyster",
-          "King Oyster": "King Oyster (Trumpet)", "Lion's Mane": "Lion's Mane", "Shiitake": "Shiitake",
-          "Chestnut": "Chestnut", "Pioppino": "Pioppino", "Nameko": "Nameko", "Reishi": "Reishi"}
 # the growing space the user describes once (the Grow Log's Environment box); not the recipe scale above
 ENVIRONMENT_SIZES = ["Small plastic box", "Tub", "Tent", "Shelf", "Room"]
 MEASURED_BY = ["Thermometer", "Sensor device", "Guess"]
 # stage that ends colonisation -> where "Next stage" goes, per goal (Food: Fruiting, Materials: Post-treatment)
 COLONISING_STAGES = {"Food": ("Inoculated", "Colonising"), "Materials": ("Colonisation",)}
 AFTER_COLONISATION = {"Food": "Fruiting", "Materials": "Post-treatment"}
-BASELINE, SPAWN_PCT, MOISTURE = "masters", 10, 60   # baseline recipe (50/50 hardwood sawdust + soy hull, 1 % gypsum)
+BASELINE_SUBSTRATE, SPAWN_PCT = recipe_maths.DEFAULT_SUBSTRATE, recipe_maths.DEFAULT_SPAWN_PCT   # baseline recipe
 HUMIDITY_RANGE = (80.0, 95.0)         # % RH wanted while colonising; out of range is only ever a Warning
 # Temperature rule (our assumption, see temperature_factor): the typical days hold at the optimum, the growth
 # rate falls in straight lines to zero at the biological limits. The 10-35 °C limits are the "biological range"
 # stated for Pleurotus in the consensus table; the optimum is incubation_temp_C opt of the baseline row.
 BIOLOGICAL_RANGE = {"Pleurotus": (10.0, 35.0)}
-# recipe preset -> substrate_code in the baseline guide (the baseline recipe is a masters mix)
-PRESET_SUBSTRATE = {"masters": "masters_mix", "suppsaw": "sawdust", "straw": "straw"}
 RATE_FLOOR = 0.15                     # slowest relative growth rate we allow, so days never run away
 MAX_NUDGE = 1.3                       # 1-2 photos move the estimate by at most 30 %
 # "consensus model" / "photos + consensus model" = the 2.2 estimate and 2.5 update; the "fallback:" tags = the older
@@ -130,7 +123,7 @@ class Batch:
     environment: str | None = None    # recipe scale (page 3), see ENVIRONMENTS; not the Environment record
     env_name: str | None = None       # name of the Environment this batch grows in (Grow Log)
     temp_c: float | None = None
-    recipe: dict | None = None        # {'preset', 'moisture', 'spawn_pct'}; None = the baseline
+    recipe: dict | None = None        # {'substrate', 'spawn_pct'}; None = the baseline (sawdust, 10 % spawn)
     inoc_date: date = field(default_factory=date.today)
     photos: list[Photo] = field(default_factory=list)
     conditions: list[Condition] = field(default_factory=list)
@@ -148,6 +141,8 @@ class Batch:
     @classmethod
     def from_dict(cls, d):
         d = dict(d)
+        if d.get("goal") == "Food":
+            d["choice"] = canonical_species_choice(d.get("choice"))
         d["inoc_date"] = date.fromisoformat(d["inoc_date"])
         d["photos"] = [Photo(**p) for p in d.get("photos", [])]
         d["conditions"] = [Condition(**{**c, "date": date.fromisoformat(c["date"])}) for c in d.get("conditions", [])]
@@ -187,15 +182,33 @@ class Result:
 
 # --- species ----------------------------------------------------------------------------------
 def species_row(batch):
-    """The FRUITING_CONDITIONS entry for the chosen species (materials use MATERIAL_SPECIES); None if custom."""
-    name = MATERIAL_SPECIES if batch.goal == "Materials" else batch.choice
-    return next((s for s in FRUITING_CONDITIONS if s["name"] == name), None)
+    """The consensus-table entry {'species', 'common_name'} for the chosen species (materials use MATERIAL_SPECIES);
+    None if custom or not in the table."""
+    name = MATERIAL_SPECIES if batch.goal == "Materials" else canonical_species_choice(batch.choice)
+    return next((s for s in recipe_maths.species_list() if s["species"] == name), None)
+
+
+def canonical_species_choice(choice):
+    """Latin name of the choice; older backups stored a common name such as 'Blue Oyster'."""
+    if choice is None:
+        return None
+    by_common_name = {s["common_name"]: s["species"] for s in recipe_maths.species_list()}
+    by_common_name.update({"Blue Oyster": MATERIAL_SPECIES, "Blue / Pearl Oyster": MATERIAL_SPECIES})
+    return by_common_name.get(choice, choice)
 
 
 def choice_label(batch):
     if batch.goal == "Food" and batch.choice == "Custom":
         return batch.custom_name or "your own mushroom"
+    if batch.goal == "Food":
+        row = species_row(batch)
+        if row is not None:
+            return row["common_name"]
     return batch.choice or ""
+
+
+def recipe_substrate(batch):
+    return (batch.recipe or {}).get("substrate", BASELINE_SUBSTRATE)
 
 
 def baseline_row(batch):
@@ -204,16 +217,10 @@ def baseline_row(batch):
     row = species_row(batch)
     if row is None:
         return None
-    preset = (batch.recipe or {}).get("preset", BASELINE)
     try:
-        return baseline_guide.row(row["latin"], PRESET_SUBSTRATE.get(preset, "masters_mix"))
+        return baseline_guide.row(row["species"], recipe_substrate(batch))
     except KeyError:
         return None
-
-
-def be_percent(row):
-    key = BE_KEY.get(row["name"]) if row else None
-    return SPECIES_BE.get(key)
 
 
 # --- temperature rule (parsing moved here from notebook 2.1; the notebook itself is unchanged) -----
@@ -293,18 +300,18 @@ def _plan_size(batch):
 
 
 def recipe_step(batch):
+    """Substrate, supplementation, water and spawn from the consensus row (see cultivation/recipe.py)."""
     n, kg = _plan_size(batch)
-    r = batch.recipe or {}
-    preset, moisture, spawn_pct = r.get("preset", BASELINE), r.get("moisture", MOISTURE), r.get("spawn_pct", SPAWN_PCT)
-    rec = substrate_recipe(kg, n, preset, moisture)
-    spawn_kg = spawn_corrected(rec["per_block"]["hydrated"], spawn_pct, "of_total_mix")["spawn"]
-    note = "Baseline recipe, not yet tuned to your product or environment."
+    spawn_pct = (batch.recipe or {}).get("spawn_pct", SPAWN_PCT)
+    row = species_row(batch)
+    rec = recipe_maths.recipe(row["species"] if row else MATERIAL_SPECIES, recipe_substrate(batch), kg, n, spawn_pct)
+    note = "Baseline recipe from the consensus guide, not yet tuned to your product or environment."
     if batch.environment not in ENVIRONMENTS:
         note += " No environment chosen yet, so one 0.5 kg container is assumed."
-    if batch.goal == "Food" and species_row(batch) is None:
+    if batch.goal == "Food" and row is None:
         note += " For your own mushroom the baseline oyster recipe is used; it may not suit it."
-    return Step("Recipe", {"rec": rec, "spawn_kg": spawn_kg, "n": n, "moisture": moisture, "spawn_pct": spawn_pct},
-                "typical range", note)
+    return Step("Recipe", {"rec": rec, "n": n, "moisture": rec["moisture_pct"], "spawn_pct": spawn_pct,
+                           "spawn_kg": rec["per_container"]["spawn"]}, "typical range", note)
 
 
 def _source_text(row, c):
@@ -608,16 +615,9 @@ def _strength_model():
 
 
 def outcome_step(batch):
-    """Yield estimate (Food) or Material strength (Materials)."""
+    """Harvest-record placeholder (Food) or Material strength (Materials)."""
     if batch.goal != "Materials":
-        row = species_row(batch)
-        be = be_percent(row)
-        if be is None:
-            return Step("Yield estimate", None, "preview", "No typical biological efficiency (BE) is known for this mushroom.")
-        dry = recipe_step(batch).value["rec"]["totals"]["total_dry"]
-        return Step("Yield estimate", {"kg": dry * be / 100, "be": be, "dry_kg": dry}, "typical range",
-                    f"Estimate, not a prediction: an assumed BE of {be} % of the dry substrate ({dry:.1f} kg dry). "
-                    "No dataset yet links growth to harvest weight.")
+        return Step("Harvest record", None, "preview", "Record your harvest in Monitor; no yield estimate is provided.")
     try:
         frame = pd.DataFrame({"species_name": ["Pleurotus ostreatus"], "substrate_group": ["hardwood"]})
         model = _strength_model()

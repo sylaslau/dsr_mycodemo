@@ -12,6 +12,7 @@ def test_shape():
     df = bg.load()
     assert len(df) == 22
     assert len(bg.species_list()) == 8
+    assert bg.species_list()[0] == {"species": "Pleurotus ostreatus", "common_name": "Pearl Oyster"}
     assert len(bg.load_text()) == 22
 
 
@@ -58,7 +59,7 @@ def test_row_falls_back_to_sawdust():
 def test_row_falls_back_to_first_when_no_sawdust():
     df = bg.load()
     no_sawdust = [
-        s for s in bg.species_list() if "sawdust" not in bg.substrates(s)
+        s["species"] for s in bg.species_list() if "sawdust" not in bg.substrates(s["species"])
     ]
     if not no_sawdust:
         pytest.skip("every species has a sawdust row")
@@ -115,7 +116,7 @@ def test_stages_agree_with_pipeline_dates_step_for_blue_oyster(monkeypatch):
     def missing():
         raise ModelUnavailable("test")
     monkeypatch.setattr(pipeline, "_consensus", missing)
-    batch = pipeline.Batch(goal="Food", choice="Blue Oyster", inoc_date=date(2026, 1, 1))
+    batch = pipeline.Batch(goal="Food", choice="Pleurotus ostreatus", inoc_date=date(2026, 1, 1))
     row, _ = pipeline.baseline_row(batch)
     st_ = bg.stages(row).set_index("stage")
     est = pipeline.colonisation_estimate(batch)

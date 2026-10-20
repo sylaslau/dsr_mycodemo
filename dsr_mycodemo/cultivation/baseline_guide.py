@@ -28,8 +28,9 @@ def load_text() -> pd.DataFrame:
     return pd.read_csv(TEXT_CSV)
 
 
-def species_list() -> list[str]:
-    return list(dict.fromkeys(load()["species"]))
+def species_list() -> list[dict[str, str]]:
+    species = load()[["species", "common_name"]].drop_duplicates()
+    return species.to_dict("records")
 
 
 def substrates(species: str) -> list[str]:

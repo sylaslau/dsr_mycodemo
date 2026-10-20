@@ -3,20 +3,21 @@
 import streamlit as st
 
 from dsr_mycodemo.app import flow
-from dsr_mycodemo.cultivation import FRUITING_CONDITIONS
+from dsr_mycodemo.cultivation import baseline_guide
 
 st.set_page_config(page_title="What do you want to grow?",
                    page_icon="🍄", layout="wide")
 flow.init()
 ss = st.session_state
 
-# shown name -> FRUITING_CONDITIONS name (what the pipeline looks up); None = not in our table (kept as a custom pick)
-FOODS = {"Pearl or Blue Oyster": "Blue Oyster", "King Oyster": "King Oyster", "Shiitake": "Shiitake",
+# shown name -> consensus-table common name
+FOODS = {"Pearl or Blue Oyster": "Pearl Oyster", "King Oyster": "King Oyster", "Shiitake": "Shiitake",
          "Lion's mane": "Lion's Mane", "Enoki": "Enoki"}
 THINGS = ["Packaging foam", "Acoustic panel",
           "Mycoleather", "Bricks or blocks", "Game pieces"]
 FOOD_OWN, THING_OWN = "Your next culinary invention", "Your next thingiverse invention"
-latin = {s["name"]: s["latin"] for s in FRUITING_CONDITIONS}
+SPECIES_BY_COMMON_NAME = {s["common_name"]: s["species"] for s in baseline_guide.species_list()}
+FOOD_SPECIES = {shown: SPECIES_BY_COMMON_NAME[common_name] for shown, common_name in FOODS.items()}
 
 
 def pick(goal, choice, custom_name=""):
@@ -27,9 +28,7 @@ def pick(goal, choice, custom_name=""):
 
 
 def is_food(shown):
-    if FOODS[shown] is None:
-        return ss["goal"] == "Food" and ss["choice"] == "Custom" and ss["custom_name"] == shown
-    return ss["goal"] == "Food" and ss["choice"] == FOODS[shown]
+    return ss["goal"] == "Food" and ss["choice"] == FOOD_SPECIES[shown]
 
 
 st.title("Start a batch")
@@ -38,12 +37,12 @@ left, right = st.columns(2)
 
 with left:
     st.subheader("Food")
-    for shown, name in FOODS.items():
+    for shown in FOODS:
         on = is_food(shown)
         if st.button(shown, key=f"food_{shown}", type="primary" if on else "secondary", use_container_width=True):
-            pick("Food", name or "Custom", shown if name is None else "")
+            pick("Food", FOOD_SPECIES[shown])
         if on:
-            st.caption(f"*{latin.get(name, "")}*")
+            st.caption(f"*{FOOD_SPECIES[shown]}*")
     own = ss["goal"] == "Food" and ss["choice"] == "Custom" and ss["custom_name"] not in FOODS
     if st.button(FOOD_OWN, key="food_own", type="primary" if own else "secondary", use_container_width=True):
         pick("Food", "Custom", "")
@@ -51,7 +50,7 @@ with left:
         name = st.text_input("What is it called?",
                              value=ss["custom_name"], key="food_own_in")
         ss["custom_name"] = name.strip()
-        st.caption("For your own mushroom we have no temperature range or yield figure; "
+        st.caption("For your own mushroom we have no temperature range or recipe figures; "
                    "try identification tools to get some reference; "
                    "I'll help you track with the experimental conditions.")
 

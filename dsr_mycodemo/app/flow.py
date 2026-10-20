@@ -10,7 +10,7 @@ from dsr_mycodemo.growth.forecast import (
 )
 
 MATERIAL_SPECIES = pipeline.MATERIAL_SPECIES
-PRODUCTS, ENVIRONMENTS, BE_KEY = pipeline.PRODUCTS, pipeline.ENVIRONMENTS, pipeline.BE_KEY
+PRODUCTS, ENVIRONMENTS = pipeline.PRODUCTS, pipeline.ENVIRONMENTS
 FULLY_COLONISED_NOTE = ("Start induction when the substrate is white all the way through, bottom included; "
                         "90% on a photo is only a surface marker.")
 ENDPOINT_ASSUMPTION_NOTE = (
@@ -71,16 +71,12 @@ def run():
 
 
 def species_row():
-    """The FRUITING_CONDITIONS entry for the chosen species (materials use MATERIAL_SPECIES); None if custom."""
+    """The consensus-table entry for the chosen species (materials use MATERIAL_SPECIES); None if custom."""
     return pipeline.species_row(get_batch())
 
 
 def choice_label():
     return pipeline.choice_label(get_batch())
-
-
-def be_percent(row):
-    return pipeline.be_percent(row)
 
 
 def predicted_dates():

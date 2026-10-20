@@ -105,11 +105,11 @@ def forecast_warnings(t, c, result):
     return out
 
 
-def biological_efficiency(fresh_g, dry_g):
-    """Measured biological efficiency in % = fresh harvest / dry substrate x 100 (NaN if either is missing)."""
+def fresh_g_per_kg_dry(fresh_g, dry_g):
+    """Fresh harvest (g) per kg of dry substrate, from the user's own logged numbers (NaN if either is missing)."""
     if not fresh_g or not dry_g or dry_g <= 0:
         return np.nan
-    return 100 * fresh_g / dry_g
+    return fresh_g / (dry_g / 1000)
 
 
 def loss_rate_text(lost, total):

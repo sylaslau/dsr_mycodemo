@@ -28,7 +28,7 @@ def fallback_maths(monkeypatch):
 
 def food(**kw):
     kw.setdefault("temp_c", 24.0)
-    return Batch(goal="Food", choice="Blue Oyster", environment="Grow bag (about 3 kg)", inoc_date=START, **kw)
+    return Batch(goal="Food", choice="Pleurotus ostreatus", environment="Grow bag (about 3 kg)", inoc_date=START, **kw)
 
 
 def materials(**kw):
@@ -47,9 +47,9 @@ def event(result, label):
 # --- food and materials ----------------------------------------------------------------------
 def test_food_batch_steps_and_dates():
     r = run(food())
-    assert r.recipe.value["rec"]["totals"]["total_dry"] > 0
+    assert r.recipe.value["rec"]["totals"]["as_weighed"] > 0
     assert r.colonisation_estimate.source == "fallback: typical range"
-    assert r.outcome.name == "Yield estimate" and r.outcome.value["kg"] > 0
+    assert r.outcome.name == "Harvest record" and r.outcome.value is None
     assert [n for n, _, _ in r.dates.value] == ["Inoculation", END, MARK, "Pinning",
                                                    "First harvest"]
     a, b = event(r, END)
@@ -70,6 +70,28 @@ def test_materials_batch_has_post_treatment_and_strength():
         assert r.outcome.value["stress_mpa"] > 0
 
 
+def test_recipe_comes_from_the_consensus_row():
+    v = run(food()).recipe.value
+    rec = v["rec"]
+    assert rec["ref_id"] == "cb03" and v["moisture"] == 62 and v["spawn_pct"] == 10
+    assert rec["per_container"]["water"] == pytest.approx(0.9 * rec["per_container"]["as_weighed"] / 0.38
+                                                          - rec["per_container"]["as_weighed"])
+    assert v["spawn_kg"] / rec["per_container"]["total_mix"] == pytest.approx(0.10)
+    bad = run(food(recipe={"spawn_pct": 3}))
+    assert any("Spawn at 3%" in w for w in bad.warnings.value)
+
+
+def test_species_rows_and_legacy_choices_use_consensus_names():
+    oyster = pipeline.species_row(food())
+    assert oyster == {"species": "Pleurotus ostreatus", "common_name": "Pearl Oyster"}
+    assert pipeline.species_row(materials()) == oyster
+    old = {**food().to_dict(), "choice": "Blue Oyster"}
+    assert Batch.from_dict(old).choice == "Pleurotus ostreatus"
+    old["choice"] = "King Oyster"
+    assert Batch.from_dict(old).choice == "Pleurotus eryngii"
+    assert pipeline.choice_label(food()) == "Pearl Oyster"
+
+
 def test_blue_oyster_uses_the_sawdust_row_of_the_consensus_guide():
     est = run(food()).colonisation_estimate
     assert est.value["days"] == (14, 22) and est.value["typical"] == 18 and est.value["factor"] == 1.0
@@ -77,7 +99,7 @@ def test_blue_oyster_uses_the_sawdust_row_of_the_consensus_guide():
 
 
 def test_shiitake_gets_no_temperature_adjustment():
-    b = Batch(goal="Food", choice="Shiitake", environment="Grow bag (about 3 kg)", temp_c=15.0, inoc_date=START)
+    b = Batch(goal="Food", choice="Lentinula edodes", environment="Grow bag (about 3 kg)", temp_c=15.0, inoc_date=START)
     est = pipeline.colonisation_estimate(b)
     assert est.value["factor"] == 1.0 and "No temperature adjustment" in est.note
     assert est.value["row"].startswith("cb13")
@@ -213,7 +235,7 @@ def test_every_step_has_a_valid_source_and_a_note():
 # --- batch record and backup ----------------------------------------------------------------
 def test_batch_round_trips_through_the_json_backup():
     b = food(photos=photos(3), conditions=[Condition(START, 23.0, 88.0)],
-             stages=[pipeline.StageEntry("Colonising", START, "ok")], recipe={"preset": "masters"})
+             stages=[pipeline.StageEntry("Colonising", START, "ok")], recipe={"substrate": "sawdust", "spawn_pct": 10})
     payload = {"dataset": "ref", "dish": "d", "batch": {"inoc_date": START}, "dish_fields": {}, "stage_log": {},
                "photos": [], "harvest": {}, "dry_g": {}, "losses": {}, "costs": {}, "pipeline": b.to_dict()}
     back = backup_from_json(backup_to_json(payload))

@@ -95,9 +95,9 @@ else:
     lo, hi = inc["min"], inc["max"]
     if lo <= temp <= hi:
         st.success(
-            f"{temp:g} °C is inside the colonisation range of {row['name']} ({lo}–{hi} °C, consensus guide).")
+            f"{temp:g} °C is inside the colonisation range of {row['common_name']} ({lo}–{hi} °C, consensus guide).")
     else:
-        st.warning(f"{temp:g} °C is outside the colonisation range of {row['name']} ({lo}–{hi} °C, consensus guide). "
+        st.warning(f"{temp:g} °C is outside the colonisation range of {row['common_name']} ({lo}–{hi} °C, consensus guide). "
                    "Colonisation will be slower, or may stall; consider a warmer or cooler spot.")
     st.caption(f"Row used: {br[1]}.")
     if ss["goal"] == "Food":

@@ -1,4 +1,4 @@
-"""Recipe and timeline: shows what the pipeline returns (recipe, colonisation timeline, yield or strength)."""
+"""Recipe and timeline: shows what the pipeline returns (recipe, colonisation timeline, harvest note or strength)."""
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -23,16 +23,21 @@ st.caption(f"{what} · {ss['environment']} · {ss['temp_c']:g} °C")
 # --- recipe ---------------------------------------------------------------------------------
 st.subheader("Baseline recipe")
 rv = result.recipe.value
-rec, n, spawn_kg = rv["rec"], rv["n"], rv["spawn_kg"]
-pb = rec["per_block"]
-ing = pd.DataFrame([{"Ingredient": i["name"], "Per container (kg)": i["per_block"], "Total (kg)": i["total"]}
+rec, n = rv["rec"], rv["n"]
+pc = rec["per_container"]
+ing = pd.DataFrame([{"Ingredient": i["name"], "Per container (kg)": i["kg"], "Total (kg)": i["kg"] * n}
                     for i in rec["ingredients"]]
-                   + [{"Ingredient": f"Water (to {rv['moisture']} % moisture)", "Per container (kg)": pb["water"],
-                       "Total (kg)": pb["water"] * n},
-                      {"Ingredient": f"Spawn ({rv['spawn_pct']} % of the whole mix)", "Per container (kg)": spawn_kg,
-                       "Total (kg)": spawn_kg * n}])
+                   + [{"Ingredient": f"Water (to {rec['moisture_pct']:g} % moisture)", "Per container (kg)": pc["water"],
+                       "Total (kg)": pc["water"] * n},
+                      {"Ingredient": f"Spawn ({rv['spawn_pct']:g} % of the whole mix)", "Per container (kg)": pc["spawn"],
+                       "Total (kg)": pc["spawn"] * n}])
 st.dataframe(ing.style.format({"Per container (kg)": "{:.2f}", "Total (kg)": "{:.2f}"}), hide_index=True)
-st.caption(f"{n} container(s). Amounts are dry matter for the substrate. {result.recipe.note}")
+st.caption(f"{n} container(s). Ingredient amounts are as weighed. {result.recipe.note}")
+st.caption("Water assumes the dry ingredients already hold about 10% water. Supplement amounts use the middle of "
+           f"the guide's range ({rec['supplementation'] or 'none listed'}).")
+if rec["supplements_text_only"]:
+    st.caption("Also from the guide: " + "; ".join(rec["supplements_text_only"]) + ".")
+st.caption(f"Guide row {rec['row_note']}")
 
 # --- stage timeline (stage 1 block below is the fallback) -------------------------------------
 est, fc, dates, fruit = result.colonisation_estimate, result.colonisation_forecast, result.dates, result.fruiting
@@ -185,29 +190,28 @@ if fruit is not None:
 for w in result.warnings.value:
     st.warning(w)
 
-# --- yield or strength ----------------------------------------------------------------------
+# --- harvest record or strength -------------------------------------------------------------
 out = result.outcome
-st.subheader(out.name + (" estimate" if out.name == "Material strength" else ""))
-if out.is_preview:
-    flow.preview(out.name, out.note)
-elif ss["goal"] == "Food":
-    st.metric("Estimated fresh yield, whole batch", f"{out.value['kg']:.1f} kg")
-    st.caption(out.note)
+if ss["goal"] == "Food":
+    st.info("Yield: record your harvest in Monitor.")
 else:
-    m1, m2 = st.columns(2)
-    m1.metric("Stress at 10 % strain", f"{out.value['stress_mpa']:.3f} MPa")
-    m2.metric("Density", f"{out.value['density']:.0f} kg/m³")
-    st.caption(out.note)
+    st.subheader(out.name + " estimate")
+    if out.is_preview:
+        flow.preview(out.name, out.note)
+    else:
+        m1, m2 = st.columns(2)
+        m1.metric("Stress at 10 % strain", f"{out.value['stress_mpa']:.3f} MPa")
+        m2.metric("Density", f"{out.value['density']:.0f} kg/m³")
+        st.caption(out.note)
 
 if result.harvest_readiness is not None:
     flow.preview("Harvest readiness", result.harvest_readiness.note)
 
 # --- hand over to Monitor ----------------------------------------------------------------
 if st.button("Save this plan and open Monitor", type="primary"):
-    ss["recipe"] = {"preset": pipeline.BASELINE, "moisture": pipeline.MOISTURE, "spawn_pct": pipeline.SPAWN_PCT,
-                    "substrate": "sawdust"}
+    ss["recipe"] = {"substrate": pipeline.BASELINE_SUBSTRATE, "spawn_pct": pipeline.SPAWN_PCT}
     row = flow.species_row()
-    ss["batch"] = {"batch_label": f"{what} {ss['inoc_date'].isoformat()}", "species": row["latin"] if row else what,
+    ss["batch"] = {"batch_label": f"{what} {ss['inoc_date'].isoformat()}", "species": row["species"] if row else what,
                    "inoc_date": ss["inoc_date"], "n_containers": n, "temp_c": ss["temp_c"],
-                   "substrate": "sawdust", "spawn_pct": float(pipeline.SPAWN_PCT)}
+                   "substrate": pipeline.BASELINE_SUBSTRATE, "spawn_pct": float(pipeline.SPAWN_PCT)}
     st.switch_page("pages/4_Monitor.py")

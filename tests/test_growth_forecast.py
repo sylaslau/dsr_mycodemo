@@ -11,12 +11,12 @@ from dsr_mycodemo.growth.forecast import (
     build_labels_html,
     csv_to_payload,
     restore_from_text,
-    biological_efficiency,
     cost_summary,
     day_reaching,
     forecast,
     forecast_by_photo,
     forecast_warnings,
+    fresh_g_per_kg_dry,
     logistic,
     loss_rate_text,
     pace_vs_typical,
@@ -91,11 +91,12 @@ def test_pace_unknown_for_nan():
     assert pace_vs_typical(np.nan) == "unknown"
 
 
-def test_biological_efficiency():
-    assert biological_efficiency(300, 1000) == pytest.approx(30.0)
-    assert np.isnan(biological_efficiency(300, None))
-    assert np.isnan(biological_efficiency(0, 1000))
-    assert np.isnan(biological_efficiency(300, 0))
+def test_fresh_harvest_per_kg_dry():
+    assert fresh_g_per_kg_dry(300, 1000) == pytest.approx(300)
+    assert fresh_g_per_kg_dry(450, 1500) == pytest.approx(300)
+    assert np.isnan(fresh_g_per_kg_dry(300, None))
+    assert np.isnan(fresh_g_per_kg_dry(0, 1000))
+    assert np.isnan(fresh_g_per_kg_dry(300, 0))
 
 
 def test_loss_rate_text():
@@ -183,7 +184,7 @@ def test_csv_wrong_columns_gives_clear_error():
 
 def test_labels_eight_per_page():
     lab = {"batch": "syldd", "container": "C", "species": "P. ostreatus", "inoculation": "2026-10-08",
-           "expected": "2026-10-22", "expected_note": "typical, usemycro.com guidance"}
+           "expected": "2026-10-22", "expected_note": "typical, consensus guide"}
     out = build_labels_html([lab] * 9)
     assert out.count('class="page"') == 2 and out.count('class="label"') == 9
     assert out.count("flush: ____") == 9
