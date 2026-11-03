@@ -12,8 +12,8 @@ import pandas as pd
 
 from dsr_mycodemo.config import PROCESSED_DATA_DIR
 
-BASELINE_CSV = PROCESSED_DATA_DIR / "cultivation_baseline.csv"
-TEXT_CSV = PROCESSED_DATA_DIR / "cultivation_guide_text.csv"
+BASELINE_CSV = PROCESSED_DATA_DIR / "food" / "cultivation_baseline.csv"
+TEXT_CSV = PROCESSED_DATA_DIR / "food" / "cultivation_guide_text.csv"
 
 FALLBACK_SUBSTRATE = "sawdust"
 

@@ -10,7 +10,7 @@ import pandas as pd
 from dsr_mycodemo.config import INTERIM_DATA_DIR, PROCESSED_DATA_DIR
 
 EXTRACTED_DIR = INTERIM_DATA_DIR / "extracted"
-OUTPUT_PATH = PROCESSED_DATA_DIR / "property_table.csv"
+OUTPUT_PATH = PROCESSED_DATA_DIR / "materials" / "property_table.csv"
 
 # d005 PFL specimens LF_1/LF_2 sit in the pre-compression sheet but were left out of
 # the PFL mean, and their treatment is unknown (flag CF7)

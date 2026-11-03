@@ -1,4 +1,4 @@
-"""Recipe maths from the consensus table (data/processed/cultivation_baseline.csv and cultivation_guide_text.csv).
+"""Recipe maths from the consensus table (data/processed/food/cultivation_baseline.csv and cultivation_guide_text.csv).
 
 - Substrate and supplementation: the guide's text for the species and substrate row.
 - Water: brings the mix to the row's substrate_moisture_pct, assuming the dry ingredients already hold
