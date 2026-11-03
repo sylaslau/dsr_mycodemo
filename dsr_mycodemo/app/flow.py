@@ -34,7 +34,8 @@ PREVIEW_CSS = """
 
 def init():
     """Set the defaults once and load the Preview style; call at the top of every grower page."""
-    for key, value in {"goal": None, "choice": None, "custom_name": "", "environment": None,
+    for key, value in {"goal": None, "choice": None, "custom_name": "", "material_species": MATERIAL_SPECIES[0],
+                       "environment": None,
                        "temp_c": None, "recipe": None, "batch": None, "inoc_date": date.today(),
                        "pipeline_batch": None}.items():
         st.session_state.setdefault(key, value)
@@ -45,6 +46,11 @@ def preview(title, body=""):
     """A greyed, dashed box: marks something pretend and inactive (a Preview)."""
     st.markdown(f'<div class="mc-preview"><span class="mc-tag">PREVIEW · inactive</span><b>{title}</b>'
                 f'<br>{body}</div>', unsafe_allow_html=True)
+
+
+def materials_preview(title):
+    """The greyed box for a part that is food-derived and not yet available for materials."""
+    preview(title, pipeline.MATERIALS_PREVIEW_NOTE)
 
 
 def need(key, label, page):
@@ -62,6 +68,7 @@ def get_batch():
         ss["pipeline_batch"] = pipeline.Batch()
     b = ss["pipeline_batch"]
     b.goal, b.choice, b.custom_name = ss["goal"], ss["choice"], ss["custom_name"]
+    b.material_species = ss.get("material_species")
     b.environment, b.temp_c, b.recipe, b.inoc_date = ss["environment"], ss["temp_c"], ss["recipe"], ss["inoc_date"]
     b.plan_size = ss.get("plan_size")
     return b
@@ -98,13 +105,17 @@ def sample_batch(exclude=None, force_checked=None):
     return replace(b, photos=photos)
 
 
+def is_materials():
+    return st.session_state.get("goal") == "Materials"
+
+
 def run():
     """pipeline.run on the current batch; every page shows this and nothing else."""
     return pipeline.run(get_batch())
 
 
 def species_row():
-    """The consensus-table entry for the chosen species (materials use MATERIAL_SPECIES); None if custom."""
+    """The consensus-table entry for the chosen Food species; None if custom or Materials."""
     return pipeline.species_row(get_batch())
 
 

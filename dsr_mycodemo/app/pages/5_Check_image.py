@@ -87,7 +87,10 @@ if row.get("method") == pipeline.MARKED_METHOD:
         missing.append("no plan batch yet (make one on Recipe and timeline)")
     elif not start:
         missing.append("no inoculation date in the plan batch")
-    if missing:
+    if flow.is_materials():
+        st.markdown(f"{pct:.0f}% of the surface colonised.")
+        flow.materials_preview("Typical range and induction day")
+    elif missing:
         st.info(f"{pct:.0f}% of the surface colonised. No typical range and no induction day: {'; '.join(missing)}.")
     else:
         with_batch = flow.sample_batch(force_checked=key)        # as if ticked, so an unticked photo can say what it would do
@@ -106,6 +109,7 @@ if row.get("method") == pipeline.MARKED_METHOD:
                                                                   "estimated induction day would be"))
     if not row.get("checked"):
         st.warning("This photo is not used in the forecast until you tick “I checked the result” and Save again.")
-    st.caption("Induction day = the Colonisation forecast's 90% day + 2 days (project assumption), compared with the "
-               "forecast without this photo. Typical range = the Colonisation time estimate curve on this day, with its "
-               "90% day at the earliest and the latest day of its range.")
+    if not flow.is_materials():
+        st.caption("Induction day = the Colonisation forecast's 90% day + 2 days (project assumption), compared with "
+                   "the forecast without this photo. Typical range = the Colonisation time estimate curve on this day, "
+                   "with its 90% day at the earliest and the latest day of its range.")

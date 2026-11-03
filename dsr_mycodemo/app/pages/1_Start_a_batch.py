@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from dsr_mycodemo import pipeline
 from dsr_mycodemo.app import flow
 from dsr_mycodemo.cultivation import baseline_guide
 
@@ -56,21 +57,35 @@ with left:
 
 with right:
     st.subheader("Things")
+    materials_off = pipeline.materials_mode() == "off"
+    if materials_off:
+        flow.preview("Materials", "Switched off in this version: only Food runs.")
     for p in THINGS:
         on = ss["goal"] == "Materials" and ss["choice"] == p
-        if st.button(p, key=f"thing_{p}", type="primary" if on else "secondary", use_container_width=True):
+        if st.button(p, key=f"thing_{p}", type="primary" if on else "secondary", use_container_width=True,
+                     disabled=materials_off):
             pick("Materials", p)
     own = ss["goal"] == "Materials" and ss["choice"] not in THINGS
-    if st.button(THING_OWN, key="thing_own", type="primary" if own else "secondary", use_container_width=True):
+    if st.button(THING_OWN, key="thing_own", type="primary" if own else "secondary", use_container_width=True,
+                 disabled=materials_off):
         pick("Materials", "Your own invention", "")
-    if own:
+    if ss["goal"] == "Materials" and not materials_off:
+        ss["material_species"] = st.radio(
+            "Fungus", pipeline.MATERIAL_SPECIES, horizontal=True, key="material_species_in",
+            index=pipeline.MATERIAL_SPECIES.index(ss["material_species"])
+            if ss["material_species"] in pipeline.MATERIAL_SPECIES else 0,
+            help="Ganoderma covers G. sessile, G. lingzhi and G. lucidum in the strength data.")
+    if own and not materials_off:
         name = st.text_input("What is it called?",
                              value=ss["custom_name"], key="thing_own_in")
         ss["custom_name"] = name.strip()
         ss["choice"] = name.strip() or "Your own invention"
 
 
-if ss["choice"]:
-    st.success(f"Chosen: {flow.choice_label()}")
+if ss["goal"] == "Materials" and pipeline.materials_mode() == "off":
+    st.info("Materials are switched off in this version; pick a Food to continue.")
+elif ss["choice"]:
+    st.success(f"Chosen: {flow.choice_label()}"
+               + (f" ({ss['material_species']})" if ss["goal"] == "Materials" else ""))
     st.page_link("pages/2_Environment.py",
                  label="Next: your environment", icon="➡️")

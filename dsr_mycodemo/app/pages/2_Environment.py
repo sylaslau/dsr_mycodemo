@@ -88,7 +88,9 @@ flow.preview("Connect an external device",
 
 row = flow.species_row()
 br = pipeline.baseline_row(flow.get_batch())
-if row is None or br is None:
+if flow.is_materials():
+    flow.materials_preview("Temperature check (Warnings)")
+elif row is None or br is None:
     st.info(
         "No temperature range is known for this mushroom, so we cannot check it.")
 else:

@@ -212,7 +212,8 @@ def test_logged_conditions_move_the_forecast_but_future_ones_do_not_break_it(cm)
 def test_materials_batch_still_works(cm):
     b = Batch(goal="Materials", choice="Foam", environment="Grow bag (about 3 kg)", inoc_date=START, temp_c=19.0)
     r = run(b)
-    assert [n for n, _, _ in r.dates.value] == ["Inoculation", pipeline.ENDPOINT_LABEL, "Post-treatment can start"]
+    assert r.dates.value == [] and r.dates.source == pipeline.MATERIALS_PREVIEW      # no food-derived timing
+    assert r.colonisation_estimate.value is None and r.colonisation_forecast.is_preview
 
 
 @pytest.mark.parametrize("species, substrate", [("Pleurotus djamor", "straw"), ("Hericium erinaceus", "sawdust"),

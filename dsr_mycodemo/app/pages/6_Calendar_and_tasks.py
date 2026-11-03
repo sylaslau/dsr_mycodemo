@@ -20,6 +20,8 @@ if dates.value:
 else:
     body = dates.note
 flow.preview("Calendar", body)
+if result.warnings.is_preview:
+    flow.preview(result.warnings.name, result.warnings.note)
 for w in result.warnings.value:
     st.warning(w)
 flow.preview("Tasks and reminders", "Watering, checking the photos, starting post-treatment: reminders on your phone.")

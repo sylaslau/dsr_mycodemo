@@ -21,7 +21,21 @@ from dsr_mycodemo.growth import consensus_estimate, forecast_update
 from dsr_mycodemo.growth.forecast import forecast, forecast_warnings
 
 # --- constants ------------------------------------------------------------------------------
-MATERIAL_SPECIES = "Pleurotus ostreatus"   # the species in our material data
+# The one switch for materials mode. "limited": materials keep the recipe maths, Photo coverage (% only), the mould
+# check (preview) and Material strength; everything timed from food data (Colonisation time estimate and forecast,
+# dates, stage timeline, Warnings rules, Harvest readiness) is a preview. "off": only Food runs.
+MATERIALS_MODE = "limited"
+MATERIALS_MODES = ("limited", "off")
+MATERIAL_SPECIES = ["Trametes versicolor", "Ganoderma"]          # the materials options; oyster is Food only
+# species strings of the strength data (property_table) -> the materials option they count for
+MATERIAL_SPECIES_DATA = {"Trametes versicolor": "Trametes versicolor", "Ganoderma sessile": "Ganoderma",
+                         "Ganoderma lingzhi": "Ganoderma", "Ganoderma lucidum": "Ganoderma"}
+# consensus-guide species whose recipe row each option uses; the guide has no Trametes row, so it takes the
+# oyster sawdust row as a generic baseline (our assumption)
+MATERIAL_RECIPE_SPECIES = {"Trametes versicolor": "Pleurotus ostreatus", "Ganoderma": "Ganoderma lucidum"}
+MATERIALS_PREVIEW = "preview: materials"
+MATERIALS_PREVIEW_NOTE = "Not available for materials yet: needs material colonisation data."
+STRENGTH_LABEL = "range from 7 lab studies; between labs typically off by x1.5 to x2.8"
 PRODUCTS = ["Foam", "Acoustic board", "Game pieces"]
 # environment: label -> (containers, dry substrate per container in kg); sizes are our pretend defaults
 ENVIRONMENTS = {
@@ -48,7 +62,7 @@ MAX_NUDGE = 1.3                       # 1-2 photos move the estimate by at most 
 # "consensus model" / "photos + consensus model" = the 2.2 estimate and 2.5 update; the "fallback:" tags = the older
 # ref_2 range + temperature rule and logistic fit, used when the model files are missing or a call fails.
 SOURCES = ("typical range", "our model", "your photos", "preview", "consensus model", "photos + consensus model",
-           "fallback: typical range", "fallback: photo curve")
+           "fallback: typical range", "fallback: photo curve", MATERIALS_PREVIEW)
 MIN_PHOTOS = 3                        # the Colonisation forecast takes over from here
 STAGE_TARGET = 0.90                   # 90 % of the photo is a surface marker, not the end of stage 1
 # Endpoint wording (project assumption, 10-18): the consensus typical colonisation day is taken as 90 % visible
@@ -123,6 +137,7 @@ class Batch:
     goal: str | None = None           # 'Food' or 'Materials'
     choice: str | None = None         # species name (Food; 'Custom' = own mushroom) or product (Materials)
     custom_name: str = ""
+    material_species: str | None = None   # one of MATERIAL_SPECIES (Materials); None = the first
     environment: str | None = None    # recipe scale (page 3), see ENVIRONMENTS; not the Environment record
     plan_size: tuple | None = None    # (containers, dry kg per container) from the vessels on Environment; beats ENVIRONMENTS
     env_name: str | None = None       # name of the Environment this batch grows in (Grow Log)
@@ -156,7 +171,7 @@ class Batch:
 
 @dataclass
 class Step:
-    """One step's answer. source is one of SOURCES; 'preview' means pretend and inactive."""
+    """One step's answer. source is one of SOURCES; 'preview' (and 'preview: materials') means pretend and inactive."""
     name: str
     value: object
     source: str
@@ -168,7 +183,7 @@ class Step:
 
     @property
     def is_preview(self):
-        return self.source == "preview"
+        return self.source in ("preview", MATERIALS_PREVIEW)
 
 
 @dataclass
@@ -177,7 +192,7 @@ class Result:
     colonisation_estimate: Step           # Colonisation time estimate
     colonisation_forecast: Step           # Colonisation forecast (or the estimate it fell back to)
     dates: Step
-    harvest_readiness: Step | None        # Food only
+    harvest_readiness: Step | None        # preview for Food and Materials; None for no goal
     warnings: Step                        # value = list of messages
     mould_check: Step
     outcome: Step                         # yield estimate (Food) or Material strength (Materials)
@@ -185,10 +200,32 @@ class Result:
 
 
 # --- species ----------------------------------------------------------------------------------
+def is_materials(batch):
+    return batch.goal == "Materials"
+
+
+def materials_mode():
+    if MATERIALS_MODE not in MATERIALS_MODES:
+        raise ValueError(f"MATERIALS_MODE must be one of {MATERIALS_MODES}, not {MATERIALS_MODE!r}")
+    return MATERIALS_MODE
+
+
+def material_species(batch):
+    """The materials option of the batch (Trametes versicolor or Ganoderma); the first when unset or unknown."""
+    return batch.material_species if batch.material_species in MATERIAL_SPECIES else MATERIAL_SPECIES[0]
+
+
+def _materials_preview(name, value=None):
+    """A greyed step for materials: the food-derived maths does not apply to materials yet."""
+    return Step(name, value, MATERIALS_PREVIEW, MATERIALS_PREVIEW_NOTE)
+
+
 def species_row(batch):
-    """The consensus-table entry {'species', 'common_name'} for the chosen species (materials use MATERIAL_SPECIES);
-    None if custom or not in the table."""
-    name = MATERIAL_SPECIES if batch.goal == "Materials" else canonical_species_choice(batch.choice)
+    """The consensus-table entry {'species', 'common_name'} for the chosen Food species; None if custom, not in the
+    table, or Materials (materials have no consensus colonisation row: see material_species)."""
+    if is_materials(batch):
+        return None
+    name = canonical_species_choice(batch.choice)
     return next((s for s in recipe_maths.species_list() if s["species"] == name), None)
 
 
@@ -197,7 +234,7 @@ def canonical_species_choice(choice):
     if choice is None:
         return None
     by_common_name = {s["common_name"]: s["species"] for s in recipe_maths.species_list()}
-    by_common_name.update({"Blue Oyster": MATERIAL_SPECIES, "Blue / Pearl Oyster": MATERIAL_SPECIES})
+    by_common_name.update({"Blue Oyster": "Pleurotus ostreatus", "Blue / Pearl Oyster": "Pleurotus ostreatus"})
     return by_common_name.get(choice, choice)
 
 
@@ -310,12 +347,21 @@ def recipe_step(batch):
     n, kg = _plan_size(batch)
     spawn_pct = (batch.recipe or {}).get("spawn_pct", SPAWN_PCT)
     row = species_row(batch)
-    rec = recipe_maths.recipe(row["species"] if row else MATERIAL_SPECIES, recipe_substrate(batch), kg, n, spawn_pct)
+    if is_materials(batch):
+        guide_species = MATERIAL_RECIPE_SPECIES[material_species(batch)]
+    else:
+        guide_species = row["species"] if row else "Pleurotus ostreatus"
+    rec = recipe_maths.recipe(guide_species, recipe_substrate(batch), kg, n, spawn_pct)
     note = "Baseline recipe from the consensus guide, not yet tuned to your product or environment."
     if not batch.plan_size and batch.environment not in ENVIRONMENTS:
         note += " No environment chosen yet, so one 0.5 kg container is assumed."
     if batch.goal == "Food" and row is None:
         note += " For your own mushroom the baseline oyster recipe is used; it may not suit it."
+    if is_materials(batch):
+        rec = {**rec, "warnings": []}            # the 5-20% spawn rule comes from food growing
+        if guide_species != material_species(batch):
+            note += (f" The guide has no {material_species(batch)} row, so its {guide_species} row is used as a "
+                     "generic baseline.")
     return Step("Recipe", {"rec": rec, "n": n, "moisture": rec["moisture_pct"], "spawn_pct": spawn_pct,
                            "spawn_kg": rec["per_container"]["spawn"]}, "typical range", note)
 
@@ -365,6 +411,8 @@ def _consensus_estimate(row, row_note, c, temp_c):
 def colonisation_estimate(batch, temp_c=None):
     """Colonisation time estimate (stage 1): the 2.2 consensus regression with its temperature rule. If the model
     files are missing or the call fails, the older ref_2 range + temperature rule is used and the source tag says so."""
+    if is_materials(batch):
+        return _materials_preview("Colonisation time estimate")
     br = baseline_row(batch)
     if br is None:
         return _estimate_fallback(batch, temp_c)
@@ -491,6 +539,8 @@ def _consensus_forecast(batch, est, today):
 def colonisation_forecast(batch, est, today=None):
     """Colonisation forecast: the 2.5 update of the 2.2 estimate by photos and conditions. If the model files are
     missing or the call fails, the older logistic fit is used (and says so). `today` is for tests."""
+    if is_materials(batch):
+        return _materials_preview("Colonisation forecast")
     if est.value is not None and est.value.get("engine") == "consensus":
         try:
             return _consensus_forecast(batch, est, today)
@@ -541,7 +591,9 @@ def _forecast_fallback(batch, est):
 
 def dates_step(batch, fc):
     """Inoculation, the 90% visible (consensus day), then the Induction planning marker 2 days later, Pinning and
-    First harvest (Food, stage 2) or the start of post-treatment (Materials)."""
+    First harvest (Food, stage 2). Materials: no dates yet (a preview)."""
+    if is_materials(batch):
+        return _materials_preview("Dates", [])
     if fc.value is None:
         return Step("Dates", [], "preview", "No estimate yet for this mushroom, so there are no dates.")
     start = batch.inoc_date
@@ -566,8 +618,6 @@ def dates_step(batch, fc):
                      "cannot be predicted, check by eye). The guide has one typical value per fruiting step, so the "
                      "Pinning and First harvest ranges are the marker range shifted by those days (counted from the "
                      "start of induction).")
-    else:
-        events.append(("Post-treatment can start", full[1], full[1]))
     return Step("Dates", events, fc.source, note)
 
 
@@ -579,6 +629,8 @@ def harvest_readiness(photos):
 
 
 def harvest_readiness_step(batch):
+    if is_materials(batch):
+        return _materials_preview("Harvest readiness")
     if batch.goal != "Food":
         return None
     return Step("Harvest readiness", harvest_readiness(batch.fruiting_photos), "preview",
@@ -593,7 +645,10 @@ def mould_check(photos):
 
 
 def warnings_step(batch, est, fc):
-    """Recipe warnings, forecast warnings, and temperature or humidity out of range (humidity never moves dates)."""
+    """Recipe warnings, forecast warnings, and temperature or humidity out of range (humidity never moves dates).
+    Materials: a preview (the rule set comes from food growing)."""
+    if is_materials(batch):
+        return _materials_preview("Warnings", [])
     msgs = list(recipe_step(batch).value["rec"]["warnings"])
     t, c = _photo_series(batch)
     if len(t):
@@ -624,26 +679,41 @@ def mould_check_step(batch):
                 "Planned: each photo is checked for mould and you get a warning. Not active yet.")
 
 
+def _strength_table():
+    """The strength data with its species strings mapped to the materials options (Ganoderma sessile, lingzhi and
+    lucidum -> Ganoderma); other species keep their own name."""
+    from dsr_mycodemo.property_data import OUTPUT_PATH
+    t = pd.read_csv(OUTPUT_PATH)
+    t["species_name"] = t["species_name"].map(MATERIAL_SPECIES_DATA).fillna(t["species_name"])
+    return t
+
+
 @lru_cache(maxsize=1)
 def _strength_model():
-    from dsr_mycodemo.property_data import OUTPUT_PATH
     from dsr_mycodemo.property_model import TwoStepModel, training_rows
-    return TwoStepModel().fit(training_rows(pd.read_csv(OUTPUT_PATH)))
+    table = _strength_table()
+    return TwoStepModel().fit(training_rows(table)), table["species_name"].value_counts().to_dict(), len(table)
 
 
 def outcome_step(batch):
-    """Harvest-record placeholder (Food) or Material strength (Materials)."""
-    if batch.goal != "Materials":
+    """Harvest-record placeholder (Food) or Material strength (Materials) for the chosen materials species."""
+    if not is_materials(batch):
         return Step("Harvest record", None, "preview", "Record your harvest in Monitor; no yield estimate is provided.")
+    if materials_mode() == "off":
+        return Step("Material strength", None, "preview", "Materials mode is switched off; only Food runs.")
+    species = material_species(batch)
     try:
-        frame = pd.DataFrame({"species_name": ["Pleurotus ostreatus"], "substrate_group": ["hardwood"]})
-        model = _strength_model()
+        frame = pd.DataFrame({"species_name": [species], "substrate_group": ["hardwood"]})
+        model, counts, total = _strength_model()
         stress, dens = float(model.predict_stress(frame)[0]), float(model.predict_density(frame)[0])
     except (FileNotFoundError, ValueError, KeyError):
         return Step("Material strength", None, "preview", "The material model could not be loaded.")
-    return Step("Material strength", {"stress_mpa": stress, "density": dens}, "our model",
-                f"Estimate for hardwood sawdust and P. ostreatus. The model has no input for the product, so it is "
-                f"the same for {', '.join(PRODUCTS).lower()}; it is rough (tested by leaving one lab out).")
+    n = int(counts.get(species, 0))
+    return Step("Material strength", {"stress_mpa": stress, "density": dens, "species": species, "n_rows": n,
+                                      "n_total": total, "label": STRENGTH_LABEL}, "our model",
+                f"Estimate for hardwood sawdust and {species}, based on {n} rows for this species, out of {total}. "
+                f"The model has no input for the product, so it is the same for {', '.join(PRODUCTS).lower()}; "
+                f"{STRENGTH_LABEL}.")
 
 
 def days_to_next_stage(batch, cover, temp_c):

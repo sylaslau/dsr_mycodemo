@@ -88,6 +88,8 @@ st.caption("Water assumes the dry ingredients already hold about 10% water. Supp
 if rec["supplements_text_only"]:
     st.caption("Also from the guide: " + "; ".join(rec["supplements_text_only"]) + ".")
 st.caption(f"Guide row {rec['row_note']}")
+if flow.is_materials():
+    st.caption(result.recipe.note)
 
 # --- stage timeline (the Stage 1 block below is the fallback) -------------------------------------
 est, fc, dates = result.colonisation_estimate, result.colonisation_forecast, result.dates
@@ -229,6 +231,11 @@ if base is not None:
 
     st.caption(f"Source: {col['source']} · evidence: {r['evidence_type']} · confidence: {col['confidence']}. "
                f"Row used: {row_note}. Consensus values, not a prediction.")
+elif flow.is_materials():
+    st.subheader("Colonisation and timeline")
+    for title in ("Colonisation time estimate (days)", "Colonisation forecast (90% day and dates)",
+                  "Stage timeline and " + pipeline.MARKER_LABEL):
+        flow.materials_preview(title)
 else:
     st.subheader("Stage 1: Colonisation")
     if est.is_preview:
@@ -256,6 +263,8 @@ else:
             st.caption("Your photos in Monitor will update it into the Colonisation forecast.")
 
 # --- warnings -----------------------------------------------------------------------------------
+if result.warnings.is_preview:
+    flow.preview(result.warnings.name, result.warnings.note)
 for w in result.warnings.value:
     st.warning(w)
 
@@ -271,6 +280,8 @@ else:
         m1, m2 = st.columns(2)
         m1.metric("Stress at 10 % strain", f"{out.value['stress_mpa']:.3f} MPa")
         m2.metric("Density", f"{out.value['density']:.0f} kg/m³")
+        st.markdown(f"**{out.value['species']}**: {out.value['label']}. Based on {out.value['n_rows']} rows for this "
+                    f"species, out of {out.value['n_total']}.")
         st.caption(out.note)
 
 if result.harvest_readiness is not None:
@@ -280,7 +291,7 @@ if result.harvest_readiness is not None:
 if st.button("Save this plan and open Monitor", type="primary"):
     row = flow.species_row()
     ss["batch"] = {"batch_label": batch_label or f"{what} {ss['inoc_date'].isoformat()}",
-                   "species": row["species"] if row else what,
+                   "species": row["species"] if row else ss["material_species"] if flow.is_materials() else what,
                    "inoc_date": ss["inoc_date"], "n_containers": n, "temp_c": ss["temp_c"],
                    "substrate": substrate, "spawn_pct": float(pipeline.SPAWN_PCT)}
     st.switch_page("pages/4_Monitor.py")

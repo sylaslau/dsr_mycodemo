@@ -6,6 +6,7 @@ Run from the project folder (with the .venv active):
 
 import streamlit as st
 
+from dsr_mycodemo import pipeline
 from dsr_mycodemo.app import flow
 
 st.set_page_config(page_title="Shroomie", page_icon="🍄", layout="wide")
@@ -47,8 +48,12 @@ st.markdown(FLOW_CSS, unsafe_allow_html=True)
 food, thing = st.columns(2)
 food.markdown(stage_flow("Food", [("Culture", False), ("Spawn", False), ("Block", True),
                                   ("Flushes", True)]), unsafe_allow_html=True)
+materials_on = pipeline.materials_mode() != "off"
 thing.markdown(stage_flow("Thing", [("Culture", False), ("Spawn", False), ("Pre-treatment", False),
-                                    ("Block", True), ("Post-treatment", False)]), unsafe_allow_html=True)
+                                    ("Block", materials_on), ("Post-treatment", False)]), unsafe_allow_html=True)
+if not materials_on:
+    with thing:
+        flow.preview("Materials", "Switched off in this version: only Food runs.")
 
 st.write("")
 st.caption("")

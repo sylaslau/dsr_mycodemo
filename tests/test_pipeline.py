@@ -60,14 +60,66 @@ def test_food_batch_steps_and_dates():
     assert r.fruiting.name == "Fruiting" and r.fruiting.value["first_harvest"] == 9
 
 
-def test_materials_batch_has_post_treatment_and_strength():
+def test_materials_batch_greys_food_timing_and_keeps_recipe_and_strength():
     r = run(materials())
-    assert [n for n, _, _ in r.dates.value] == ["Inoculation", END, "Post-treatment can start"]
-    assert r.harvest_readiness is None                         # Food only
+    for step in (r.colonisation_estimate, r.colonisation_forecast, r.dates, r.warnings, r.harvest_readiness):
+        assert step.source == pipeline.MATERIALS_PREVIEW and step.is_preview
+        assert step.note == pipeline.MATERIALS_PREVIEW_NOTE
+    assert r.dates.value == [] and r.warnings.value == [] and r.fruiting is None
+    assert r.recipe.source == "typical range" and r.recipe.value["rec"]["totals"]["as_weighed"] > 0
+    assert r.mould_check.source == "preview"
     assert r.outcome.name == "Material strength"
     assert r.outcome.source in ("our model", "preview")        # preview only if the model data is missing here
     if r.outcome.source == "our model":
         assert r.outcome.value["stress_mpa"] > 0
+        assert pipeline.STRENGTH_LABEL in r.outcome.note
+
+
+def test_materials_offers_trametes_and_ganoderma_only():
+    assert pipeline.MATERIAL_SPECIES == ["Trametes versicolor", "Ganoderma"]
+    assert set(pipeline.MATERIAL_SPECIES_DATA.values()) == set(pipeline.MATERIAL_SPECIES)
+    assert pipeline.material_species(materials()) == "Trametes versicolor"        # unset = the first
+    assert pipeline.material_species(materials(material_species="Pleurotus ostreatus")) == "Trametes versicolor"
+    assert pipeline.species_row(materials()) is None and pipeline.baseline_row(materials()) is None
+    tv = run(materials()).recipe
+    gan = run(materials(material_species="Ganoderma")).recipe
+    assert "Pleurotus ostreatus row is used as a generic baseline" in tv.note
+    assert gan.value["rec"]["row_note"].startswith(pipeline.baseline_guide.row("Ganoderma lucidum", "sawdust")[0]["ref_id"])
+
+
+def test_material_strength_uses_the_chosen_species():
+    tv, gan = (run(materials(material_species=s)).outcome for s in pipeline.MATERIAL_SPECIES)
+    if tv.source != "our model":
+        pytest.skip("property_table.csv not available")
+    assert (tv.value["species"], gan.value["species"]) == ("Trametes versicolor", "Ganoderma")
+    assert tv.value["stress_mpa"] != gan.value["stress_mpa"]
+    assert tv.value["n_total"] == 213
+    assert (tv.value["n_rows"], gan.value["n_rows"]) == (110, 63)      # Ganoderma = sessile 39 + lingzhi 18 + lucidum 6
+    assert "based on 63 rows for this species, out of 213" in gan.note
+
+
+def test_materials_hide_the_spawn_warning_food_keeps_it():
+    assert run(materials(recipe={"spawn_pct": 3})).recipe.value["rec"]["warnings"] == []
+    assert run(materials(recipe={"spawn_pct": 3})).warnings.value == []
+    assert any("Spawn at 3%" in w for w in run(food(recipe={"spawn_pct": 3})).warnings.value)
+
+
+def test_food_results_do_not_depend_on_the_materials_switch(monkeypatch):
+    b = food(photos=photos(3), conditions=[Condition(START + timedelta(days=2), 22.0, 60.0)])
+    limited = repr(run(b))
+    monkeypatch.setattr(pipeline, "MATERIALS_MODE", "off")
+    assert repr(run(b)) == limited
+    assert pipeline.MATERIALS_PREVIEW not in limited
+
+
+def test_materials_mode_off_and_bad_values(monkeypatch):
+    monkeypatch.setattr(pipeline, "MATERIALS_MODE", "off")
+    r = run(materials())
+    assert r.outcome.source == "preview" and r.outcome.value is None
+    assert r.colonisation_estimate.source == pipeline.MATERIALS_PREVIEW
+    monkeypatch.setattr(pipeline, "MATERIALS_MODE", "maybe")
+    with pytest.raises(ValueError):
+        pipeline.materials_mode()
 
 
 def test_recipe_comes_from_the_consensus_row():
@@ -84,7 +136,7 @@ def test_recipe_comes_from_the_consensus_row():
 def test_species_rows_and_legacy_choices_use_consensus_names():
     oyster = pipeline.species_row(food())
     assert oyster == {"species": "Pleurotus ostreatus", "common_name": "Pearl Oyster"}
-    assert pipeline.species_row(materials()) == oyster
+    assert pipeline.species_row(materials()) is None          # materials have no consensus colonisation row
     old = {**food().to_dict(), "choice": "Blue Oyster"}
     assert Batch.from_dict(old).choice == "Pleurotus ostreatus"
     old["choice"] = "King Oyster"
@@ -353,3 +405,31 @@ def test_monitor_page_environment_boxes_stages_and_sample_photo():
     assert [b.label for b in at.button if b.label in ("Spawning", "Ready for harvest")] == ["Spawning", "Ready for harvest"]
     assert any(b.label == "Save" for b in at.button)
 
+
+
+def _page(name):
+    from streamlit.testing.v1 import AppTest
+    return AppTest.from_file(str(Path(__file__).parents[1] / "dsr_mycodemo/app" / name), default_timeout=60)
+
+
+def test_recipe_page_materials_shows_previews_and_strength():
+    at = _page("pages/3_Recipe_and_timeline.py")
+    at.session_state["goal"], at.session_state["choice"] = "Materials", "Packaging foam"
+    at.session_state["material_species"] = "Ganoderma"
+    at.session_state["environment"], at.session_state["temp_c"] = "Grow bag (about 3 kg)", 22.0
+    at.run()
+    assert not at.exception
+    html_ = " ".join(m.value for m in at.markdown)
+    assert html_.count(pipeline.MATERIALS_PREVIEW_NOTE) >= 5    # estimate, forecast, timeline, Warnings, Harvest readiness
+    assert not at.warning                                         # no food rules (spawn, temperature)
+    if any(m.label == "Density" for m in at.metric):
+        assert pipeline.STRENGTH_LABEL in html_
+
+
+def test_start_page_materials_off_greys_the_things(monkeypatch):
+    monkeypatch.setattr(pipeline, "MATERIALS_MODE", "off")
+    at = _page("pages/1_Start_a_batch.py")
+    at.run()
+    assert not at.exception
+    assert all(b.disabled for b in at.button if b.key.startswith("thing_"))
+    assert not any(b.disabled for b in at.button if b.key.startswith("food_"))

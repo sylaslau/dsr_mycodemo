@@ -65,7 +65,8 @@ def apply_restore(p):
         ss["pipeline_batch"] = pb
         if pb.goal:                              # the plan keys the pages share follow the restored batch
             ss.update(goal=pb.goal, choice=pb.choice, custom_name=pb.custom_name, environment=pb.environment,
-                      temp_c=pb.temp_c, recipe=pb.recipe, inoc_date=pb.inoc_date)
+                      temp_c=pb.temp_c, recipe=pb.recipe, inoc_date=pb.inoc_date,
+                      material_species=pipeline.material_species(pb))
 
 
 # --- helpers -------------------------------------------------------------------------------
@@ -206,10 +207,13 @@ for name in residences():
         if has_batch:                            # the plan batch grows in this residence
             with st.container(border=True):
                 st.markdown(f"**{PLAN['batch_label']}**")
-                for row in STAGE_ROWS:
-                    for col, s in zip(st.columns(len(STAGE_ROWS[0])), row):
-                        col.button(s, key=f"stage_{name}_{s}",
-                                   type="primary" if s == stage else "secondary", use_container_width=True)
+                if flow.is_materials():
+                    flow.materials_preview("Stage timeline")
+                else:
+                    for row in STAGE_ROWS:
+                        for col, s in zip(st.columns(len(STAGE_ROWS[0])), row):
+                            col.button(s, key=f"stage_{name}_{s}",
+                                       type="primary" if s == stage else "secondary", use_container_width=True)
                 n = int(PLAN["n_containers"])
                 samples = [f"{PLAN['batch_label']}-{i:02d}" for i in range(1, n + 1)]
                 sample = st.selectbox("Sample (one bag or jar)", samples, key=f"sample_{name}")
