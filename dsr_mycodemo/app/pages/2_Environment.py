@@ -6,11 +6,10 @@ from dsr_mycodemo import pipeline
 from dsr_mycodemo.app import flow
 from dsr_mycodemo.cultivation import baseline_guide
 
-st.set_page_config(page_title="Where does it/ do they live?",
-                   page_icon="📦", layout="wide")
+st.set_page_config(page_title="Environment", page_icon="📦", layout="wide")
 flow.init()
 ss = st.session_state
-flow.need("choice", "What do you want to grow?", "pages/1_Start_a_batch.py")
+flow.need("choice", "Start a batch", "pages/1_Start_a_batch.py")
 for key, value in {"env_where": None, "env_size": {}, "env_amount": {}, "env_container": None, "rh_pct": 80.0}.items():
     ss.setdefault(key, value)
 
@@ -40,7 +39,7 @@ def size_amount(name, size_label, lo, hi, default, step, on):
         ss["env_size"][name], ss["env_amount"][name] = size, int(amount)
 
 
-st.title("Environment")
+flow.step_header(2, 6, "Environment")
 st.write("Where do you grow them, and in what?")
 where_col, cont_col = st.columns(2)
 

@@ -1,4 +1,4 @@
-"""Shared helpers for the grower pages: choices carried in st.session_state, the Preview style, lists."""
+"""Shared helpers for the grower pages: choices carried in st.session_state, the style and step header, lists."""
 
 from dataclasses import replace
 from datetime import date
@@ -6,6 +6,7 @@ from datetime import date
 import streamlit as st
 
 from dsr_mycodemo import pipeline
+from dsr_mycodemo.app import style
 from dsr_mycodemo.growth.forecast import (
     pace_vs_typical,  # noqa: F401  (typical range lives with the forecast)
 )
@@ -21,25 +22,21 @@ ENDPOINT_ASSUMPTION_NOTE = (
 STAGES_FOOD = ["Inoculated", "Colonising", "Fruiting", "Harvested", "Contaminated"]
 STAGES_MATERIAL = ["Pre-treatment", "Colonisation", "Liquid fermentation", "Post-treatment", "Contaminated"]
 
-PREVIEW_CSS = """
-<style>
-.mc-preview {border: 2px dashed #9aa0a6; border-radius: 8px; padding: 0.7rem 1rem; margin: 0.6rem 0;
-  background: rgba(150,150,150,0.12); color: #8a8f94; filter: grayscale(1);}
-.mc-preview b {color: #8a8f94;}
-.mc-tag {display: inline-block; border: 1px solid #9aa0a6; border-radius: 4px; padding: 0 6px;
-  font-size: 0.75rem; letter-spacing: 0.05em; margin-right: 8px; color: #8a8f94;}
-</style>
-"""
-
 
 def init():
-    """Set the defaults once and load the Preview style; call at the top of every grower page."""
+    """Set the defaults once and load the app style; call at the top of every grower page."""
     for key, value in {"goal": None, "choice": None, "custom_name": "", "material_species": MATERIAL_SPECIES[0],
                        "environment": None,
                        "temp_c": None, "recipe": None, "batch": None, "inoc_date": date.today(),
                        "pipeline_batch": None}.items():
         st.session_state.setdefault(key, value)
-    st.markdown(PREVIEW_CSS, unsafe_allow_html=True)
+    st.markdown(style.CSS, unsafe_allow_html=True)
+
+
+def step_header(n, total, title):
+    """The page title with a small "Step n of total" line above it."""
+    st.markdown(f'<div class="mc-step">Step {n} of {total}</div>', unsafe_allow_html=True)
+    st.title(title)
 
 
 def preview(title, body=""):

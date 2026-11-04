@@ -13,7 +13,7 @@ from dsr_mycodemo.growth.forecast import restore_from_text
 
 st.set_page_config(page_title="Monitor", page_icon="📷", layout="wide")
 flow.init()
-st.title("Monitor")
+flow.step_header(4, 6, "Monitor")
 
 # session-only stores (nothing is written to disk): stage_log {dish: [{stage, date, note}]},
 # harvest {dish: [{date, g}]}, losses {dish: {...}}, dry_g {dish: g}, costs {batch: {...}},
@@ -286,8 +286,10 @@ for name in residences():
                     if not any((r["file"], r["day"]) == (row["file"], row["day"]) for r in rows):
                         rows.append(row)
                     ss["pipeline_result"] = pipeline.run(batch_record())     # Photo coverage -> Colonisation forecast
-                    st.success(f"Photo saved under {sample}. Quick guess: {100 * a_['coverage']:.0f}% colonised "
-                               f"({a_['method']}). Check it with your own marks on Check image.")
+                    st.success(f"Photo saved under {sample}. Check the quick guess with your own marks on Check image.")
+                    m1, m2 = st.columns(2)
+                    m1.metric("Coverage (quick guess)", f"{100 * a_['coverage']:.0f} %", help=a_["method"])
+                    m2.metric("Day since inoculation", row["day"])
                     if st.button("Check image", key=f"check_{name}_{sample}", type="primary"):
                         ss["check_target"] = {"sample": sample, "file": row["file"]}
                         st.switch_page("pages/5_Check_image.py")

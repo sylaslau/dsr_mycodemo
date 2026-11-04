@@ -56,9 +56,9 @@ tl = bg.stages(r).set_index("stage")
 fig = go.Figure()
 full = tl.loc["Fully colonised"]
 fig.add_trace(go.Bar(y=["Timeline"], x=[full["end_day"] - full["start_day"]], base=[full["start_day"]],
-                     orientation="h", name="Fully colonised (min–max)", marker_color="#2e8b57", opacity=0.45,
+                     orientation="h", name="Fully colonised (min–max)", marker_color="#4F7F52", opacity=0.45,
                      width=0.35, hovertemplate=f"Fully colonised: day {full['start_day']}–{full['end_day']}<extra></extra>"))
-marks = [("Fully colonised", "typical", full["typical_day"], "#2e8b57"),
+marks = [("Fully colonised", "typical", full["typical_day"], "#4F7F52"),
          ("Start induction", "", full["typical_day"], "#1f77b4"),
          ("Pinning", "", tl.loc["Pinning", "typical_day"], "#ff7f0e"),
          ("First harvest", "", tl.loc["First harvest", "typical_day"], "#d62728")]

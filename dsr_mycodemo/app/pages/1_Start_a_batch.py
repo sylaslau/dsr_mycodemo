@@ -6,8 +6,7 @@ from dsr_mycodemo import pipeline
 from dsr_mycodemo.app import flow
 from dsr_mycodemo.cultivation import baseline_guide
 
-st.set_page_config(page_title="What do you want to grow?",
-                   page_icon="🍄", layout="wide")
+st.set_page_config(page_title="Start a batch", page_icon="🍄", layout="wide")
 flow.init()
 ss = st.session_state
 
@@ -32,7 +31,7 @@ def is_food(shown):
     return ss["goal"] == "Food" and ss["choice"] == FOOD_SPECIES[shown]
 
 
-st.title("Start a batch")
+flow.step_header(1, 6, "Start a batch")
 st.write("What do you want to grow? Pick one for this batch.")
 left, right = st.columns(2)
 

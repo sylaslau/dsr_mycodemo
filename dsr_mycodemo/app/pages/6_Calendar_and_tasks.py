@@ -9,7 +9,7 @@ flow.init()
 ss = st.session_state
 flow.need("batch", "Recipe and first prediction", "pages/3_Recipe_and_timeline.py")
 
-st.title("Calendar and tasks")
+flow.step_header(6, 6, "Calendar and tasks")
 result = flow.run()
 dates = result.dates
 if dates.value:

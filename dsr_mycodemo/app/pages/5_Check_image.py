@@ -11,7 +11,7 @@ from dsr_mycodemo.growth.traced_coverage import coverage_from_marks, editor_imag
 
 st.set_page_config(page_title="Check image", page_icon="🔍", layout="wide")
 flow.init()
-st.title("Check image")
+flow.step_header(5, 6, "Check image")
 
 ss = st.session_state
 SAMPLE_PHOTOS = ss.setdefault("sample_photos", {})      # {sample ID: [photo rows]}, filled on Monitor

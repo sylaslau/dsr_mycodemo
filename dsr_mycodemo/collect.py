@@ -1,7 +1,7 @@
 """Share a batch with the Mycelly research database (Supabase): photo shrinking, BE maths and the row writer.
 
-The rows use the column names of data/interim/extracted/*.csv (references/supabase_schema.sql). The client is passed
-in (supabase.create_client with the anon key, or a fake in tests); the anon role may only INSERT.
+The rows use the column names of data/interim/extracted/*.csv (references/supabase_schema.sql). 
+The client is passed in (supabase.create_client with the anon key); the anon role may only INSERT.
 
 batch is a plain dict built by the Monitor page:
     {"purpose": "food" | "material", "species": "Pleurotus ostreatus", "substrate": "sawdust",
@@ -33,11 +33,14 @@ def new_contributor_code():
 
 def prepare_photo(file) -> bytes:
     """JPEG bytes: EXIF rotation applied, RGB, long side at most 1280 px, quality 85, no EXIF or other metadata."""
-    data = file if isinstance(file, bytes) else file.read()     # bytes or an open file / Streamlit upload
+    data = file if isinstance(file, bytes) else file.read(
+    )     # bytes or an open file / Streamlit upload
     with Image.open(io.BytesIO(data)) as im:
         im = ImageOps.exif_transpose(im).convert("RGB")
-    im.thumbnail((LONG_SIDE, LONG_SIDE), Image.Resampling.LANCZOS)       # keeps the aspect ratio, never enlarges
-    clean = Image.new("RGB", im.size)                          # a fresh image carries no info/EXIF over
+    # keeps the aspect ratio, never enlarges
+    im.thumbnail((LONG_SIDE, LONG_SIDE), Image.Resampling.LANCZOS)
+    # a fresh image carries no info/EXIF over
+    clean = Image.new("RGB", im.size)
     clean.paste(im)
     out = io.BytesIO()
     clean.save(out, "JPEG", quality=JPEG_QUALITY, optimize=True)
@@ -92,12 +95,14 @@ def build_rows(dataset_id, batch, licence):
         rows["sample"].append({"sample_id": sample_id, "dataset_id": dataset_id, "replicate_no": i,
                                "n_specimens": 1, "growth_outcome": outcome_code(s.get("colonised_day"), s.get("mould")),
                                "substrate_id": sub_id, "fermentation_id": fer_id, "initial_fill_weight_g": fill})
-        meas = {"dataset_id": dataset_id, "sample_id": sample_id, "measurement_type": "raw"}
+        meas = {"dataset_id": dataset_id,
+                "sample_id": sample_id, "measurement_type": "raw"}
         for c in s.get("checks", []):
             rows["measurement"].append({**meas, "day_of_growth": c["day"], "colonisation_score": c.get("score"),
                                         "surface_colonised_pct": c["coverage_pct"]})
         if s.get("colonised_day") is not None:
-            rows["measurement"].append({**meas, "day_of_growth": s["colonised_day"], "surface_colonised_pct": 100})
+            rows["measurement"].append(
+                {**meas, "day_of_growth": s["colonised_day"], "surface_colonised_pct": 100})
         for f in s.get("flushes", []):
             rows["measurement"].append({**meas, "day_of_growth": f["day"], "biological_efficiency_pct": round(
                 biological_efficiency_pct(f["fresh_g"], fill, water), 2)})
@@ -118,7 +123,8 @@ def build_rows(dataset_id, batch, licence):
     return rows, photos
 
 
-TABLE_ORDER = ("dataset", "fermentation", "substrate", "container", "sample", "measurement")
+TABLE_ORDER = ("dataset", "fermentation", "substrate",
+               "container", "sample", "measurement")
 
 
 def submit_batch(client, batch, consent_licence):
@@ -133,7 +139,9 @@ def submit_batch(client, batch, consent_licence):
 
     def insert(table):
         if rows[table]:
-            client.table(table).insert(rows[table], returning="minimal").execute()   # anon cannot read rows back
+            # anon cannot read rows back
+            client.table(table).insert(
+                rows[table], returning="minimal").execute()
 
     for table in TABLE_ORDER:
         insert(table)

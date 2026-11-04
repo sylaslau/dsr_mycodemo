@@ -22,7 +22,7 @@ SUBSTRATE_CODE = {"wood chips": "sawdust", "sawdust": "sawdust", "straw": "straw
 VESSELS = ["Tupperware", "Grow bag", "Bucket"]       # the vessel names of the Environment page
 KG_DRY_PER_LITRE = 0.2                               # our assumption: 1 L vessel = 0.2 kg dry substrate (as ENVIRONMENTS)
 HANDLING = 1.05                                      # 5% extra on everything, for handling
-EVENT_COLOR, STAGE_COLOR = "#1f77b4", "#2e8b57"
+EVENT_COLOR, STAGE_COLOR = "#1f77b4", "#4F7F52"
 
 
 def code(text, n):
@@ -43,7 +43,7 @@ def suggest_label():
                      ss["inoc_date"].strftime("%y%m%d")])
 
 
-st.title("Recipe and timeline")
+flow.step_header(3, 6, "Recipe and timeline")
 d1, d2 = st.columns(2)
 ss["inoc_date"] = d1.date_input("Planned inoculation date", ss["inoc_date"])
 auto = suggest_label()
