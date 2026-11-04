@@ -6,7 +6,7 @@ Run from the project folder (with the .venv active):
 
 import streamlit as st
 
-from dsr_mycodemo import pipeline
+from dsr_mycodemo import collect, pipeline
 from dsr_mycodemo.app import flow
 
 st.set_page_config(page_title="Shroomie", page_icon="🍄", layout="wide")
@@ -54,6 +54,9 @@ thing.markdown(stage_flow("Thing", [("Culture", False), ("Spawn", False), ("Pre-
 if not materials_on:
     with thing:
         flow.preview("Materials", "Switched off in this version: only Food runs.")
+
+with st.expander("What we collect"):
+    st.write("Only if you tick the box on Monitor and press Send: " + collect.SHARE_TEXT)
 
 st.write("")
 st.caption("")

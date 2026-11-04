@@ -5,7 +5,7 @@ from datetime import date
 
 import streamlit as st
 
-from dsr_mycodemo import pipeline
+from dsr_mycodemo import collect, pipeline
 from dsr_mycodemo.app import flow
 from dsr_mycodemo.cultivation import baseline_guide
 from dsr_mycodemo.growth.coverage import days_since, photo_coverage, photo_datetime, photo_quality
@@ -19,7 +19,8 @@ st.title("Monitor")
 # harvest {dish: [{date, g}]}, losses {dish: {...}}, dry_g {dish: g}, costs {batch: {...}},
 # batch_fields {dataset: {...}}, dish_fields {dish: {...}}, upload_rows / restored_photos {key: [photo rows]},
 # environments {name: pipeline.Environment} (kept for backups), monitor_env {residence: conditions},
-# sample_photos {sample ID: [photo rows]}
+# sample_photos {sample ID: [photo rows]}, outcomes {sample ID: {colonised: date | None, mould: bool}},
+# share_code (contributor code once this batch was shared)
 ss = st.session_state
 STAGE_LOG = ss.setdefault("stage_log", {})
 HARVEST = ss.setdefault("harvest", {})
@@ -33,6 +34,7 @@ RESTORED_PHOTOS = ss.setdefault("restored_photos", {})
 ENVIRONMENTS = ss.setdefault("environments", {})
 SAMPLE_PHOTOS = ss.setdefault("sample_photos", {})
 MONITOR_ENV = ss.setdefault("monitor_env", {})
+OUTCOMES = ss.setdefault("outcomes", {})
 RADIO = {"ref": "d005 (reference)", "syldd": "syldd (my batch)"}
 WIDGET_PREFIXES = ("b_", "h_", "l_", "c_")      # their values come from the stores above after a restore
 PLAN = ss["batch"]
@@ -151,6 +153,59 @@ def batch_record():
     return flow.sample_batch()
 
 
+def sample_record(sample, inoc_date):
+    """Outcome (fully colonised date, mould seen) and, for Food, the harvest flushes of one sample."""
+    out = OUTCOMES.setdefault(sample, {"colonised": None, "mould": False})
+    with st.expander(f"Record for {sample}"):
+        c1, c2 = st.columns(2, vertical_alignment="bottom")
+        out["colonised"] = c1.date_input("Fully colonised on", value=out["colonised"], min_value=inoc_date,
+                                         key=f"o_col_{sample}", help="Leave empty while it is still colonising.")
+        out["mould"] = c2.checkbox("Mould seen", value=out["mould"], key=f"o_mould_{sample}")
+        if flow.is_materials():
+            return
+        st.markdown("**Harvest**")
+        h1, h2, h3 = st.columns([2, 2, 1], vertical_alignment="bottom")
+        when = h1.date_input("Harvest date", date.today(), min_value=inoc_date, key=f"h_date_{sample}")
+        grams = h2.number_input("Fresh weight (g)", 0.0, step=10.0, key=f"h_g_{sample}")
+        if h3.button("Add flush", key=f"h_add_{sample}", disabled=grams <= 0, use_container_width=True):
+            HARVEST.setdefault(sample, []).append({"date": when, "g": float(grams)})
+        for k, f in enumerate(HARVEST.get(sample, []), start=1):
+            st.caption(f"Flush {k}: {f['date']:%Y-%m-%d}, {f['g']:g} g fresh")
+
+
+def supabase_config():
+    """The [supabase] section of .streamlit/secrets.toml (url, anon_key), or None when sharing is not set up."""
+    try:
+        cfg = dict(st.secrets["supabase"])
+    except (FileNotFoundError, KeyError):        # no secrets file or no [supabase] section
+        return None
+    return cfg if cfg.get("url") and cfg.get("anon_key") else None
+
+
+def share_payload(rec, fill_g):
+    """The batch as collect.submit_batch wants it, from the plan, the recipe and the Monitor stores."""
+    inoc = PLAN["inoc_date"]
+    spawn = float(rec["spawn_pct"])
+    vessel = ss.get("env_container")
+    samples = []
+    for i in range(1, int(PLAN["n_containers"]) + 1):
+        sid = f"{PLAN['batch_label']}-{i:02d}"
+        rows = [r for r in SAMPLE_PHOTOS.get(sid, []) if r["day"] >= 0 and flow.in_forecast(r)]
+        out = OUTCOMES.get(sid, {})
+        samples.append({
+            "checks": [{"day": r["day"], "coverage_pct": round(100 * r["coverage"], 1)} for r in rows],
+            "colonised_day": days_since(out["colonised"], inoc) if out.get("colonised") else None,
+            "mould": bool(out.get("mould")),
+            "flushes": [{"day": days_since(f["date"], inoc), "fresh_g": f["g"]} for f in HARVEST.get(sid, [])],
+            "photos": [{"day": r["day"], "date": r.get("date"), "data": r["data"]} for r in rows if r.get("data")]})
+    return {"purpose": "material" if flow.is_materials() else "food", "species": PLAN["species"],
+            "substrate": PLAN.get("substrate"), "ingredients": rec["ingredients"],
+            "water_pct_wt": round(rec["moisture_pct"] * (1 - spawn / 100), 1),     # % of the whole mix
+            "spawn_pct_wt": spawn, "temp_c": PLAN.get("temp_c"), "rh_pct": ss.get("rh_pct"),
+            "vessel": vessel, "vessel_litres": ss.get("env_size", {}).get(vessel), "fill_weight_g": float(fill_g),
+            "samples": samples}
+
+
 # --- sidebar: the environment list above Restore --------------------------------------------
 with st.sidebar:
     env_list = st.container()
@@ -236,10 +291,38 @@ for name in residences():
                     if st.button("Check image", key=f"check_{name}_{sample}", type="primary"):
                         ss["check_target"] = {"sample": sample, "file": row["file"]}
                         st.switch_page("pages/5_Check_image.py")
+                sample_record(sample, batch.inoc_date)
 
 if not residences():
     st.info("Choose where you grow on the Environment page first.")
     st.page_link("pages/2_Environment.py", label="Environment", icon="📦")
+
+# --- share this batch for research ------------------------------------------------------
+if PLAN:
+    st.divider()
+    st.header("Share this batch for research")
+    st.write(collect.SHARE_TEXT)
+    cfg = supabase_config()
+    if cfg is None:
+        st.info("Sharing not set up.")
+    elif ss.get("share_code"):
+        st.success(f"Sent. Your contributor code: **{ss['share_code']}**. "
+                   "Keep this code if you want your data deleted.")
+    else:
+        rec = flow.run().recipe.value["rec"]
+        fill_g = st.number_input("Wet fill per container (g)", 1.0, value=float(round(1000 * rec["per_container"]["total_mix"])),
+                                 step=10.0, help="Substrate + water + spawn in one bag or jar; used for the yield (BE %).")
+        agreed = st.checkbox("I agree to share this batch", value=False, key="share_ok")
+        if st.button("Send", type="primary", disabled=not agreed):
+            try:
+                from supabase import create_client
+                client = create_client(cfg["url"], cfg["anon_key"])
+                with st.spinner("Sending..."):
+                    ss["share_code"] = collect.submit_batch(client, share_payload(rec, fill_g), collect.LICENCE)
+            except Exception as err:             # network, policy or bucket errors: show, keep the app running
+                st.error(f"Sending failed: {err}")
+            else:
+                st.rerun()
 
 with env_list:
     for name, colour in side_lights.items():

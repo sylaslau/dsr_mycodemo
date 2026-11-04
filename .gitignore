@@ -189,3 +189,5 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+# Streamlit secrets (Supabase keys)
+.streamlit/secrets.toml
