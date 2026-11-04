@@ -22,7 +22,7 @@ SUBSTRATE_CODE = {"wood chips": "sawdust", "sawdust": "sawdust", "straw": "straw
 VESSELS = ["Tupperware", "Grow bag", "Bucket"]       # the vessel names of the Environment page
 KG_DRY_PER_LITRE = 0.2                               # our assumption: 1 L vessel = 0.2 kg dry substrate (as ENVIRONMENTS)
 HANDLING = 1.05                                      # 5% extra on everything, for handling
-EVENT_COLOR, STAGE_COLOR = "#1f77b4", "#4F7F52"
+EVENT_COLOR, STAGE_COLOR = "#8A5A3B", "#5E6B3A"
 
 
 def code(text, n):

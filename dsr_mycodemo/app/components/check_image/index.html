@@ -4,17 +4,17 @@
      setComponentValue). It gets one photo (data URL) and its batch/sample/date from the app; Save returns the marks. -->
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check image</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f5f3;color:#20372f;font:15px system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#F8F3EC;color:#2E2620;font:15px system-ui,sans-serif}
 .tips{padding:0}.tips div{background:#fff4da;border:1px solid #e8d49b;border-radius:10px;padding:12px 16px;line-height:1.5}
 main{padding:14px 0 10px;display:grid;grid-template-columns:270px 1fr;gap:16px}
-.panel{background:#fff;border:1px solid #d8e1da;border-radius:12px;padding:18px}
+.panel{background:#fff;border:1px solid #E2C6BE;border-radius:12px;padding:18px}
 h2{font-size:17px;margin:0 0 12px}label{display:block;margin:10px 0 4px;font-weight:600}
 input,select,button{font:inherit}
 input[type=text],input[type=number],input[type=date],select{width:100%;padding:8px;border:1px solid #b4c6bb;border-radius:6px}
 input[readonly]{background:#eef3f0;color:#33493f}
-button{padding:9px 12px;border-radius:7px;border:1px solid #9bb5a4;background:#f7faf8;color:#20372f;cursor:pointer}
-button:hover{background:#dfebe3}button.primary{background:#28684f;color:#fff;border-color:#28684f}
-button.active{background:#d2eee1;border-color:#27674f;box-shadow:inset 0 0 0 2px #27674f}
+button{padding:9px 12px;border-radius:7px;border:1px solid #9bb5a4;background:#f7faf8;color:#2E2620;cursor:pointer}
+button:hover{background:#EDE2D6;border-color:#8A5A3B}button.primary{background:#8A5A3B;color:#fff;border-color:#8A5A3B}
+button.active{background:#EDE2D6;border-color:#8A5A3B;box-shadow:inset 0 0 0 2px #8A5A3B}
 button.pink{border-color:#e114b9;background:#ffe9f9}button.pink.active{background:#ffc7f1;box-shadow:inset 0 0 0 2px #e114b9}
 button.green{border-color:#1f9d63;background:#e3f8ec}button.green.active{background:#bdeed3;box-shadow:inset 0 0 0 2px #1f9d63}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
@@ -29,7 +29,7 @@ canvas{display:block;max-width:100%;height:auto;margin:10px auto;cursor:crosshai
 .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:#33493f;margin:4px 0 12px}
 .legend i{display:inline-block;vertical-align:middle;margin-right:6px}
 .sw-line{width:20px;height:0;border-top:3px solid}.sw-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px #888}.sw-box{width:16px;height:12px;border-radius:2px}
-details{margin:14px 0;border:1px solid #d8e1da;border-radius:8px;padding:10px 14px;background:#fafcfb}summary{cursor:pointer;font-weight:600}
+details{margin:14px 0;border:1px solid #E2C6BE;border-radius:8px;padding:10px 14px;background:#fafcfb}summary{cursor:pointer;font-weight:600}
 .count{font-size:13px;color:#52695b}.space{margin-top:14px}
 .save .check{font-size:17px;font-weight:600;align-items:center}.save .check input{width:22px;height:22px;margin:0}
 @media(max-width:850px){main{grid-template-columns:1fr}.samples{grid-template-columns:1fr}}
