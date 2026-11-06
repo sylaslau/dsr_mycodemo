@@ -1,44 +1,44 @@
-fermentation_id,genus,species,fibre_pct_wt,water_pct_wt,spawn_pct_wt,water_pct_of_fibre,container_id,fill_height_mm,incubation_container_id,incubation_temp_c,rh_pct,phase1_days,phase2_days,phase3_days,total_growth_days,in_process_treatment,post_treatment,post_treatment_temp_c,post_treatment_time_h
-FER-001,Trametes,versicolor,20.0,70.0,10.0,300.0,C-001,37.5,C-007,28.0,,,8,8,16,,oven_dry,70,10
-FER-002,Trametes,versicolor,20.0,70.0,10.0,,C-001,37.5,C-007,28.0,,,8,8,16,,oven_dry,70,10
-FER-003,Trametes,versicolor,20.0,70.0,10.0,,C-003,200.0,C-007,28.0,,,8,8,16,,oven_dry,70,10
-FER-004,Trametes,versicolor,20.0,70.0,10.0,227.0,C-004,100.0,,26.0,,,8,8,16,,oven_dry,70,10
-FER-005,Trametes,versicolor,20.0,70.0,10.0,,C-002,100.0,C-007,28.0,,,8,8,19,compressing by 20% in volume,oven_dry,70,10
-FER-006,Trametes,versicolor,20.0,70.0,10.0,320.0,C-004,100.0,,24.0,,,8,8,16,,oven_dry,70,10
-FER-007,Trametes,versicolor,20.0,70.0,10.0,,C-005,60.0,C-007,28.0,,,8,8,19,compressing by 20% in volume,oven_dry,70,10
-FER-008,Trametes,versicolor,20.0,70.0,10.0,234.0,C-004,100.0,,28.0,,,8,8,16,,oven_dry,70,10
-FER-009,Trametes,versicolor,20.0,70.0,10.0,300.0,C-009,35.0,C-007,28.0,,,8,8,16,,oven_dry,70,10
-FER-010,Trametes,versicolor,20.0,70.0,10.0,300.0,C-006,,,28.0,,,8,8,16,,oven_dry,70,10
-FER-011,Pleurotus,ostreatus,,,33.3,,C-008,40.0,,,65.0,,14,,14,,oven_dry,82,24
-FER-012,Pleurotus,ostreatus,,,20.0,,C-008,40.0,,,65.0,,14,,14,,oven_dry,82,24
-FER-013,Ganoderma,sessile,,,33.3,,C-008,40.0,,,65.0,,14,,14,,oven_dry,82,24
-FER-014,Ganoderma,sessile,,,20.0,,C-008,40.0,,,65.0,,14,,14,,oven_dry,82,24
-FER-015,Trametes,versicolor,,,20.0,,C-008,40.0,,,65.0,,14,,14,,oven_dry,82,36
-FER-016,Trametes,versicolor,,,33.3,,C-008,40.0,,,65.0,,14,,14,,oven_dry,82,36
-FER-017,Trametes,versicolor,20.0,70.0,10.0,,,,,28.0,,,8,8,16,,oven_dry,70,10
-FER-018,Ganoderma,sessile,,60,9.1,,C-010,50,C-012,24,95,14,8,7,29,manual homogenisation,oven_dry,103,24
-FER-019,Ganoderma,lingzhi,,60,9.1,,C-010,50,C-012,24,95,14,8,7,29,manual homogenisation,oven_dry,103,24
-FER-020,Trametes,versicolor,,60,9.1,,C-010,50,C-012,24,95,14,8,7,29,manual homogenisation,oven_dry,103,24
-FER-021,Ganoderma,tsugae,43,48,,,,,,28,65,,,,13,"after 10 d: shredded, mixed with binders and water, 3D-printed; then 72 h growth at 20-30 C, 65-80% RH",dried,,
-FER-022,Trametes,versicolor,,,,,,40,,22,70,14,7,,21,,oven_dry,70,24
-FER-023,Trametes,versicolor,,,,,,40,,22,70,14,7,,21,,oven_dry+chitosan_2_layers,70,24
-FER-024,Trametes,versicolor,,,,,,40,,22,70,14,7,,21,,oven_dry+chitosan_4_layers,70,24
-FER-025,Pleurotus,ostreatus,,,9.1,,,100,,,,7,,,17,,oven_dry,40,
-FER-026,Pleurotus,ostreatus,,,9.1,,,100,,,,7,,,14,,oven_dry,40,
-FER-027,Pleurotus,ostreatus,,,9.1,,,100,,,,7,,,,,oven_dry,40,
-FER-028,Ganoderma,lucidum,,,4.8,,,40,,25,,14,,,14,,oven_dry,60,48
-FER-029,Pleurotus,ostreatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,oven_dry,40,12
-FER-030,Pleurotus,ostreatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,oven_bake,100,6
-FER-031,Pleurotus,ostreatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,compact_50pct+oven_dry,40,12
-FER-032,Pleurotus,ostreatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,compact_50pct+oven_bake,100,6
-FER-033,Coprinus,comatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,oven_dry,40,12
-FER-034,Coprinus,comatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,oven_bake,100,6
-FER-035,Coprinus,comatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,compact_50pct+oven_dry,40,12
-FER-036,Coprinus,comatus,22.5,67.5,10,300,,,,25.7,,46,,,46,,compact_50pct+oven_bake,100,6
-FER-037,Pleurotus,ostreatus,31.7,63.5,4.8,200,,,,24,,,,,28,,,,
-FER-038,Trametes,versicolor,,,,,,,,26,,,,,22,,,,
-FER-039,Pleurotus,djamor,22.7,68.2,9.1,300,,,,19,60,,,,,,,,
-FER-040,Pleurotus,ostreatus,,,2.0,,,,,25,85,18,,,35,,,,
-FER-041,Pleurotus,florida,,,2.0,,,,,25,85,18,,,35,,,,
-FER-042,Pleurotus,ostreatus,,,6.5,,,,,25,85,,,,,,,,
-FER-043,Pleurotus,ostreatus,47.1,52.0,0.9,110.5,,,,22,70,,,,,,,,
+fermentation_id,genus,species,fibre_pct_wt,water_pct_wt,spawn_pct_wt,water_pct_of_fibre,container_id,fill_height_mm,incubation_container_id,incubation_temp_c,rh_pct,co2_ppm,phase1_days,phase2_days,phase3_days,total_growth_days,in_process_treatment,post_treatment,post_treatment_temp_c,post_treatment_time_h
+FER-001,Trametes,versicolor,20.0,70.0,10.0,300.0,C-001,37.5,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-002,Trametes,versicolor,20.0,70.0,10.0,,C-001,37.5,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-003,Trametes,versicolor,20.0,70.0,10.0,,C-003,200.0,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-004,Trametes,versicolor,20.0,70.0,10.0,227.0,C-004,100.0,,26.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-005,Trametes,versicolor,20.0,70.0,10.0,,C-002,100.0,C-007,28.0,,,,8.0,8.0,19.0,compressing by 20% in volume,oven_dry,70.0,10.0
+FER-006,Trametes,versicolor,20.0,70.0,10.0,320.0,C-004,100.0,,24.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-007,Trametes,versicolor,20.0,70.0,10.0,,C-005,60.0,C-007,28.0,,,,8.0,8.0,19.0,compressing by 20% in volume,oven_dry,70.0,10.0
+FER-008,Trametes,versicolor,20.0,70.0,10.0,234.0,C-004,100.0,,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-009,Trametes,versicolor,20.0,70.0,10.0,300.0,C-009,35.0,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-010,Trametes,versicolor,20.0,70.0,10.0,300.0,C-006,,,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-011,Pleurotus,ostreatus,,,33.3,,C-008,40.0,,,65.0,,,14.0,,14.0,,oven_dry,82.0,24.0
+FER-012,Pleurotus,ostreatus,,,20.0,,C-008,40.0,,,65.0,,,14.0,,14.0,,oven_dry,82.0,24.0
+FER-013,Ganoderma,sessile,,,33.3,,C-008,40.0,,,65.0,,,14.0,,14.0,,oven_dry,82.0,24.0
+FER-014,Ganoderma,sessile,,,20.0,,C-008,40.0,,,65.0,,,14.0,,14.0,,oven_dry,82.0,24.0
+FER-015,Trametes,versicolor,,,20.0,,C-008,40.0,,,65.0,,,14.0,,14.0,,oven_dry,82.0,36.0
+FER-016,Trametes,versicolor,,,33.3,,C-008,40.0,,,65.0,,,14.0,,14.0,,oven_dry,82.0,36.0
+FER-017,Trametes,versicolor,20.0,70.0,10.0,,,,,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
+FER-018,Ganoderma,sessile,,60.0,9.1,,C-010,50.0,C-012,24.0,95.0,,14.0,8.0,7.0,29.0,manual homogenisation,oven_dry,103.0,24.0
+FER-019,Ganoderma,lingzhi,,60.0,9.1,,C-010,50.0,C-012,24.0,95.0,,14.0,8.0,7.0,29.0,manual homogenisation,oven_dry,103.0,24.0
+FER-020,Trametes,versicolor,,60.0,9.1,,C-010,50.0,C-012,24.0,95.0,,14.0,8.0,7.0,29.0,manual homogenisation,oven_dry,103.0,24.0
+FER-021,Ganoderma,tsugae,43.0,48.0,,,,,,28.0,65.0,,,,,13.0,"after 10 d: shredded, mixed with binders and water, 3D-printed; then 72 h growth at 20-30 C, 65-80% RH",dried,,
+FER-022,Trametes,versicolor,,,,,,40.0,,22.0,70.0,,14.0,7.0,,21.0,,oven_dry,70.0,24.0
+FER-023,Trametes,versicolor,,,,,,40.0,,22.0,70.0,,14.0,7.0,,21.0,,oven_dry+chitosan_2_layers,70.0,24.0
+FER-024,Trametes,versicolor,,,,,,40.0,,22.0,70.0,,14.0,7.0,,21.0,,oven_dry+chitosan_4_layers,70.0,24.0
+FER-025,Pleurotus,ostreatus,,,9.1,,,100.0,,,,,,7.0,10.0,17.0,,oven_dry,40.0,
+FER-026,Pleurotus,ostreatus,,,9.1,,,100.0,,,,,,7.0,7.0,14.0,,oven_dry,40.0,
+FER-027,Pleurotus,ostreatus,,,9.1,,,100.0,,,,,,7.0,,,,oven_dry,40.0,
+FER-028,Ganoderma,lucidum,,,4.8,,,40.0,,25.0,,,,14.0,,14.0,,oven_dry,60.0,48.0
+FER-029,Pleurotus,ostreatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,oven_dry,40.0,12.0
+FER-030,Pleurotus,ostreatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,oven_bake,100.0,6.0
+FER-031,Pleurotus,ostreatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,compact_50pct+oven_dry,40.0,12.0
+FER-032,Pleurotus,ostreatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,compact_50pct+oven_bake,100.0,6.0
+FER-033,Coprinus,comatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,oven_dry,40.0,12.0
+FER-034,Coprinus,comatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,oven_bake,100.0,6.0
+FER-035,Coprinus,comatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,compact_50pct+oven_dry,40.0,12.0
+FER-036,Coprinus,comatus,22.5,67.5,10.0,300.0,,,,25.7,,,,46.0,,46.0,,compact_50pct+oven_bake,100.0,6.0
+FER-037,Pleurotus,ostreatus,31.7,63.5,4.8,200.0,,,,24.0,,,,,,28.0,,,,
+FER-038,Trametes,versicolor,,,,,,,,26.0,,,,,,22.0,,,,
+FER-039,Pleurotus,djamor,22.7,68.2,9.1,300.0,,,,19.0,60.0,,,,,,,,,
+FER-040,Pleurotus,ostreatus,,,2.0,,,,,25.0,85.0,,18.0,,,35.0,,,,
+FER-041,Pleurotus,florida,,,2.0,,,,,25.0,85.0,,18.0,,,35.0,,,,
+FER-042,Pleurotus,ostreatus,,,6.5,,,,,25.0,85.0,,,,,,,,,
+FER-043,Pleurotus,ostreatus,47.1,52.0,0.9,110.5,,,,22.0,70.0,,,,,,,,,
