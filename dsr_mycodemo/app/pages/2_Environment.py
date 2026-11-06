@@ -20,6 +20,8 @@ WHERE = {
     "Tent": ("Shelf or grow tent", "Size (floor area, m²)", 0.25, 4.0, 1.0, 0.25),
     "Room": ("Room", "Size (floor area, m²)", 2, 50, 12, 1),
 }
+# shown on the button (and small text under it); the saved value stays the WHERE key so old batches still load
+WHERE_SHOWN = {"Plastic container": ("Monotub", "Plastic container with ventilation holes")}
 CONTAINERS = {
     "Glass Jar": ("Size (litres)", 0.5, 5.0, 1.0, 0.5),
     "Tupperware": ("Size (litres)", 0.5, 5.0, 1.0, 0.5),
@@ -47,10 +49,13 @@ with where_col:
     st.subheader("Residence")
     for name, (label, size_label, lo, hi, default, step) in WHERE.items():
         on = ss["env_where"] == name
-        if st.button(name, key=f"where_{name}", type="primary" if on else "secondary", use_container_width=True):
+        shown, small = WHERE_SHOWN.get(name, (name, None))
+        if st.button(shown, key=f"where_{name}", type="primary" if on else "secondary", use_container_width=True):
             ss["env_where"], ss["environment"] = name, label
             ss["recipe"] = ss["batch"] = None
             st.rerun()
+        if small:
+            st.caption(small)
         size_amount(name, size_label, lo, hi, default, step, on)
 
 with cont_col:

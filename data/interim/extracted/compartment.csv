@@ -1,0 +1,25 @@
+compartment_id,role,container_type,container_shape,inner_diameter_mm,inner_length_mm,inner_width_mm,inner_height_mm,closure,notes
+C-001,vessel,mould,cylinder,75.0,,,37.5,perforated cellophane foil,Article M1; compression specimens. Quoted size is the specimen size
+C-002,vessel,mould,cylinder,75.0,,,100.0,perforated cellophane foil,Article M2; pre-compressed samples
+C-003,vessel,mould,cylinder,63.0,,,200.0,perforated cellophane foil,"Article M3; thermal conductivity (ASTM D5334). Article Table 1 reads 36 x 200 for flax, probably a typo (specimen diameter 53.8 mm)"
+C-004,vessel,mould,cylinder,20.0,,,100.0,perforated cellophane foil,Article M4; water absorption. Preparation documents say moulds closed with parafilm
+C-005,vessel,mould,cylinder,75.0,,,60.0,perforated cellophane foil,Article M5; PFWL
+C-006,vessel,petri_dish,square_prism,,120.0,120.0,17.0,sterile plastic film,"Square petri dish grown in parallel for daily scanning (diary, article)"
+C-007,container,micro_box,square_prism,,185.0,185.0,78.0,"depth-filtration lid, air flow",Micro box 185 x 185 x 78 mm (Sac O2): autoclaving and incubation of moulds and demoulded samples
+C-008,vessel,mould,square_prism,,75.0,75.0,,plastic bag in grow tent,"Bhaskar 2026 mould with 75 x 75 mm square inserts; mould height not stated, filled to 40 mm"
+C-009,vessel,mould,cylinder,75.0,,,35.0,sterile plastic film,Lab diary mould Type 3 (75 x 35 mm); used by diary-only HD samples
+C-010,vessel,mould,square_prism,,50,50,50,,Hysek 2025 cubic mould 50 mm side; compression and internal bonding specimens
+C-011,vessel,mould,cylinder,100,,,70,,"Hysek 2025 cylindrical samples 100 x 70 mm for thermal insulation tests; mould not described, size is the specimen size"
+C-012,container,crate,square_prism,,600,400,185,filters for air exchange,Hysek 2025 modified EURO crate for demoulded samples; size is the lid dimensions 60 x 40 x 18.5 cm
+C-013,vessel,bag,,,,,,,Hysek 2025 PP bag holding 2.5 kg substrate (phase 1 spawn run); bag size not stated
+C-014,vessel,bag,,,,,,,Irbe 2026 4 L filter bag (14 d spawn run); dimensions not stated
+C-015,vessel,mould,square_prism,,200,200,40,,Irbe 2026 mould 200 x 200 x 40 mm (7 d regrowth)
+C-016,vessel,mould,square_prism,,100,100,100,,"Vasatko 2022 plastic 10 cm cube mould, set inside a microfilter bag (C-017)"
+C-017,container,bag,,,,,,,Vasatko 2022 microfilter bag; holds the mould during growth and the demoulded sample after; size not stated
+C-018,vessel,mould,square_prism,,50,50,22,,Jimenez-Obando 2025 acrylic mould 5 x 5 x 2.2 cm (same as the compression specimen size)
+C-019,vessel,mould,cylinder,77,,,,,Houette 2022 PVC pipe mould 77 mm (inner or outer not stated); specimens 7 cm x 11 cm
+C-020,vessel,bag,,,,,,,Patil 2025 grow bag; size not stated
+C-021,residence,grow_tent,,,,,,,Bhaskar 2026 grow tent holding the bagged moulds (C-008); size not stated
+C-022,residence,plastic_container,,,,,,,syldd plastic container; lid does not seal when closed (not a monotub); size to follow
+C-023,vessel,petri_dish,,,,,,,syldd petri dish; size to follow
+C-024,vessel,jar,,,,,,,syldd jar; size to follow

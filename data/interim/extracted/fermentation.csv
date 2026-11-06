@@ -1,4 +1,4 @@
-fermentation_id,genus,species,fibre_pct_wt,water_pct_wt,spawn_pct_wt,water_pct_of_fibre,container_id,fill_height_mm,incubation_container_id,incubation_temp_c,rh_pct,co2_ppm,phase1_days,phase2_days,phase3_days,total_growth_days,in_process_treatment,post_treatment,post_treatment_temp_c,post_treatment_time_h
+fermentation_id,genus,species,fibre_pct_wt,water_pct_wt,spawn_pct_wt,water_pct_of_fibre,vessel_id,fill_height_mm,container_id,incubation_temp_c,rh_pct,co2_ppm,phase1_days,phase2_days,phase3_days,total_growth_days,in_process_treatment,post_treatment,post_treatment_temp_c,post_treatment_time_h
 FER-001,Trametes,versicolor,20.0,70.0,10.0,300.0,C-001,37.5,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
 FER-002,Trametes,versicolor,20.0,70.0,10.0,,C-001,37.5,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0
 FER-003,Trametes,versicolor,20.0,70.0,10.0,,C-003,200.0,C-007,28.0,,,,8.0,8.0,16.0,,oven_dry,70.0,10.0

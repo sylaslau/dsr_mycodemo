@@ -433,3 +433,16 @@ def test_start_page_materials_off_greys_the_things(monkeypatch):
     assert not at.exception
     assert all(b.disabled for b in at.button if b.key.startswith("thing_"))
     assert not any(b.disabled for b in at.button if b.key.startswith("food_"))
+
+
+@pytest.mark.parametrize("goal,choice", [("Food", "Blue Oyster"), ("Materials", "Packaging foam")])
+def test_environment_page_shows_monotub_and_keeps_saved_value(goal, choice):
+    at = _page("pages/2_Environment.py")
+    at.session_state["goal"], at.session_state["choice"] = goal, choice
+    at.session_state["env_where"] = "Plastic container"          # value saved by older batches
+    at.run()
+    assert not at.exception
+    labels = [b.label for b in at.button]
+    assert "Monotub" in labels and "Plastic container" not in labels
+    assert "Plastic container with ventilation holes" in [c.value for c in at.caption]
+    assert at.button(key="where_Plastic container").label == "Monotub"

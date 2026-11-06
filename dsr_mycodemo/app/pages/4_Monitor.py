@@ -78,6 +78,9 @@ LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00"}
 STAGE_ROWS = [["Spawning", "Colonising", "Fruiting"], ["Ready for induction", "Ready for harvest"]]
 
 
+SHOWN = {"Plastic container": "Monotub"}     # shown name; the saved value stays the same (old batches load)
+
+
 def residences():
     """Residences entered on the Environment page, in that page's order."""
     names = [n for n in ("Plastic container", "Shelf or vitrine", "Tent", "Room")
@@ -231,7 +234,7 @@ home = ss.get("env_where")                       # the residence the plan batch 
 side_lights = {}
 for name in residences():
     with st.container(border=True):
-        st.subheader(name)
+        st.subheader(SHOWN.get(name, name))
         has_batch = PLAN and name == home
         env_stage = stage if has_batch else "Colonising"
         rng = wanted_ranges(batch, env_stage)
@@ -328,4 +331,4 @@ if PLAN:
 
 with env_list:
     for name, colour in side_lights.items():
-        st.markdown(f"{dot(colour)} {name}", unsafe_allow_html=True)
+        st.markdown(f"{dot(colour)} {SHOWN.get(name, name)}", unsafe_allow_html=True)
