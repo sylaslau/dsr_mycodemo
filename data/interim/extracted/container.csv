@@ -11,3 +11,11 @@ C-009,mould,cylinder,75.0,,,35.0,sterile plastic film,Lab diary mould Type 3 (75
 C-010,mould,square_prism,,50,50,50,,Hysek 2025 cubic mould 50 mm side; compression and internal bonding specimens
 C-011,mould,cylinder,100,,,70,,"Hysek 2025 cylindrical samples 100 x 70 mm for thermal insulation tests; mould not described, size is the specimen size"
 C-012,crate,square_prism,,600,400,185,filters for air exchange,Hysek 2025 modified EURO crate for demoulded samples; size is the lid dimensions 60 x 40 x 18.5 cm
+C-013,bag,,,,,,,Hysek 2025 PP bag holding 2.5 kg substrate (phase 1 spawn run); bag size not stated
+C-014,bag,,,,,,,Irbe 2026 4 L filter bag (14 d spawn run); dimensions not stated
+C-015,mould,square_prism,,200,200,40,,Irbe 2026 mould 200 x 200 x 40 mm (7 d regrowth)
+C-016,mould,square_prism,,100,100,100,,"Vasatko 2022 plastic 10 cm cube mould, set inside a microfilter bag (C-017)"
+C-017,bag,,,,,,,Vasatko 2022 microfilter bag; holds the mould during growth and the demoulded sample after; size not stated
+C-018,mould,square_prism,,50,50,22,,Jimenez-Obando 2025 acrylic mould 5 x 5 x 2.2 cm (same as the compression specimen size)
+C-019,mould,cylinder,77,,,,,Houette 2022 PVC pipe mould 77 mm (inner or outer not stated); specimens 7 cm x 11 cm
+C-020,bag,,,,,,,Patil 2025 grow bag; size not stated
