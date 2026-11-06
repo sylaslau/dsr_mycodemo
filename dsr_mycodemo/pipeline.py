@@ -15,6 +15,7 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 
+from dsr_mycodemo import stages
 from dsr_mycodemo.cultivation import baseline_guide
 from dsr_mycodemo.cultivation import recipe as recipe_maths
 from dsr_mycodemo.growth import consensus_estimate, forecast_update
@@ -48,9 +49,12 @@ ENVIRONMENTS = {
 # the growing space the user describes once (the Grow Log's Environment box); not the recipe scale above
 ENVIRONMENT_SIZES = ["Small plastic box", "Tub", "Tent", "Shelf", "Room"]
 MEASURED_BY = ["Thermometer", "Sensor device", "Guess"]
-# stage that ends colonisation -> where "Next stage" goes, per goal (Food: Fruiting, Materials: Post-treatment)
+# stage that ends colonisation -> where "Next stage" goes, per goal (Food: Fruiting, Materials: Post-treatment).
+# Words stay as the grower sees them; the logic runs on stage_ids from stage.csv (dsr_mycodemo.stages).
 COLONISING_STAGES = {"Food": ("Inoculated", "Colonising"), "Materials": ("Colonisation",)}
 AFTER_COLONISATION = {"Food": "Fruiting", "Materials": "Post-treatment"}
+COLONISING_STAGE_ID = "ST4"
+NEXT_STAGE_ID = {"Food": "ST5", "Materials": "ST6"}
 BASELINE_SUBSTRATE, SPAWN_PCT = recipe_maths.DEFAULT_SUBSTRATE, recipe_maths.DEFAULT_SPAWN_PCT   # baseline recipe
 HUMIDITY_RANGE = (80.0, 95.0)         # % RH wanted while colonising; out of range is only ever a Warning
 # Temperature rule (our assumption, see temperature_factor): the typical days hold at the optimum, the growth
@@ -128,7 +132,9 @@ def next_stage(goal, latest_stage):
     Only the step after colonisation is defined: Food goes to Fruiting, Materials to Post-treatment (drying/baking).
     """
     goal = goal if goal in AFTER_COLONISATION else "Food"
-    return AFTER_COLONISATION[goal] if latest_stage in COLONISING_STAGES[goal] else None
+    if stages.stage_of(latest_stage) != COLONISING_STAGE_ID or latest_stage not in COLONISING_STAGES[goal]:
+        return None
+    return AFTER_COLONISATION[goal]          # its stage_id is NEXT_STAGE_ID[goal] (tests/test_stages.py)
 
 
 @dataclass

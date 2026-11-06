@@ -1,0 +1,16 @@
+protocol_id,name,stage_id,side,ref_ids
+STER,Sterilise (autoclave),ST3,both,
+STER-PC,Sterilise (pressure cooker),ST3,both,
+PAST,Pasteurise (method not stated),ST3,both,
+RUN,"Main spawn run (first colonisation of the substrate, any container)",ST4,both,US11343979B2
+REGROW,Regrowth after break-up and moulding,ST4,material,US11343979B2
+SKIN,Growth after demoulding,ST4,material,US11866691B2
+COMPRESS-20,Compress 20% in volume during growth,ST4,material,
+HOMOGENISE,Break up and mix by hand during growth,ST4,material,
+REPRINT,"Shred, mix with binders and water, 3D-print, regrow",ST4,material,
+COMPACT-50,Compact 50% after growth,ST6,material,
+OVEN-DRY,Oven dry,ST6,material,
+OVEN-BAKE,Oven bake,ST6,material,
+DRY,Dry (method not stated),ST6,material,
+CHITOSAN-2L,"Chitosan coating, 2 layers",ST6,material,
+CHITOSAN-4L,"Chitosan coating, 4 layers",ST6,material,

@@ -1,0 +1,6 @@
+measure_id,name,unit,kind,stage_id,side,category,definition,area_basis,note
+compressive_stress_10pct,Compressive stress at 10% strain,MPa,outcome,ST6,material,mechanical,Stress at 10% strain; the test method differs between datasets (see measurement.test_method),,
+dry_density,Dry density,kg/m3,outcome,ST6,material,physical,,,d006: only on separate density blocks with unknown fungus (flag HF7)
+colonisation_score,Colonisation score,score 1-5,reading,ST4,both,growth,"Share of the substrate colonised, by eye: 1 = 0-5%, 2 = 6-30%, 3 = 31-69%, 4 = 70-94%, 5 = 95-100% (Musci 2025)",,
+surface_colonised_pct,Surface colonised,%,reading,ST4,both,growth,"Share of the visible surface covered by mycelium, measured on scans (d009) or photos",,
+biological_efficiency,Biological efficiency,%,outcome,ST5,food,yield,Fresh mushroom weight harvested / dry substrate weight x 100,,"d012: 1000 g dry substrate per bag, so harvest in g = BE x 10"

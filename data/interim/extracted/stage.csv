@@ -1,0 +1,7 @@
+stage_id,name,side,maps_to_S
+ST1,Culture,both,S1
+ST2,Spawn,both,S1
+ST3,Substrate preparation,both,S2;S3
+ST4,Block (colonisation),both,S4
+ST5,Flushes,food,S4;S5
+ST6,Post-treatment,material,S5;S6;S7;S8

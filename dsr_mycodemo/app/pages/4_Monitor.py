@@ -75,6 +75,7 @@ def apply_restore(p):
 # book ranges for CO2 (ppm): colonisation tolerates a lot, fruiting wants fresh air
 CO2_COLONISING, CO2_FRUITING = (0.0, 20000.0), (500.0, 1000.0)
 LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00"}
+# the grower's words in button rows; each maps to a stage_id (Spawning..Ready for induction ST4, the rest ST5)
 STAGE_ROWS = [["Spawning", "Colonising", "Fruiting"], ["Ready for induction", "Ready for harvest"]]
 
 

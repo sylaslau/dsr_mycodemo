@@ -1,5 +1,8 @@
 """Checks for the M3 property table. Run from the project root:  pytest tests"""
 
+import io
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -42,3 +45,18 @@ def test_pre_compression_flag(table):
     compacted = table[table["compacted_after_growth"] == 1]["sample_id"]
     assert compacted.str.contains("^d023-G-..-.C[DB]$", regex=True).all()
     assert len(compacted) == 6
+
+
+def test_treatments_come_from_process_steps(table):
+    coated = table[table["coated"]]
+    assert set(coated["post_treatment"]) == {"oven_dry+chitosan_2_layers", "oven_dry+chitosan_4_layers"}
+    assert table.loc[table["compacted_after_growth"] == 1, "post_treatment"].str.startswith("compact_50pct+").all()
+
+
+def test_rebuilt_table_matches_the_11_06_table_value_for_value(table):
+    """The switch from measurement/fermentation text to outcome/process must not change a single value."""
+    saved = pd.read_csv(Path(__file__).parent / "fixtures" / "property_table_20261106.csv")
+    rebuilt = pd.read_csv(io.StringIO(table.to_csv(index=False)))      # through CSV, as main() saves it
+    assert list(rebuilt.columns) == list(saved.columns)
+    pd.testing.assert_frame_equal(rebuilt.set_index("sample_id").sort_index(),
+                                  saved.set_index("sample_id").sort_index())

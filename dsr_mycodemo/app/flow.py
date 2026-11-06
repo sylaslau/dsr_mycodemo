@@ -19,8 +19,9 @@ ENDPOINT_ASSUMPTION_NOTE = (
     "Project assumption, not a measured result: the consensus typical colonisation day is taken as **90% visible "
     "coverage**, and the **Induction planning marker** is that day + 2 days. The day the substrate is white all the "
     "way through, bottom included, cannot be predicted; check by eye before starting induction.")
+# the grower's words; each maps to a stage_id in stage.csv via dsr_mycodemo.stages ("Contaminated" is a status)
 STAGES_FOOD = ["Inoculated", "Colonising", "Fruiting", "Harvested", "Contaminated"]
-STAGES_MATERIAL = ["Pre-treatment", "Colonisation", "Liquid fermentation", "Post-treatment", "Contaminated"]
+STAGES_MATERIAL = ["Colonisation", "Post-treatment", "Contaminated"]
 
 
 def init():

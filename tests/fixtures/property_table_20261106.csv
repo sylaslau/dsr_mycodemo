@@ -1,0 +1,214 @@
+dataset_id,sample_id,measurement_type,n_specimens,species_name,plant_name,substrate_group,particle_size_class,spawn_pct_wt,incubation_temp_c,total_growth_days,pre_compressed,compacted_after_growth,post_treatment,coated,density_kg_m3,stress_mpa
+d004,d004-S-P-1to2-01,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,221.41,0.14928
+d004,d004-S-P-1to2-02,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,220.71,0.16631
+d004,d004-S-P-1to2-03,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,225.53,0.20464
+d004,d004-S-P-1to2-04,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,210.67,0.14813
+d004,d004-S-P-1to2-05,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,210.71,0.17803
+d004,d004-S-P-1to2-06,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,263.2,0.10761
+d004,d004-S-P-1to2-07,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,269.19,0.14839
+d004,d004-S-P-1to2-08,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,267.4,0.11191
+d004,d004-S-P-1to2-09,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,256.99,0.1263
+d004,d004-S-P-1to2-10,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,269.61,0.16338
+d004,d004-S-P-1to4-01,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,163.5,0.10624
+d004,d004-S-P-1to4-02,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,166.11,0.15216
+d004,d004-S-P-1to4-03,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,169.96,0.18928
+d004,d004-S-P-1to4-04,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,165.02,0.15602
+d004,d004-S-P-1to4-05,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,163.24,0.16278
+d004,d004-S-P-1to4-06,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,226.041,0.22958
+d004,d004-S-P-1to4-07,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,221.251,0.31923
+d004,d004-S-P-1to4-08,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,215.009,0.21012
+d004,d004-S-P-1to4-09,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,236.677,0.23399
+d004,d004-S-P-1to4-10,raw,1.0,Pleurotus ostreatus,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,240.78,0.18525
+d004,d004-S-G-1to2-01,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,228.37,0.07782
+d004,d004-S-G-1to2-02,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,225.73,0.076902
+d004,d004-S-G-1to2-03,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,212.26,0.139015
+d004,d004-S-G-1to2-04,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,219.33,0.136629
+d004,d004-S-G-1to2-05,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,216.54,0.175636
+d004,d004-S-G-1to2-06,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,207.209,0.13472
+d004,d004-S-G-1to2-07,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,214.742,0.151156
+d004,d004-S-G-1to2-08,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,210.179,0.164024
+d004,d004-S-G-1to2-09,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,196.273,0.167815
+d004,d004-S-G-1to2-10,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,205.634,0.197186
+d004,d004-S-G-1to4-01,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,158.99,0.17296
+d004,d004-S-G-1to4-02,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,163.41,0.17393
+d004,d004-S-G-1to4-03,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,153.02,0.20768
+d004,d004-S-G-1to4-04,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,179.24,0.18436
+d004,d004-S-G-1to4-05,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,182.58,0.20485
+d004,d004-S-G-1to4-06,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,211.24,0.15167
+d004,d004-S-G-1to4-07,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,228.84,0.07594
+d004,d004-S-G-1to4-08,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,212.83,0.20852
+d004,d004-S-G-1to4-09,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,232.23,0.15867
+d004,d004-S-G-1to4-10,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,197.52,0.13399
+d004,d004-S-G-1to4-11,raw,1.0,Ganoderma sessile,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,177.21,0.19655
+d004,d004-S-T-1to4-01,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,210.807,0.105606
+d004,d004-S-T-1to4-02,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,213.007,0.146091
+d004,d004-S-T-1to4-03,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,216.615,0.102326
+d004,d004-S-T-1to4-04,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,189.76,0.057406
+d004,d004-S-T-1to4-05,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,195.602,0.08027
+d004,d004-S-T-1to4-06,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,172.23,0.15909
+d004,d004-S-T-1to4-07,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,171.99,0.12007
+d004,d004-S-T-1to4-08,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,167.76,0.08563
+d004,d004-S-T-1to4-09,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,166.25,0.14311
+d004,d004-S-T-1to4-10,raw,1.0,Trametes versicolor,hemp,hemp,2.0,20.0,,14.0,0.0,0.0,oven_dry,False,163.7,0.11376
+d004,d004-S-T-1to2-01,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,195.0,0.17446
+d004,d004-S-T-1to2-02,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,197.0,0.13936
+d004,d004-S-T-1to2-03,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,224.0,0.09831
+d004,d004-S-T-1to2-04,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,200.0,0.10525
+d004,d004-S-T-1to2-05,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,197.0,0.12827
+d004,d004-S-T-1to2-06,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,280.0,0.2225
+d004,d004-S-T-1to2-07,raw,1.0,Trametes versicolor,hemp,hemp,2.0,33.3,,14.0,0.0,0.0,oven_dry,False,249.34,0.24447
+d005,d005-S-WL-C-1,raw,1.0,Trametes versicolor,softwood,softwood,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,79.9,0.012
+d005,d005-S-WL-C-2,raw,1.0,Trametes versicolor,softwood,softwood,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,88.8,0.0145
+d005,d005-S-WL-C-3,raw,1.0,Trametes versicolor,softwood,softwood,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,92.3,0.0165
+d005,d005-S-HL-C-1,raw,1.0,Trametes versicolor,hemp,hemp,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,90.4,0.0027
+d005,d005-S-HL-C-2,raw,1.0,Trametes versicolor,hemp,hemp,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,88.5,0.0282
+d005,d005-S-HL-C-3,raw,1.0,Trametes versicolor,hemp,hemp,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,86.9,0.0273
+d005,d005-S-FL-C-1,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,43.5,0.0144
+d005,d005-S-FL-C-2,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,65.6,0.0121
+d005,d005-S-FL-C-3,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,70.2,0.0177
+d005,d005-S-FL-C-4,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,,0.0287
+d005,d005-S-FL-C-5,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,,0.0246
+d005,d005-S-FL-C-6,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,,0.0178
+d005,d005-S-FL-C-7,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,,0.0171
+d005,d005-S-FWL-C-1,raw,1.0,Trametes versicolor,flax waste,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,98.6,0.0066
+d005,d005-S-FWL-C-2,raw,1.0,Trametes versicolor,flax waste,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,112.4,0.0398
+d005,d005-S-FWL-C-3,raw,1.0,Trametes versicolor,flax waste,flax,3.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,79.4,0.0291
+d005,d005-S-FTT-C-1,raw,1.0,Trametes versicolor,flax,flax,4.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,222.1,0.0337
+d005,d005-S-FTT-C-2,raw,1.0,Trametes versicolor,flax,flax,4.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,150.8,0.0107
+d005,d005-S-FUT-C-1,raw,1.0,Trametes versicolor,flax,flax,4.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,146.2,0.0639
+d005,d005-S-FUT-C-2,raw,1.0,Trametes versicolor,flax,flax,4.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,124.8,0.0427
+d005,d005-S-FUT-C-3,raw,1.0,Trametes versicolor,flax,flax,4.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,124.8,0.019
+d005,d005-S-HC-C-1,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,94.0,0.0428
+d005,d005-S-HC-C-2,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,100.5,0.03
+d005,d005-S-FC-C-1,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,,0.0777
+d005,d005-S-PHL-C-1,raw,1.0,Trametes versicolor,hemp,hemp,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,72.1,0.0909
+d005,d005-S-PHL-C-2,raw,1.0,Trametes versicolor,hemp,hemp,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,72.5,0.092
+d005,d005-S-PFL-C-4,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,,0.0,oven_dry,False,,0.0155
+d005,d005-S-PFL-C-5,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,16.0,,0.0,oven_dry,False,,0.0164
+d005,d005-S-PFL-C-1,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,71.7,0.0394
+d005,d005-S-PFL-C-2,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,67.8,0.0667
+d005,d005-S-PFL-C-3,raw,1.0,Trametes versicolor,flax,flax,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,66.6,0.0546
+d005,d005-S-PFWL-C-1,raw,1.0,Trametes versicolor,flax waste,flax,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,150.6,0.0621
+d005,d005-S-FC-Tc-1,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,134.71698,
+d005,d005-S-FC-Tc-2,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,134.71698,
+d005,d005-S-FC-Tc-3,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,134.71698,
+d005,d005-S-HC-Tc-1,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,98.92064,
+d005,d005-S-HC-Tc-2,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,98.92064,
+d005,d005-S-HC-Tc-3,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,98.92064,
+d005,d005-S-SC-Tc-1,raw,1.0,Trametes versicolor,wheat straw,straw,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,94.39432,
+d005,d005-S-SC-Tc-2,raw,1.0,Trametes versicolor,wheat straw,straw,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,94.39432,
+d005,d005-S-SC-Tc-3,raw,1.0,Trametes versicolor,wheat straw,straw,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,94.39432,
+d005,d005-S-FC-Aw-1,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,24.0,16.0,0.0,0.0,oven_dry,False,136.43,
+d005,d005-S-FC-Aw-2,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,24.0,16.0,0.0,0.0,oven_dry,False,135.09,
+d005,d005-S-FC-Aw-3,raw,1.0,Trametes versicolor,flax,flax,2.0,10.0,24.0,16.0,0.0,0.0,oven_dry,False,142.04,
+d005,d005-S-HC-Aw-1,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,26.0,16.0,0.0,0.0,oven_dry,False,93.27,
+d005,d005-S-HC-Aw-2,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,26.0,16.0,0.0,0.0,oven_dry,False,97.78,
+d005,d005-S-HC-Aw-3,raw,1.0,Trametes versicolor,hemp,hemp,2.0,10.0,26.0,16.0,0.0,0.0,oven_dry,False,104.34,
+d005,d005-S-SC-Aw-1,raw,1.0,Trametes versicolor,wheat straw,straw,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,124.4,
+d005,d005-S-SC-Aw-2,raw,1.0,Trametes versicolor,wheat straw,straw,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,134.17,
+d005,d005-S-SC-Aw-3,raw,1.0,Trametes versicolor,wheat straw,straw,2.0,10.0,28.0,16.0,0.0,0.0,oven_dry,False,107.51,
+d006,d006-S-Gl-RW-1,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.051276
+d006,d006-S-Gl-RW-2,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.039484
+d006,d006-S-Gl-RW-3,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.043721
+d006,d006-S-Gl-RW-4,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.043209
+d006,d006-S-Gl-RW-5,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.039957
+d006,d006-S-Gl-RW-6,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.032717
+d006,d006-S-Gl-RWL-1,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.02032
+d006,d006-S-Gl-RWL-2,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.026255
+d006,d006-S-Gl-RWL-3,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.031437
+d006,d006-S-Gl-RWL-4,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.025875
+d006,d006-S-Gl-RWL-5,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.025802
+d006,d006-S-Gl-RWL-6,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.026975
+d006,d006-S-Gl-REF-1,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.032825
+d006,d006-S-Gl-REF-2,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.032224
+d006,d006-S-Gl-REF-3,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.0277
+d006,d006-S-Gl-REF-4,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.032749
+d006,d006-S-Gl-REF-5,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.035871
+d006,d006-S-Gl-REF-6,raw,1.0,Ganoderma lingzhi,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.030172
+d006,d006-S-Gs-RW-1,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.042579
+d006,d006-S-Gs-RW-2,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.048254
+d006,d006-S-Gs-RW-3,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.029988
+d006,d006-S-Gs-RW-4,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.028831
+d006,d006-S-Gs-RW-5,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.053677
+d006,d006-S-Gs-RW-6,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.034657
+d006,d006-S-Gs-RWL-1,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.057194
+d006,d006-S-Gs-RWL-2,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.046566
+d006,d006-S-Gs-RWL-3,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.056099
+d006,d006-S-Gs-RWL-4,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.026509
+d006,d006-S-Gs-RWL-5,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.046624
+d006,d006-S-Gs-RWL-6,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.04493
+d006,d006-S-Gs-REF-1,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.044247
+d006,d006-S-Gs-REF-2,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.039737
+d006,d006-S-Gs-REF-3,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.049896
+d006,d006-S-Gs-REF-4,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.038649
+d006,d006-S-Gs-REF-5,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.040672
+d006,d006-S-Gs-REF-6,raw,1.0,Ganoderma sessile,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.059515
+d006,d006-S-Tv-RW-1,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.016259
+d006,d006-S-Tv-RW-2,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.011905
+d006,d006-S-Tv-RW-3,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.013553
+d006,d006-S-Tv-RW-4,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.021593
+d006,d006-S-Tv-RW-5,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.021218
+d006,d006-S-Tv-RW-6,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.015921
+d006,d006-S-Tv-RWL-1,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.023812
+d006,d006-S-Tv-RWL-2,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.035548
+d006,d006-S-Tv-RWL-3,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.033134
+d006,d006-S-Tv-RWL-4,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.035137
+d006,d006-S-Tv-RWL-5,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.029934
+d006,d006-S-Tv-RWL-6,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.032973
+d006,d006-S-Tv-REF-1,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.039496
+d006,d006-S-Tv-REF-2,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.07121
+d006,d006-S-Tv-REF-3,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.062705
+d006,d006-S-Tv-REF-4,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.06095
+d006,d006-S-Tv-REF-5,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.030498
+d006,d006-S-Tv-REF-6,raw,1.0,Trametes versicolor,softwood,softwood,3.0,9.1,24.0,29.0,0.0,0.0,oven_dry,False,,0.056091
+d007,d007-G-BSD1-C0,mean,5.0,Trametes versicolor,birch sanding dust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry,False,252.0,0.241
+d007,d007-G-BSD1-C2,mean,5.0,Trametes versicolor,birch sanding dust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,174.0,0.113
+d007,d007-G-BSD2-C0,mean,5.0,Trametes versicolor,birch sanding dust + hemp shives,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry,False,147.0,0.104
+d007,d007-G-BSD2-C2,mean,5.0,Trametes versicolor,birch sanding dust + hemp shives,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,138.0,0.082
+d007,d007-G-BSD2-C4,mean,5.0,Trametes versicolor,birch sanding dust + hemp shives,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,136.0,0.076
+d007,d007-G-BSD3-C0,mean,5.0,Trametes versicolor,birch sanding dust + birch sawdust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry,False,205.0,0.123
+d007,d007-G-BSD3-C2,mean,5.0,Trametes versicolor,birch sanding dust + birch sawdust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,199.0,0.11
+d007,d007-G-BSD3-C4,mean,5.0,Trametes versicolor,birch sanding dust + birch sawdust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,172.0,0.065
+d007,d007-G-BSD4-C0,mean,5.0,Trametes versicolor,birch sanding dust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry,False,227.0,0.162
+d007,d007-G-BSD4-C2,mean,5.0,Trametes versicolor,birch sanding dust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,180.0,0.08
+d007,d007-G-BSD4-C4,mean,5.0,Trametes versicolor,birch sanding dust,hardwood,1.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,190.0,0.092
+d007,d007-G-WS1-C0,mean,5.0,Trametes versicolor,wheat straw,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry,False,124.0,0.039
+d007,d007-G-WS1-C2,mean,5.0,Trametes versicolor,wheat straw,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,96.0,0.019
+d007,d007-G-WS1-C4,mean,5.0,Trametes versicolor,wheat straw,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,106.0,0.024
+d007,d007-G-WS2-C0,mean,5.0,Trametes versicolor,wheat straw + hemp shives,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry,False,109.0,0.035
+d007,d007-G-WS2-C2,mean,5.0,Trametes versicolor,wheat straw + hemp shives,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,97.0,0.032
+d007,d007-G-WS2-C4,mean,5.0,Trametes versicolor,wheat straw + hemp shives,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,99.0,0.035
+d007,d007-G-WS3-C0,mean,5.0,Trametes versicolor,wheat straw + birch sawdust,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry,False,151.0,0.078
+d007,d007-G-WS3-C2,mean,5.0,Trametes versicolor,wheat straw + birch sawdust,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,128.0,0.057
+d007,d007-G-WS3-C4,mean,5.0,Trametes versicolor,wheat straw + birch sawdust,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,128.0,0.062
+d007,d007-G-WS4-C0,mean,5.0,Trametes versicolor,wheat straw,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry,False,103.0,0.024
+d007,d007-G-WS4-C2,mean,5.0,Trametes versicolor,wheat straw,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_2_layers,True,92.0,0.019
+d007,d007-G-WS4-C4,mean,5.0,Trametes versicolor,wheat straw,straw,2.0,,22.0,21.0,0.0,0.0,oven_dry+chitosan_4_layers,True,103.0,0.024
+d016,d016-S-FS-PO-01,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,,0.0,0.0,oven_dry,False,270.6,
+d016,d016-S-FS-PO-02,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,,0.0,0.0,oven_dry,False,274.2,
+d016,d016-S-FS-PO-03,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,17.0,0.0,0.0,oven_dry,False,251.4,0.097
+d016,d016-S-FS-PO-04,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,,0.0,0.0,oven_dry,False,255.2,
+d016,d016-S-FS-PO-05,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,14.0,0.0,0.0,oven_dry,False,256.5,0.118
+d016,d016-S-FS-PO-06,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,,0.0,0.0,oven_dry,False,250.6,
+d016,d016-S-FS-PO-07,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,17.0,0.0,0.0,oven_dry,False,,0.13
+d016,d016-S-FS-PO-10,raw,1.0,Pleurotus ostreatus,beech sawdust,hardwood,,9.1,,14.0,0.0,0.0,oven_dry,False,,0.14
+d017,d017-G-TL,mean,10.0,Ganoderma lucidum,arboloco pith,pith,2.0,4.8,25.0,14.0,0.0,0.0,oven_dry,False,31.6,
+d017,d017-G-TH,mean,10.0,Ganoderma lucidum,arboloco pith,pith,2.0,4.8,25.0,14.0,0.0,0.0,oven_dry,False,46.3,
+d017,d017-G-F1L,mean,10.0,Ganoderma lucidum,arboloco pith + kikuyu grass,pith,2.0,4.8,25.0,14.0,0.0,0.0,oven_dry,False,43.6,
+d017,d017-G-F1H,mean,10.0,Ganoderma lucidum,arboloco pith + kikuyu grass,pith,2.0,4.8,25.0,14.0,0.0,0.0,oven_dry,False,46.6,
+d017,d017-G-F2L,mean,10.0,Ganoderma lucidum,arboloco pith + kikuyu grass,pith,2.0,4.8,25.0,14.0,0.0,0.0,oven_dry,False,57.2,
+d017,d017-G-F2H,mean,10.0,Ganoderma lucidum,arboloco pith + kikuyu grass,pith,2.0,4.8,25.0,14.0,0.0,0.0,oven_dry,False,64.4,
+d023,d023-G-PO-SNCD,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,0.0,oven_dry,False,180.04,
+d023,d023-G-PO-SNCB,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,0.0,oven_bake,False,186.13,
+d023,d023-G-PO-SCD,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,1.0,compact_50pct+oven_dry,False,258.93,
+d023,d023-G-PO-SCB,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,1.0,compact_50pct+oven_bake,False,283.07,
+d023,d023-G-PO-LNCD,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,0.0,oven_dry,False,156.83,
+d023,d023-G-PO-LNCB,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,0.0,oven_bake,False,136.22,
+d023,d023-G-PO-LCD,mean,3.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,1.0,compact_50pct+oven_dry,False,188.88,
+d023,d023-G-PO-LCB,mean,4.0,Pleurotus ostreatus,straw,straw,2.0,10.0,25.7,46.0,0.0,1.0,compact_50pct+oven_bake,False,217.46,
+d023,d023-G-CC-SNCD,mean,10.0,Coprinus comatus,straw,straw,2.0,10.0,25.7,46.0,0.0,0.0,oven_dry,False,167.69,
+d023,d023-G-CC-SNCB,mean,10.0,Coprinus comatus,straw,straw,2.0,10.0,25.7,46.0,0.0,0.0,oven_bake,False,175.79,
+d023,d023-G-CC-SCD,mean,10.0,Coprinus comatus,straw,straw,2.0,10.0,25.7,46.0,0.0,1.0,compact_50pct+oven_dry,False,264.55,
+d023,d023-G-CC-SCB,mean,10.0,Coprinus comatus,straw,straw,2.0,10.0,25.7,46.0,0.0,1.0,compact_50pct+oven_bake,False,270.21,
+d005,d005-S-PFWL-C-2,raw,1.0,Trametes versicolor,flax waste,flax,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,161.2,
+d005,d005-S-PFWL-C-3,raw,1.0,Trametes versicolor,flax waste,flax,3.0,10.0,28.0,19.0,1.0,0.0,oven_dry,False,166.5,

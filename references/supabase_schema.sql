@@ -1,6 +1,13 @@
 -- Mycelly research database (Supabase). Paste into the Supabase SQL editor and run once.
 -- Tables and column names match data/interim/extracted/*.csv exactly (no extra columns).
--- Text columns are text, numbers numeric ("..._MPa" is quoted to keep its capitals).
+-- Text columns are text, numbers numeric.
+-- Changed 2026-11-06: measurement replaced by reading + outcome, fermentation step columns moved to process.
+-- On a database made from the older file, first drop the old table and columns (old test rows go with them):
+--   drop table public.measurement;
+--   alter table public.fermentation drop column phase1_days, drop column phase2_days, drop column phase3_days,
+--     drop column in_process_treatment, drop column post_treatment, drop column post_treatment_temp_c,
+--     drop column post_treatment_time_h;
+--   then run only the create table blocks for process, reading and outcome below.
 -- The app (role anon) may only INSERT: it cannot read, change or delete anything.
 -- Read the data in the dashboard (Table editor) or with the service key.
 
@@ -47,14 +54,7 @@ create table public.fermentation (
   incubation_container_id text,
   incubation_temp_c numeric,
   rh_pct numeric,
-  phase1_days numeric,
-  phase2_days numeric,
-  phase3_days numeric,
-  total_growth_days numeric,
-  in_process_treatment text,
-  post_treatment text,
-  post_treatment_temp_c numeric,
-  post_treatment_time_h numeric
+  total_growth_days numeric
 );
 alter table public.fermentation enable row level security;
 grant insert on public.fermentation to anon;
@@ -96,20 +96,53 @@ alter table public.container enable row level security;
 grant insert on public.container to anon;
 create policy "anon insert only" on public.container for insert to anon with check (true);
 
-create table public.measurement (
+-- The planned steps of a fermentation (process.csv, "the notebook"); stage_id and protocol_id are codes from
+-- stage.csv and protocol.csv (e.g. ST4 RUN = main spawn run).
+create table public.process (
+  fermentation_id text,
+  step_no numeric,
+  stage_id text,
+  protocol_id text,
+  vessel_id text,
+  container_id text,
+  residence_id text,
+  day_start numeric,
+  duration_days numeric,
+  duration_h numeric,
+  temp_c numeric,
+  rh_pct numeric,
+  primary key (fermentation_id, step_no)
+);
+alter table public.process enable row level security;
+grant insert on public.process to anon;
+create policy "anon insert only" on public.process for insert to anon with check (true);
+
+-- Log during growth (reading.csv): one row per sample, day and measure (colonisation_score, surface_colonised_pct).
+create table public.reading (
   dataset_id text,
   sample_id text,
   measurement_type text,
-  "compressive_stress_at_10pct_strain_MPa" numeric,
-  dry_density_kg_m3 numeric,
-  day_of_growth numeric,
-  colonisation_score numeric,
-  surface_colonised_pct numeric,
-  biological_efficiency_pct numeric
+  stage_id text,
+  day numeric,
+  measure_id text,
+  value numeric
 );
-alter table public.measurement enable row level security;
-grant insert on public.measurement to anon;
-create policy "anon insert only" on public.measurement for insert to anon with check (true);
+alter table public.reading enable row level security;
+grant insert on public.reading to anon;
+create policy "anon insert only" on public.reading for insert to anon with check (true);
+
+-- Results per sample (outcome.csv): biological_efficiency per flush (day = flush day), strength, density.
+create table public.outcome (
+  dataset_id text,
+  sample_id text,
+  measurement_type text,
+  measure_id text,
+  day numeric,
+  value numeric
+);
+alter table public.outcome enable row level security;
+grant insert on public.outcome to anon;
+create policy "anon insert only" on public.outcome for insert to anon with check (true);
 
 create table public.image (
   image_id text primary key,
@@ -144,11 +177,13 @@ create policy "anon upload photos only" on storage.objects for insert to anon
   with check (bucket_id = 'photos');
 
 -- Deleting one contributor's data (e.g. a test send, or a deletion request): replace u-xxxxxx and run.
--- Tables without a primary key (measurement, flag) cannot be deleted row by row in the Table editor.
+-- Tables without a primary key (reading, outcome, flag) cannot be deleted row by row in the Table editor.
 -- delete from public.flag where dataset_id = 'u-xxxxxx';
 -- delete from public.image where dataset_id = 'u-xxxxxx';
--- delete from public.measurement where dataset_id = 'u-xxxxxx';
+-- delete from public.outcome where dataset_id = 'u-xxxxxx';
+-- delete from public.reading where dataset_id = 'u-xxxxxx';
 -- delete from public.sample where dataset_id = 'u-xxxxxx';
+-- delete from public.process where fermentation_id like 'u-xxxxxx-%';
 -- delete from public.fermentation where fermentation_id like 'u-xxxxxx-%';
 -- delete from public.substrate where substrate_id like 'u-xxxxxx-%';
 -- delete from public.container where container_id like 'u-xxxxxx-%';

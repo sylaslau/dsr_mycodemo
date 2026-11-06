@@ -105,7 +105,8 @@ def test_submit_batch_writes_the_tables():
     client = FakeClient()
     code = collect.submit_batch(client, batch(mould=True), "CC BY 4.0")
     ins = client.inserts
-    assert set(ins) == {"dataset", "fermentation", "substrate", "container", "sample", "measurement", "image", "flag"}
+    assert set(ins) == {"dataset", "fermentation", "substrate", "container", "process", "sample", "reading", "outcome",
+                        "image", "flag"}
     assert ins["dataset"] == [{"dataset_id": code, "citation": "Mycelly app contribution", "license": "CC BY 4.0",
                                "purpose": "food", "status": "submitted"}]
     assert [s["sample_id"] for s in ins["sample"]] == [f"{code}-S-01", f"{code}-S-02"]
@@ -113,9 +114,15 @@ def test_submit_batch_writes_the_tables():
     assert ins["sample"][1]["growth_outcome"] == "not_colonised_no_mould"
     assert ins["fermentation"][0]["genus"] == "Pleurotus" and ins["fermentation"][0]["species"] == "ostreatus"
     assert ins["substrate"][0]["pct_dry_1"] == 80.0 and ins["substrate"][0]["component_2"] == "wheat bran"
-    m = ins["measurement"]
-    assert [(r["day_of_growth"], r.get("surface_colonised_pct")) for r in m[:3]] == [(5, 30.0), (9, 80.0), (14, 100)]
-    assert m[3]["biological_efficiency_pct"] == pytest.approx(50.0)      # 230 g / (1000 g x 46 % dry)
+    r = ins["reading"]
+    assert [(x["day"], x["measure_id"], x["value"]) for x in r] == [
+        (5, "surface_colonised_pct", 30.0), (9, "surface_colonised_pct", 80.0), (14, "surface_colonised_pct", 100)]
+    assert {x["stage_id"] for x in r} == {"ST4"} and {x["sample_id"] for x in r} == {f"{code}-S-01"}
+    o = ins["outcome"]
+    assert len(o) == 1 and o[0]["measure_id"] == "biological_efficiency" and o[0]["day"] == 30
+    assert o[0]["value"] == pytest.approx(50.0)                         # 230 g / (1000 g x 46 % dry)
+    assert ins["process"] == [{"fermentation_id": f"{code}-FER-1", "step_no": 1, "stage_id": "ST4", "protocol_id": "RUN",
+                               "vessel_id": f"{code}-C-1", "day_start": 0, "temp_c": 22.0, "rh_pct": 85.0}]
     assert ins["flag"][0]["key_value"] == f"{code}-S-01" and ins["flag"][0]["flag_code"] == "MOULD"
     paths = [r["file_path"] for r in ins["image"]]
     assert paths == [f"{code}/{code}-S-01/day_5.jpg", f"{code}/{code}-S-01/day_5_2.jpg"]
@@ -128,3 +135,17 @@ def test_no_flag_rows_without_mould():
     client = FakeClient()
     collect.submit_batch(client, batch(mould=False), "CC BY 4.0")
     assert "flag" not in client.inserts
+
+
+def test_rows_only_use_columns_of_the_extracted_csvs():
+    """reading / outcome / process rows must fit the CSVs (and so the Supabase tables built from them)."""
+    import pandas as pd
+    from dsr_mycodemo.config import INTERIM_DATA_DIR
+    b = batch()
+    b["samples"][0]["checks"][0]["score"] = 2
+    rows, _ = collect.build_rows("u-test01", b, "CC BY 4.0")
+    assert any(x["measure_id"] == "colonisation_score" for x in rows["reading"])
+    for table in ("reading", "outcome", "process"):
+        cols = set(pd.read_csv(INTERIM_DATA_DIR / "extracted" / f"{table}.csv", nrows=0).columns)
+        for row in rows[table]:
+            assert set(row) <= cols, (table, set(row) - cols)

@@ -86,7 +86,10 @@ def build_rows(dataset_id, batch, licence):
         "substrate": [{"substrate_id": sub_id, "plant_name": batch.get("substrate"), **components}],
         "container": [{"container_id": con_id, "container_type": batch.get("vessel"),
                        "notes": None if batch.get("vessel_litres") is None else f"{batch['vessel_litres']:g} L"}],
-        "sample": [], "measurement": [], "image": [], "flag": [],
+        # the planned steps (the notebook): one main spawn run in the grower's vessel, at their conditions
+        "process": [{"fermentation_id": fer_id, "step_no": 1, "stage_id": "ST4", "protocol_id": "RUN",
+                     "vessel_id": con_id, "day_start": 0, "temp_c": batch.get("temp_c"), "rh_pct": batch.get("rh_pct")}],
+        "sample": [], "reading": [], "outcome": [], "image": [], "flag": [],
     }
     photos = []
     fill = batch.get("fill_weight_g")
@@ -95,17 +98,20 @@ def build_rows(dataset_id, batch, licence):
         rows["sample"].append({"sample_id": sample_id, "dataset_id": dataset_id, "replicate_no": i,
                                "n_specimens": 1, "growth_outcome": outcome_code(s.get("colonised_day"), s.get("mould")),
                                "substrate_id": sub_id, "fermentation_id": fer_id, "initial_fill_weight_g": fill})
-        meas = {"dataset_id": dataset_id,
-                "sample_id": sample_id, "measurement_type": "raw"}
+        meas = {"dataset_id": dataset_id, "sample_id": sample_id, "measurement_type": "raw"}
+
+        def reading(day, measure_id, value):            # log during growth (colonisation, ST4)
+            rows["reading"].append({**meas, "stage_id": "ST4", "day": day, "measure_id": measure_id, "value": value})
+
         for c in s.get("checks", []):
-            rows["measurement"].append({**meas, "day_of_growth": c["day"], "colonisation_score": c.get("score"),
-                                        "surface_colonised_pct": c["coverage_pct"]})
+            if c.get("score") is not None:
+                reading(c["day"], "colonisation_score", c["score"])
+            reading(c["day"], "surface_colonised_pct", c["coverage_pct"])
         if s.get("colonised_day") is not None:
-            rows["measurement"].append(
-                {**meas, "day_of_growth": s["colonised_day"], "surface_colonised_pct": 100})
-        for f in s.get("flushes", []):
-            rows["measurement"].append({**meas, "day_of_growth": f["day"], "biological_efficiency_pct": round(
-                biological_efficiency_pct(f["fresh_g"], fill, water), 2)})
+            reading(s["colonised_day"], "surface_colonised_pct", 100)
+        for f in s.get("flushes", []):                  # result per sample, with the flush day
+            rows["outcome"].append({**meas, "measure_id": "biological_efficiency", "day": f["day"],
+                                    "value": round(biological_efficiency_pct(f["fresh_g"], fill, water), 2)})
         if s.get("mould"):
             rows["flag"].append({"dataset_id": dataset_id, "table_name": "sample", "key_value": sample_id,
                                  "flag_code": "MOULD", "note": "Mould seen by the grower"})
@@ -123,8 +129,8 @@ def build_rows(dataset_id, batch, licence):
     return rows, photos
 
 
-TABLE_ORDER = ("dataset", "fermentation", "substrate",
-               "container", "sample", "measurement")
+TABLE_ORDER = ("dataset", "fermentation", "substrate", "container", "process",
+               "sample", "reading", "outcome")
 
 
 def submit_batch(client, batch, consent_licence):
