@@ -105,7 +105,7 @@ def test_submit_batch_writes_the_tables():
     client = FakeClient()
     code = collect.submit_batch(client, batch(mould=True), "CC BY 4.0")
     ins = client.inserts
-    assert set(ins) == {"dataset", "fermentation", "substrate", "container", "process", "sample", "reading", "outcome",
+    assert set(ins) == {"dataset", "fermentation", "substrate", "compartment", "process", "sample", "reading", "outcome",
                         "image", "flag"}
     assert ins["dataset"] == [{"dataset_id": code, "citation": "Mycelly app contribution", "license": "CC BY 4.0",
                                "purpose": "food", "status": "submitted"}]
@@ -113,6 +113,9 @@ def test_submit_batch_writes_the_tables():
     assert ins["sample"][0]["growth_outcome"] == "colonised_d14_mould"
     assert ins["sample"][1]["growth_outcome"] == "not_colonised_no_mould"
     assert ins["fermentation"][0]["genus"] == "Pleurotus" and ins["fermentation"][0]["species"] == "ostreatus"
+    assert ins["fermentation"][0]["vessel_id"] == f"{code}-C-1" and "container_id" not in ins["fermentation"][0]
+    assert ins["compartment"] == [{"compartment_id": f"{code}-C-1", "role": "vessel", "container_type": "Grow bag",
+                                   "notes": "2 L"}]
     assert ins["substrate"][0]["pct_dry_1"] == 80.0 and ins["substrate"][0]["component_2"] == "wheat bran"
     r = ins["reading"]
     assert [(x["day"], x["measure_id"], x["value"]) for x in r] == [
@@ -138,14 +141,16 @@ def test_no_flag_rows_without_mould():
 
 
 def test_rows_only_use_columns_of_the_extracted_csvs():
-    """reading / outcome / process rows must fit the CSVs (and so the Supabase tables built from them)."""
+    """Every table's rows must fit the CSVs (and so the Supabase tables built from them)."""
     import pandas as pd
     from dsr_mycodemo.config import INTERIM_DATA_DIR
     b = batch()
     b["samples"][0]["checks"][0]["score"] = 2
+    b["samples"][0]["mould"] = True
     rows, _ = collect.build_rows("u-test01", b, "CC BY 4.0")
     assert any(x["measure_id"] == "colonisation_score" for x in rows["reading"])
-    for table in ("reading", "outcome", "process"):
+    for table in ("dataset", "sample", "fermentation", "substrate", "compartment", "process", "reading", "outcome",
+                  "image", "flag"):
         cols = set(pd.read_csv(INTERIM_DATA_DIR / "extracted" / f"{table}.csv", nrows=0).columns)
         for row in rows[table]:
             assert set(row) <= cols, (table, set(row) - cols)

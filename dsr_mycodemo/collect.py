@@ -81,11 +81,12 @@ def build_rows(dataset_id, batch, licence):
                      "purpose": batch["purpose"], "status": "submitted"}],
         "fermentation": [{"fermentation_id": fer_id, "genus": genus or None, "species": species or None,
                           "fibre_pct_wt": None if water is None or spawn is None else 100 - water - spawn,
-                          "water_pct_wt": water, "spawn_pct_wt": spawn, "container_id": con_id,
+                          "water_pct_wt": water, "spawn_pct_wt": spawn, "vessel_id": con_id,
                           "incubation_temp_c": batch.get("temp_c"), "rh_pct": batch.get("rh_pct")}],
         "substrate": [{"substrate_id": sub_id, "plant_name": batch.get("substrate"), **components}],
-        "container": [{"container_id": con_id, "container_type": batch.get("vessel"),
-                       "notes": None if batch.get("vessel_litres") is None else f"{batch['vessel_litres']:g} L"}],
+        # the grower's bag or tub holds the substrate: role vessel (residence_id stays empty for now)
+        "compartment": [{"compartment_id": con_id, "role": "vessel", "container_type": batch.get("vessel"),
+                         "notes": None if batch.get("vessel_litres") is None else f"{batch['vessel_litres']:g} L"}],
         # the planned steps (the notebook): one main spawn run in the grower's vessel, at their conditions
         "process": [{"fermentation_id": fer_id, "step_no": 1, "stage_id": "ST4", "protocol_id": "RUN",
                      "vessel_id": con_id, "day_start": 0, "temp_c": batch.get("temp_c"), "rh_pct": batch.get("rh_pct")}],
@@ -129,7 +130,7 @@ def build_rows(dataset_id, batch, licence):
     return rows, photos
 
 
-TABLE_ORDER = ("dataset", "fermentation", "substrate", "container", "process",
+TABLE_ORDER = ("dataset", "fermentation", "substrate", "compartment", "process",
                "sample", "reading", "outcome")
 
 
