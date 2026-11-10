@@ -70,7 +70,7 @@ def test_minerals_change_weight_only():
     assert ING.mix_cn({"unknown thing": 50, "wheat_bran": 10}) == pytest.approx(18, abs=0.5)
 
 
-@pytest.mark.parametrize("size, minutes", [("under_1l", 20), ("up_to_1kg", 90), ("1_to_3kg", 150)])
+@pytest.mark.parametrize("size, minutes", [("under_1l", 60), ("up_to_1kg", 90), ("1_to_3kg", 150)])
 def test_autoclave_time_by_size(size, minutes):
     assert ING.autoclave_time(size)[0] == minutes
 
@@ -88,11 +88,12 @@ def test_autoclave_size_from_the_vessel():
     assert ING.autoclave_size_key() == "up_to_1kg"
 
 
-@pytest.mark.parametrize("method, ticked", [("STER", True), ("STEAM", False), ("COLD", False)])
-def test_protein_and_quick_energy_ticks_follow_the_method(method, ticked):
+@pytest.mark.parametrize("method, ticked, mineral", [("STER", True, True), ("STEAM", False, True),
+                                                     ("COLD", False, False)])
+def test_protein_and_quick_energy_ticks_follow_the_method(method, ticked, mineral):
     assert ING.default_ticked("wheat_bran", method, in_guide=True) is ticked     # PROT
     assert ING.default_ticked("corn_meal", method, in_guide=True) is ticked      # QSUR
-    assert ING.default_ticked("gypsum", method, in_guide=True) is True           # minerals always follow the guide
+    assert ING.default_ticked("gypsum", method, in_guide=True) is mineral        # lime soak: main bulk only
     assert ING.default_ticked("wheat_bran", method, in_guide=False) is False
 
 
@@ -140,3 +141,56 @@ def test_recipe_uses_the_chosen_mix():
     with pytest.raises(ValueError):
         rc.recipe("Pleurotus ostreatus", "sawdust", 1.0, 1,
                   mix={"main_name": "x", "supplements": [{"name": "y", "pct": 100}]})
+
+
+def test_autoclave_line_from_the_page2_vessel():
+    # glass jar under 1 L -> 60 min; 1 L jar -> by damp weight (up to 1 kg: 90 min)
+    assert ING.autoclave_line("Glass Jar", 0.5, 1, 0.25) == (
+        60, "Your 0.5 L glass jar, about 0.25 kg damp mix each: 60 min at 121 °C (15 psi).")
+    assert ING.autoclave_line("Glass Jar", 1.0, 3, 0.35) == (
+        90, "Your 1 L glass jars, about 0.35 kg damp mix each: 90 min at 121 °C (15 psi).")
+    assert ING.autoclave_line("Grow bag", 5.0, 2, 2.5)[0] == 150
+    minutes, text = ING.autoclave_line("Grow bag", 10.0, 2, 5.0)
+    assert minutes is None and text.endswith(ING.OVER_3KG_MESSAGE)
+    assert ING.autoclave_line(None, None, 1, 0.5) == (None, "Choose a vessel on Environment.")
+
+
+def test_grams_switch_to_kg_at_1000():
+    assert ING.unit_for(999.9) == ("g", 1.0)
+    assert ING.unit_for(1000) == ("kg", 1000.0)
+    assert ING.fmt_weight(630.4, ING.unit_for(630.4)) == "630 g"
+    assert ING.fmt_weight(1490, ING.unit_for(1490)) == "1.49 kg"
+
+
+@pytest.mark.parametrize("method", list(ING.METHODS))
+def test_steps_follow_the_method(method):
+    keys = [k for k, _ in ING.STEPS[method]]
+    assert keys == ["recipe", "treat", "spawn"]
+    titles = [t for _, t in ING.STEPS[method]]
+    if method == "STER":      # mix and fill first, sterilise, then spawn per vessel
+        assert "fill vessels" in titles[0] and titles[1] == "Sterilise" and "add spawn" in titles[2]
+    else:                     # treat the bulk first, fill vessels only after the spawn goes in
+        assert "fill" not in titles[0] and "fill vessels" in titles[2]
+
+
+def test_amounts_water_and_spawn_per_method():
+    ster = ING.amounts(0.2, 65, 3, "STER", 10, handling=1.0)
+    steam = ING.amounts(0.2, 65, 3, "STEAM", 10, handling=1.0)
+    cold = ING.amounts(0.2, 65, 3, "COLD", 10, handling=1.0)
+    water = rc.water_to_add(0.2, 65)
+    spawn = rc.spawn_kg(0.2 + water, 10)
+    # water row only for STER; spawn never in the sum
+    assert ster["water_total"] == pytest.approx(water * 3000) and steam["water_total"] is None
+    assert ster["sum"] == pytest.approx((0.2 + water) * 3000)
+    assert steam["sum"] == cold["sum"] == pytest.approx(600)
+    # per vessel: STER before spawn; STEAM and COLD damp mix + spawn
+    assert ster["per_vessel"] == pytest.approx((0.2 + water) * 1000)
+    assert steam["per_vessel"] == cold["per_vessel"] == pytest.approx((0.2 + water + spawn) * 1000)
+    assert ster["spawn_per_vessel"] == pytest.approx(spawn * 1000)
+
+
+def test_supplement_rows_in_order_and_empty_rows_left_out():
+    rows = ING.supplement_rows()
+    assert list(rows)[:4] == ["QSUR", "PROT", "PH", "AIR"]
+    assert all(rows.values())
+    assert "cottonseed_hulls" in ING.supplement_rows(["cottonseed_hulls"])["OTHER"]

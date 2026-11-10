@@ -2,13 +2,14 @@
 
 - Main material (bulk): one ingredient of a WOOD_*, STRAW or HUSK category.
 - Supplements: grouped by function (GROUPS); each ingredient sits under its group_1, group_2 is shown as a tag.
-- Treatment method (METHODS) and the autoclave time by jar or bag size (AUTOCLAVE_SIZES).
+- Sterilisation method (METHODS), its steps in order (STEPS) and the autoclave time by vessel size (AUTOCLAVE_SIZES).
+- Recipe table rows by function (ROWS), grams per step (amounts), g or kg (unit_for).
 - mix_cn: C:N of the dry mix = sum(weight x C%) / sum(weight x N%); ratios are never averaged.
 Values are general consensus, not measurements.
 """
 
-import re
 from functools import lru_cache
+import re
 
 import pandas as pd
 
@@ -41,15 +42,42 @@ DEFAULT_MAIN = "beech_sawdust"
 
 # method key -> (label, protocol_id in protocol.csv or None, instruction)
 METHODS = {
-    "STER": ("Autoclave / pressure cooker, 121 °C (15 psi)", "STER", ""),
-    "STEAM": ("Steam (pot or barrel with lid)", "PAST",
-              "Soak 12 h or more, then steam at a rolling boil (about 100 °C) for about 2 h."),
-    "COLD": ("Cold pasteurisation (lime soak)", None,
-             "Soak in water with hydrated lime, about 2-4 g per litre, for 12-18 h, then drain."),
+    "STER": ("Autoclave or pressure cooker (sterilise, 121 °C)", "STER", ""),
+    "STEAM": ("Steam (pasteurise)", "PAST",
+              ("Soak 12 h or more, steam at a rolling boil (about 100 °C) for about 2 h, then drain until only a "
+               "few drops come out when you squeeze a handful.")),
+    "COLD": ("Lime soak (cold pasteurise)", None,
+             ("Soak in water with hydrated lime, about 2-4 g per litre, for 12-18 h, then drain until only a few "
+              "drops come out when you squeeze a handful.")),
 }
+COOL_SPAWN_CLOSE = ("Cool to room temperature, below about 30 °C (jars usually take 12-24 h). In a clean space "
+                    "(a still-air box) add the spawn to each vessel, shake or mix, and close.")
+COOL_MIX_FILL = ("Cool below about 30 °C, mix all the spawn into the whole batch, then fill the vessels.")
+# method -> steps in the real order: (key, title); the page writes the body of each step
+STEPS = {
+    "STER": [("recipe", "Build your recipe, weigh, mix and fill vessels"), ("treat", "Sterilise"),
+             ("spawn", "Cool and add spawn")],
+    "STEAM": [("recipe", "Build your recipe and weigh the dry ingredients"), ("treat", "Pasteurise"),
+              ("spawn", "Cool, add spawn, fill vessels")],
+    "COLD": [("recipe", "Build your recipe"), ("treat", "Lime soak"),
+             ("spawn", "Add spawn, fill vessels (no cooling needed)")],
+}
+# recipe table rows by function, table order: (row title, group_1 codes); "OTHER" also takes guide-only ingredients
+ROWS = {
+    "QSUR": ("Quick energy", ("QSUR",)),
+    "PROT": ("Protein boost", ("PROT",)),
+    "PH": ("pH balance", ("PH",)),
+    "AIR": ("Texture for air space", ("AIR",)),
+    "OTHER": ("Any other purpose", ("MIN", "WATER")),
+}
+QUICK_ENERGY_NOTE = "Simple starch and sugar support a quick start, but also feed moulds."
+UNSTERILISED_NOTE = "Protein and quick-energy supplements raise mould risk without sterilising."
+COLD_NOTE = "Supplements wash out in the soak, or raise mould risk without sterilising; main bulk only by default."
+VESSEL_PLURAL = {"Glass Jar": "glass jars", "Tupperware": "tupperware boxes", "Grow bag": "grow bags",
+                 "Bucket": "buckets"}
 # autoclave size key -> (label, minutes or None)
 AUTOCLAVE_SIZES = {
-    "under_1l": ("Under 1 L", 20),
+    "under_1l": ("Under 1 L", 60),             # 20 min is an agar time (Sylas 11-10)
     "up_to_1kg": ("Grain jars or bags up to 1 kg", 90),
     "1_to_3kg": ("Bags 1-3 kg", 150),
     "over_3kg": ("Over 3 kg", None),
@@ -202,9 +230,19 @@ def guide_supplements(text) -> tuple[dict[str, dict], list[str]]:
     return found, left
 
 
+def supplement_rows(extra=()) -> dict[str, list[str]]:
+    """{row key: [ingredient ids]} in ROWS order; extra (guide-named ids outside every row) go to OTHER;
+    rows without an ingredient are left out."""
+    df = load()
+    out = {k: df.index[df["group_1"].isin(codes)].tolist() for k, (_, codes) in ROWS.items()}
+    out["OTHER"] += [i for i in extra if i not in out["OTHER"]]
+    return {k: ids for k, ids in out.items() if ids}
+
+
 def default_ticked(ingredient: str, method: str, in_guide: bool) -> bool:
-    """Ticked if the guide names it; Protein boost and Quick energy start unticked unless autoclaved."""
-    if not in_guide:
+    """Ticked if the guide names it; Protein boost and Quick energy start unticked unless autoclaved;
+    lime soak: nothing ticked (main bulk only)."""
+    if not in_guide or method == "COLD":
         return False
     df = load()
     risky = ingredient in df.index and df.at[ingredient, "group_1"] in RISKY_UNSTERILISED
@@ -227,6 +265,50 @@ def autoclave_size_key(litres=None, damp_kg=None) -> str:
     if damp_kg is None or damp_kg <= 1:
         return "up_to_1kg"
     return "1_to_3kg" if damp_kg <= 3 else "over_3kg"
+
+
+def autoclave_line(vessel, litres, n, damp_kg):
+    """(minutes or None, one line) for the vessel chosen on Environment; minutes None when none is chosen."""
+    if vessel is None or litres is None:
+        return None, "Choose a vessel on Environment."
+    minutes, text = autoclave_time(autoclave_size_key(litres, damp_kg))
+    what = VESSEL_PLURAL.get(vessel, vessel.lower()) if n > 1 else vessel.lower()
+    start = f"Your {litres:g} L {what}, about {damp_kg:.2f} kg damp mix each: "
+    if minutes is None:
+        return None, start + text
+    return minutes, start + text.split(": ", 1)[1]
+
+
+def amounts(dry_kg: float, moisture_pct: float, n: int, method: str, spawn_pct: float, handling: float = 1.05):
+    """Grams for the recipe steps; dry_kg = dry ingredients per vessel as weighed; handling extra on everything.
+
+    Water is weighed only for STER (steam and lime soak take it up in the soak). sum = dry + weighed water, spawn
+    never in it. per_vessel: STER (dry + water) / n, before spawn; STEAM and COLD (damp mix + spawn) / n."""
+    from dsr_mycodemo.cultivation.recipe import (  # recipe imports this module
+        spawn_kg,
+        water_to_add,
+    )
+    n = max(int(n), 1)
+    water = water_to_add(dry_kg, moisture_pct)
+    damp = dry_kg + water
+    spawn = spawn_kg(damp, spawn_pct)
+    g = 1000 * handling
+    ster = method == "STER"
+    out = {"dry_total": dry_kg * n * g, "water_total": water * n * g if ster else None,
+           "spawn_per_vessel": spawn * g, "spawn_total": spawn * n * g, "damp_per_vessel_kg": damp * handling}
+    out["sum"] = out["dry_total"] + (out["water_total"] or 0)
+    out["per_vessel"] = (damp if ster else damp + spawn) * g
+    return out
+
+
+def unit_for(sum_g: float):
+    """('g', 1) below 1000 g, else ('kg', 1000): the whole table uses one unit."""
+    return ("kg", 1000.0) if sum_g >= 1000 else ("g", 1.0)
+
+
+def fmt_weight(grams: float, unit) -> str:
+    name_, div = unit
+    return f"{grams / div:.2f} kg" if name_ == "kg" else f"{grams:.0f} g"
 
 
 def mix_cn(parts: dict[str, float]):

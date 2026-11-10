@@ -112,6 +112,29 @@ else:
         st.caption(
             f"Fruiting later wants {ft['min']}–{ft['max']} °C (consensus guide).")
 
+# Humidity check, same structure as the temperature check above
+rh = ss["rh_pct"]
+if flow.is_materials():
+    flow.materials_preview("Humidity check (Warnings)")
+elif row is None or br is None:
+    st.info("No humidity value is known for this mushroom.")
+else:
+    target = baseline_guide.colonisation(br[0])["incubation_rh_pct"]
+    status = baseline_guide.rh_status(rh, target)
+    if status == "dry":
+        st.warning(f"{rh:g} % RH is too dry for colonisation of {row['common_name']} (about {target} %, consensus guide).\n"
+                   "The substrate surface may dry out; close the vessel or add a humidity tent.")
+    elif status == "wet":
+        st.warning(f"{rh:g} % RH is very wet. Water can condense on the bag or box and raise mould risk; "
+                   "give some fresh air.")
+    else:
+        st.success(
+            f"{rh:g} % RH suits colonisation of {row['common_name']} (about {target} %, consensus guide).")
+    if ss["goal"] == "Food":
+        fh = baseline_guide.fruiting(br[0])["fruiting_rh_pct"]
+        st.caption(
+            f"Fruiting later wants {fh['min']}–{fh['max']} % RH (consensus guide).")
+
 if ss["environment"]:
     st.page_link("pages/3_Recipe_and_timeline.py",
                  label="Next: recipe and preview", icon="➡️")

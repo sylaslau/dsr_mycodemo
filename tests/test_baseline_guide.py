@@ -130,3 +130,12 @@ def test_stages_agree_with_pipeline_dates_step_for_blue_oyster(monkeypatch):
         stage, shift = table[label]
         assert start == batch.inoc_date + timedelta(days=int(st_.loc[stage, "start_day"]) + shift)
         assert end == batch.inoc_date + timedelta(days=int(st_.loc[stage, "end_day"]) + shift)
+
+
+def test_rh_status():
+    # target 80: dry below 70, wet above 95, else ok (edges are ok)
+    assert bg.rh_status(69, 80) == "dry"
+    assert bg.rh_status(70, 80) == "ok"
+    assert bg.rh_status(80, 80) == "ok"
+    assert bg.rh_status(95, 80) == "ok"
+    assert bg.rh_status(96, 80) == "wet"

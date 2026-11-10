@@ -79,6 +79,15 @@ def colonisation(r: pd.Series) -> dict:
     }
 
 
+def rh_status(rh: float, target: float) -> str:
+    """Humidity during colonisation: "dry" below target - 10, "wet" above 95, else "ok"."""
+    if rh < target - 10:
+        return "dry"
+    if rh > 95:
+        return "wet"
+    return "ok"
+
+
 def fruiting(r: pd.Series) -> dict:
     """Stage 2 only; days are counted from the start of induction."""
     t = load_text()
