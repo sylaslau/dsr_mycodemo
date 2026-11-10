@@ -148,7 +148,9 @@ class Batch:
     plan_size: tuple | None = None    # (containers, dry kg per container) from the vessels on Environment; beats ENVIRONMENTS
     env_name: str | None = None       # name of the Environment this batch grows in (Grow Log)
     temp_c: float | None = None
-    recipe: dict | None = None        # {'substrate', 'spawn_pct'}; None = the baseline (sawdust, 10 % spawn)
+    recipe: dict | None = None        # {'substrate', 'spawn_pct'}; None = the baseline (sawdust, 10 % spawn).
+    # The recipe page adds 'method' (STER/STEAM/COLD), 'protocol_id', 'jar_size', 'autoclave_min', 'main' (ingredient
+    # id), 'supplements' [{'ingredient', 'name', 'pct'}] (ticked only), 'mix' (passed to recipe maths) and 'mix_cn'.
     inoc_date: date = field(default_factory=date.today)
     photos: list[Photo] = field(default_factory=list)
     conditions: list[Condition] = field(default_factory=list)
@@ -348,16 +350,31 @@ def _plan_size(batch):
     return ENVIRONMENTS.get(batch.environment, (1, 0.5))
 
 
+def recipe_guide_species(batch):
+    """The consensus-guide species whose rows give the recipe: the Food species, the materials option's stand-in
+    (MATERIAL_RECIPE_SPECIES), or Pleurotus ostreatus for a custom mushroom."""
+    if is_materials(batch):
+        return MATERIAL_RECIPE_SPECIES[material_species(batch)]
+    row = species_row(batch)
+    return row["species"] if row else "Pleurotus ostreatus"
+
+
+def grower_species(batch):
+    """The species the grower actually grows (Food species, custom name, or materials option), for species rules."""
+    if is_materials(batch):
+        return material_species(batch)
+    row = species_row(batch)
+    return row["species"] if row else (batch.custom_name or str(batch.choice or ""))
+
+
 def recipe_step(batch):
     """Substrate, supplementation, water and spawn from the consensus row (see cultivation/recipe.py)."""
     n, kg = _plan_size(batch)
     spawn_pct = (batch.recipe or {}).get("spawn_pct", SPAWN_PCT)
     row = species_row(batch)
-    if is_materials(batch):
-        guide_species = MATERIAL_RECIPE_SPECIES[material_species(batch)]
-    else:
-        guide_species = row["species"] if row else "Pleurotus ostreatus"
-    rec = recipe_maths.recipe(guide_species, recipe_substrate(batch), kg, n, spawn_pct)
+    guide_species = recipe_guide_species(batch)
+    rec = recipe_maths.recipe(guide_species, recipe_substrate(batch), kg, n, spawn_pct,
+                              mix=(batch.recipe or {}).get("mix"))
     note = "Baseline recipe from the consensus guide, not yet tuned to your product or environment."
     if not batch.plan_size and batch.environment not in ENVIRONMENTS:
         note += " No environment chosen yet, so one 0.5 kg container is assumed."

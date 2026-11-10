@@ -1,0 +1,55 @@
+ingredient,display_name,category,wood_type,group_1,group_2,value_source,C_pct_dry,N_pct_dry,cn_estimate,cn_low,cn_high,basis
+hemp_hurd,Hemp hurd,STRAW,,BASE,,own,45,0.4,112,80,200,typical N% for hemp hurd/shives (low-protein woody core); van Schie 2024 also notes low N in hemp hurds
+hemp_chopped,Chopped hemp,STRAW,,BASE,,own,45,0.5,90,70,150,bast + hurd; bast slightly richer in N than hurd
+flax_shives,Flax shives,STRAW,,BASE,,own,45,0.5,90,70,150,typical N% for flax shives
+flax_tow,Flax tow,FILLER,,,,own,45,0.25,180,120,300,"nearly pure cellulose fibre, very little protein"
+flax_dust,Flax dust,STRAW,,BASE,,own,44,1.0,44,30,90,dust carries leaf/seed fragments; high uncertainty
+flax_waste,Flax waste,STRAW,,BASE,,own,45,0.6,75,60,120,mixed shives and dust
+softwood,Softwood (pine shavings),WOOD_CHIP,soft,BASE,,own,50,0.08,625,400,1000,fresh sawdust ~625:1 (Illinois Extension table); wood N 0.05-0.1%
+recycled_wood,Recycled wood,WOOD_CHIP,,BASE,,own,48,0.6,80,50,400,"particleboard waste may hold urea-formaldehyde glue, which is N-rich; very uncertain"
+kraft_lignin,Kraft lignin,FILLER,,,,own,63,0.1,630,300,1000,lignin is almost N-free
+wheat_straw,Wheat straw,STRAW,,BASE,,own,45,0.56,80,60,120,straw 80:1 (Illinois Extension table)
+hay,Hay,RICH,,BASE,,own,44,1.5,29,20,45,grass hay; legume hay lower (alfalfa 18:1)
+birch_dust,Birch dust,WOOD_DUST,hard,BASE,,own,48,0.1,480,300,700,"hardwood, N ~0.1%"
+birch_sawdust,Birch sawdust,WOOD_DUST,hard,BASE,,own,48,0.1,480,300,700,"hardwood, N ~0.1%"
+beech_sawdust,Beech sawdust,WOOD_DUST,hard,BASE,,own,48,0.13,369,250,600,"hardwood, N ~0.1-0.2%"
+wheat_bran,Wheat bran,PROTEIN,,PROT,QSUR,own,45,2.5,18,15,25,protein ~15%
+arboloco_pith,Arboloco pith,STRAW,,BASE,,own,45,0.5,90,50,200,no published composition found; assumed like other plant pith; very uncertain
+kikuyu_grass,Kikuyu grass,RICH,,BASE,,own,43,2.4,18,12,30,crude protein ~15% in kikuyu pasture
+guar_gum,Guar gum,FILLER,,,,own,42,0.7,60,40,90,galactomannan with ~4% protein
+psyllium,Psyllium,FILLER,,,,own,42,0.4,105,60,150,"husk, low protein"
+cotton,Cotton,FILLER,,,,own,44,0.05,880,500,2000,cotton rags are nearly pure cellulose
+soy_hull,Soy hulls,RICH,,BASE,,own,44,1.9,23,18,30,"soy hull pellets, protein ~12%"
+inedible_plant_biomass,Inedible plant biomass,RICH,,BASE,,own,42,2.0,21,15,40,"crop residues (leaves/stems); Musci found it did not act as an N source, so likely higher"
+cottonseed_hulls,Cottonseed hulls,HUSK,,BASE,,own,40,0.66,61,49,85,"Gemini 2026-10-14 (germini/substrate-cn-ratios.csv), sources not checked: Xu 2016; Jo 2008; Rynk 1992"
+rice_straw,Rice straw,STRAW,,BASE,,own,41,0.66,62,41,84,"Gemini 2026-10-14, sources not checked: Chang & Miles 2004; Dobermann & Fairhurst 2002; Rynk 1992"
+corncobs,Corncobs,STRAW,,BASE,,own,42.5,0.5,85,56,123,"Gemini 2026-10-14, sources not checked: Xu 2016; Rynk 1992; Wienhold 2011 (Gemini's typical 78.5 replaced by C/N)"
+sugarcane_bagasse,Sugarcane bagasse,STRAW,,BASE,,own,44,0.32,138,66,214,"Gemini 2026-10-14, sources not checked: Bhat 2015; Jesus 2013"
+rice_bran,Rice bran,PROTEIN,,PROT,QSUR,own,44,2.23,20,19,25,"Gemini 2026-10-14, sources not checked: Jo 2008; Van Soest 1994; Harith 2014"
+cotton_mill_waste,Cotton mill waste,RICH,,BASE,,own,45,1.32,34,23,41,"Gemini 2026-10-14, sources not checked: Chang & Miles 2004; not the same as cotton rags (seeds and leaf bits)"
+phase2_compost,Phase II compost,RICH,,BASE,,own,37,2.3,16,14,22,"Gemini 2026-10-14, sources not checked: Pardo-Gimenez 2017; Beyer / Penn State 2017"
+banana_leaves,Banana leaves,RICH,,BASE,,own,48,1.38,35,30,67,"Gemini 2026-10-14, sources not checked: Chang & Miles 2004; Richard 2020"
+soybean_meal,Soybean meal,PROTEIN,,PROT,,own,45,7.9,6,,,general consensus
+cottonseed_meal,Cottonseed meal,PROTEIN,,PROT,,own,45,7.6,6,,,general consensus
+corn_meal,Corn meal,ENERGY,,QSUR,,own,44,1.5,29,,,general consensus
+gypsum,Gypsum (CaSO4),MINERAL,,AIR,MIN,own,0,0,,,,general consensus
+chalk,Chalk / garden lime (CaCO3),MINERAL,,PH,MIN,own,0,0,,,,general consensus
+hydrated_lime,Hydrated lime (Ca(OH)2),MINERAL,,PH,,own,0,0,,,,general consensus
+barley_straw,Barley straw,STRAW,,BASE,,category,45,0.6,75,,,category value
+tef_straw,Tef straw,STRAW,,BASE,,category,45,0.6,75,,,category value
+soybean_straw,Soybean straw,STRAW,,BASE,,category,45,0.6,75,,,category value
+maize_stalk,Maize stalk,STRAW,,BASE,,category,45,0.6,75,,,category value
+rice_husk,Rice husk,HUSK,,BASE,,category,42,0.6,70,,,category value
+faba_bean_husk,Faba bean husk,HUSK,,BASE,,category,42,0.6,70,,,category value
+field_pea_husk,Field pea husk,HUSK,,BASE,,category,42,0.6,70,,,category value
+hazelnut_husk,Hazelnut husk,HUSK,,BASE,,category,42,0.6,70,,,category value
+coconut_fibre,Coconut fibre,HUSK,,BASE,,category,42,0.6,70,,,category value
+coffee_husk,Coffee husk,RICH,,BASE,,category,45,1.8,25,,,category value
+tomato_waste,Tomato waste,RICH,,BASE,,category,45,1.8,25,,,category value
+spent_coffee_grounds,Spent coffee grounds,RICH,,BASE,,own,47,2.1,22,,,general consensus
+hazelnut_branch,Hazelnut branch,WOOD_CHOPPED,hard,BASE,,category,48,0.12,400,,,category value
+hardwood_sawdust,Hardwood sawdust,WOOD_DUST,hard,BASE,,category,48,0.12,400,,,category value
+nanoclay,Nanoclay,FILLER,,,,category,0,0,,,,category value
+food_packaging_plastic,Food packaging plastic,FILLER,,,,category,0,0,,,,category value
+mixed_residues,Mixed crop residues,STRAW,,BASE,,category,45,0.6,75,,,category value
+guar_psyllium,Guar gum + psyllium (5:2),FILLER,,,,own,42,0.61,69,,,5:2 mix of guar_gum and psyllium

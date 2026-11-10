@@ -12,7 +12,8 @@ SCHEMA = PROJ_ROOT / "references" / "supabase_schema.sql"
 EXTRACTED = INTERIM_DATA_DIR / "extracted"
 APP_TABLES = {"dataset", "sample", "fermentation", "substrate", "compartment", "process", "reading", "outcome",
               "image", "flag"}
-NO_TABLE = {"stage", "protocol", "measure", "growth_parameter"}   # code lists / literature: never sent by growers
+NO_TABLE = {"stage", "protocol", "measure", "growth_parameter",
+            "cn_ingredients"}   # code lists / literature / lookups: never sent by growers
 
 
 def schema_tables():

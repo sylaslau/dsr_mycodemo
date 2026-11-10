@@ -10,15 +10,14 @@ import streamlit as st
 from dsr_mycodemo import pipeline
 from dsr_mycodemo.app import flow
 from dsr_mycodemo.cultivation import baseline_guide as bg
+from dsr_mycodemo.cultivation import ingredients as ING
+from dsr_mycodemo.cultivation import recipe as recipe_maths
 
 st.set_page_config(page_title="Recipe and timeline", page_icon="🧪", layout="wide")
 flow.init()
 ss = st.session_state
 flow.need("environment", "Environment", "pages/2_Environment.py")
 
-SUBSTRATES = ["wood chips", "sawdust", "straw", "hay", "stem", "other"]
-SUBSTRATE_CODE = {"wood chips": "sawdust", "sawdust": "sawdust", "straw": "straw", "hay": "straw",
-                  "stem": "straw"}                   # our assumption; anything else uses the guide's sawdust row
 VESSELS = ["Tupperware", "Grow bag", "Bucket"]       # the vessel names of the Environment page
 KG_DRY_PER_LITRE = 0.2                               # our assumption: 1 L vessel = 0.2 kg dry substrate (as ENVIRONMENTS)
 HANDLING = 1.05                                      # 5% extra on everything, for handling
@@ -52,25 +51,120 @@ if ss.get("batch_label") in (None, "", ss.get("batch_label_auto")):   # follow t
 ss["batch_label_auto"] = auto
 batch_label = d2.text_input("Batch label", key="batch_label", help="Suggested automatically; you can change it.")
 
-ss.setdefault("substrate", "sawdust")
-substrate = d1.selectbox("Substrate", SUBSTRATES, index=SUBSTRATES.index(ss["substrate"])
-                         if ss["substrate"] in SUBSTRATES else SUBSTRATES.index("other"))
-if substrate == "other":
-    substrate = d1.text_input("Other substrate", value="" if ss["substrate"] in SUBSTRATES else ss["substrate"]
-                              ).strip() or "other"
-ss["substrate"] = substrate
-ss["recipe"] = {"substrate": SUBSTRATE_CODE.get(substrate, pipeline.BASELINE_SUBSTRATE), "spawn_pct": pipeline.SPAWN_PCT}
 # vessels set on Environment: size x amount, summed (only the vessel chosen there counts; others may be stale)
 vessel = ss.get("env_container")
 ss["plan_size"] = None
+vessel_litres = None
 if vessel in VESSELS and vessel in ss.get("env_size", {}):
-    ss["plan_size"] = (int(ss["env_amount"].get(vessel, 1)), ss["env_size"][vessel] * KG_DRY_PER_LITRE)
+    vessel_litres = float(ss["env_size"][vessel])
+    ss["plan_size"] = (int(ss["env_amount"].get(vessel, 1)), vessel_litres * KG_DRY_PER_LITRE)
+
+# --- recipe choices: treatment method, main material, supplements ------------------------------
+for k in [k for k in ss if str(k).startswith("rc_")]:   # keep these choices when the user visits another page
+    ss[k] = ss[k]
+st.subheader("Recipe")
+pb = flow.get_batch()
+guide_species = pipeline.recipe_guide_species(pb)
+n_plan, kg_plan = pipeline._plan_size(pb)
+
+# 1. treatment method
+ss.setdefault("rc_method", "STER")
+method = st.radio("Treatment method", list(ING.METHODS), key="rc_method", format_func=lambda k: ING.METHODS[k][0])
+autoclave_min = jar_size = None
+if method == "STER":
+    sizes = list(ING.AUTOCLAVE_SIZES)
+    auto_jar = ING.autoclave_size_key(vessel_litres, kg_plan + recipe_maths.water_to_add(kg_plan, 65))
+    if ss.get("rc_jar") in (None, ss.get("rc_jar_auto")):           # follow page 2 until the user picks a size
+        ss["rc_jar"] = auto_jar
+    ss["rc_jar_auto"] = auto_jar
+    jar_size = st.selectbox("Size of each jar or bag", sizes, key="rc_jar",
+                            format_func=lambda k: ING.AUTOCLAVE_SIZES[k][0])
+    autoclave_min, how = ING.autoclave_time(jar_size)
+    (st.warning if autoclave_min is None else st.caption)(how)
+else:
+    st.caption(ING.METHODS[method][2])
+
+# 2. main material (bulk)
+OTHER = "__other__"
+main_ids = ING.main_options(pipeline.grower_species(pb))
+fallback_row, _ = bg.row(guide_species, bg.FALLBACK_SUBSTRATE)
+guide_text = bg.load_text().set_index("ref_id")
+default_main = ING.match_guide_words(guide_text.at[fallback_row["ref_id"], "substrate"])
+default_main = default_main if default_main in main_ids else ING.DEFAULT_MAIN
+main_key = f"rc_main_{guide_species}"
+if ss.get(main_key) not in main_ids + [OTHER]:
+    ss[main_key] = default_main
+main = st.selectbox("Main material", main_ids + [OTHER], key=main_key,
+                    format_func=lambda k: "Other (type it)" if k == OTHER else ING.name(k))
+if main == OTHER:
+    substrate = st.text_input("Other main material", key="rc_main_other").strip() or "other"
+    substrate_code = pipeline.BASELINE_SUBSTRATE
+    st.caption("Not in the ingredient table: the guide's sawdust row is used and no mix C:N can be given.")
+else:
+    substrate, substrate_code = ING.name(main), ING.guide_substrate_code(main)
+    if ING.form_caption(main):
+        st.caption(ING.form_caption(main))
+    if ING.load().at[main, "wood_type"] == "soft":
+        st.caption(ING.SOFTWOOD_NOTE + " A Quick energy supplement (below) can help.")
+ss["substrate"] = substrate
+
+# 3. supplements by function: guide amounts and ticks for this species on this main material
+guide_row, _ = bg.row(guide_species, substrate_code)
+ref = guide_row["ref_id"]
+from_guide, _ = ING.guide_supplements(guide_text.at[ref, "substrate_supplementation"])
+groups = ING.supplement_groups()
+in_groups = {i for ids in groups.values() for i in ids}
+extra = [i for i in from_guide if i not in in_groups and i != main]
+if extra:
+    groups = {**groups, "GUIDE": extra}
+chosen = []
+for g, ids in groups.items():
+    title, purpose = ING.GROUPS.get(g, ("Also in the guide's mix", "Other ingredients the guide row names."))
+    st.markdown(f"**{title}**")
+    st.caption(purpose + (" Raises mould risk unless sterilised."
+                          if g in ING.RISKY_UNSTERILISED and method != "STER" else ""))
+    for i in ids:
+        g2 = ING.load().at[i, "group_2"] if i in ING.load().index else ""
+        tick_key, pct_key = f"rc_tick_{ref}_{method}_{i}", f"rc_pct_{ref}_{i}"
+        ss.setdefault(tick_key, ING.default_ticked(i, method, from_guide.get(i, {}).get("ticked", False)))
+        ss.setdefault(pct_key, float(from_guide.get(i, {}).get("pct", ING.DEFAULT_PCT.get(i, 5.0))))
+        c1, c2 = st.columns([3, 1])
+        label = ING.name(i) + (f" · also {ING.GROUPS[g2][0]}" if g2 in ING.GROUPS else "")
+        if c1.checkbox(label, key=tick_key):
+            pct = c2.number_input(f"% of dry weight ({ING.name(i)})", 0.0, 60.0, step=0.5, key=pct_key,
+                                  label_visibility="collapsed")
+            chosen.append({"ingredient": i, "name": ING.name(i), "pct": float(pct)})
+        else:
+            c2.caption(f"{ss[pct_key]:g} % of dry weight")
+
+# 4. mix C:N and water, recalculated on every change
+supp_pct = sum(c["pct"] for c in chosen)
+mix = None
+if supp_pct >= 100:
+    st.error(f"The ticked supplements add up to {supp_pct:g} % of the dry mix; lower them so the main material "
+             "keeps a share. The guide's own mix is used until then.")
+else:
+    mix = {"main_name": substrate, "supplements": [{"name": c["name"], "pct": c["pct"]} for c in chosen]}
+parts = {**({main: 100 - supp_pct} if main != OTHER else {}), **{c["ingredient"]: c["pct"] for c in chosen}}
+cn = ING.mix_cn(parts) if main != OTHER else None      # without the bulk the ratio would mislead
+moisture = float(guide_row["substrate_moisture_pct"])
+m1, m2 = st.columns(2)
+m1.metric("Mix C:N (estimate)", "n/a" if cn is None else f"{cn:.0f}:1",
+          help="Sum of weight × C% over sum of weight × N% of the dry ingredients; spawn not counted.")
+m2.metric("Water to add per container", f"{recipe_maths.water_to_add(kg_plan, moisture) * HANDLING:.2f} kg",
+          help=f"Brings the mix to {moisture:g} % moisture; 5% extra for handling.")
+if ING.uses_category_values(parts):
+    st.caption("(some values are typical for their category)")
+
+ss["recipe"] = {"substrate": substrate_code, "spawn_pct": pipeline.SPAWN_PCT, "method": method,
+                "protocol_id": ING.METHODS[method][1], "jar_size": jar_size, "autoclave_min": autoclave_min,
+                "main": None if main == OTHER else main, "supplements": chosen, "mix": mix, "mix_cn": cn}
 result = flow.run()
 batch = flow.get_batch()
 what = flow.choice_label()
 
 # --- recipe ---------------------------------------------------------------------------------
-st.subheader("Baseline recipe")
+st.subheader("Amounts to weigh")
 rv = result.recipe.value
 rec, n = rv["rec"], rv["n"]
 pc = rec["per_container"]
@@ -83,8 +177,8 @@ ing = pd.DataFrame([{"Ingredient": i["name"], "Per container (kg)": i["kg"] * h,
                        "Total (kg)": pc["spawn"] * n * h}])
 st.dataframe(ing.style.format({"Per container (kg)": "{:.2f}", "Total (kg)": "{:.2f}"}), hide_index=True)
 st.caption("5% extra on everything is included here for handling")
-st.caption("Water assumes the dry ingredients already hold about 10% water. Supplement amounts use the middle of "
-           f"the guide's range ({rec['supplementation'] or 'none listed'}).")
+st.caption("Water assumes the dry ingredients already hold about 10% water. Supplement amounts start at the middle "
+           f"of the guide's range ({rec['supplementation'] or 'none listed'}).")
 if rec["supplements_text_only"]:
     st.caption("Also from the guide: " + "; ".join(rec["supplements_text_only"]) + ".")
 st.caption(f"Guide row {rec['row_note']}")

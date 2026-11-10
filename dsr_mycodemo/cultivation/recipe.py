@@ -12,6 +12,7 @@ import re
 import pandas as pd
 
 from dsr_mycodemo.cultivation import baseline_guide
+from dsr_mycodemo.cultivation.ingredients import split_top_level
 
 START_MOISTURE_PCT = 10.0
 DEFAULT_SPAWN_PCT = 10.0
@@ -59,7 +60,7 @@ def parse_supplements(text) -> tuple[list[dict], list[str]]:
     if not isinstance(text, str) or not text.strip():
         return [], []
     found, left = [], []
-    for part in text.split(","):
+    for part in split_top_level(text):           # commas inside brackets stay: '1% CaCO3 (chalk, garden lime)'
         m = _SUPPLEMENT.match(part)
         if m and " or " not in m.group(3):
             low = float(m.group(1))
@@ -71,17 +72,24 @@ def parse_supplements(text) -> tuple[list[dict], list[str]]:
 
 
 def recipe(species: str, substrate_code: str, as_weighed_kg: float, n_containers: int = 1,
-           spawn_pct: float = DEFAULT_SPAWN_PCT) -> dict:
+           spawn_pct: float = DEFAULT_SPAWN_PCT, mix: dict | None = None) -> dict:
     """The recipe for one species on one substrate (falls back like baseline_guide.row).
 
-    as_weighed_kg is the dry ingredients per container as weighed. Returns per-container and total amounts."""
+    as_weighed_kg is the dry ingredients per container as weighed. Returns per-container and total amounts.
+    mix = the recipe page's choice {'main_name', 'supplements': [{'name', 'pct'}]}; None = the guide's own mix."""
     row, row_note = baseline_guide.row(species, substrate_code)
     text = baseline_guide.load_text()
     text = text[text["ref_id"] == row["ref_id"]].iloc[0]
     moisture = float(row["substrate_moisture_pct"])
     supplements, text_only = parse_supplements(text["substrate_supplementation"])
+    main_name = str(text["substrate"])
+    if mix is not None:
+        main_name = mix.get("main_name") or main_name
+        supplements = [s for s in mix.get("supplements", []) if s.get("pct")]
     supplement_pct = sum(s["pct"] for s in supplements)
-    ingredients = [{"name": str(text["substrate"]), "kg": as_weighed_kg * (1 - supplement_pct / 100)}]
+    if supplement_pct >= 100:
+        raise ValueError("supplements must add up to less than 100 % of the dry mix")
+    ingredients = [{"name": main_name, "kg": as_weighed_kg * (1 - supplement_pct / 100)}]
     ingredients += [{"name": s["name"], "kg": as_weighed_kg * s["pct"] / 100} for s in supplements]
     water = water_to_add(as_weighed_kg, moisture)
     damp = as_weighed_kg + water
