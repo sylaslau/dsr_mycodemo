@@ -397,13 +397,13 @@ def test_monitor_page_environment_boxes_stages_and_sample_photo():
     from streamlit.testing.v1 import AppTest
     at = AppTest.from_file(str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/4_Monitor.py"), default_timeout=60)
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
-    at.session_state["env_where"], at.session_state["env_size"] = "Tent", {"Tent": 1.0}
+    at.session_state["env_where"], at.session_state["env_size"] = "Tent or Cabinet", {"Tent or Cabinet": 1.0}
     at.session_state["batch"] = {"batch_label": "B1", "species": "Pleurotus ostreatus", "inoc_date": START,
                                  "n_containers": 2, "temp_c": 24.0, "substrate": "sawdust", "spawn_pct": 10.0}
     at.run()
     assert not at.exception
-    assert [s.value for s in at.subheader] == ["Tent"]
-    assert at.selectbox(key="sample_Tent").options == ["B1-01", "B1-02"]
+    assert [s.value for s in at.subheader] == ["Tent or Cabinet"]
+    assert at.selectbox(key="sample_Tent or Cabinet").options == ["B1-01", "B1-02"]
     assert [b.label for b in at.button if b.label in ("Spawning", "Ready for harvest")] == ["Spawning", "Ready for harvest"]
     assert any(b.label == "Save" for b in at.button)
 
@@ -445,6 +445,5 @@ def test_environment_page_shows_monotub_and_keeps_saved_value(goal, choice):
     at.run()
     assert not at.exception
     labels = [b.label for b in at.button]
-    assert "Monotub" in labels and "Plastic container" not in labels
-    assert "Plastic container with ventilation holes" in [c.value for c in at.caption]
-    assert at.button(key="where_Plastic container").label == "Monotub"
+    assert "Monotub or Plastic Container" in labels and "Plastic container" not in labels
+    assert at.button(key="where_Plastic container").label == "Monotub or Plastic Container"

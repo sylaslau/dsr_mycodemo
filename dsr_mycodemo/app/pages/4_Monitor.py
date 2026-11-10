@@ -79,12 +79,12 @@ LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00"}
 STAGE_ROWS = [["Spawning", "Colonising", "Fruiting"], ["Ready for induction", "Ready for harvest"]]
 
 
-SHOWN = {"Plastic container": "Monotub"}     # shown name; the saved value stays the same (old batches load)
+SHOWN = {"Plastic container": "Monotub or Plastic Container", "Shelf or vitrine": "Shelf or Vitrine"}     # shown name; the saved value stays the same (old batches load)
 
 
 def residences():
     """Residences entered on the Environment page, in that page's order."""
-    names = [n for n in ("Plastic container", "Shelf or vitrine", "Tent", "Room")
+    names = [n for n in ("Plastic container", "Shelf or vitrine", "Tent or Cabinet", "Room or Chamber")
              if n in ss.get("env_size", {}) or n == ss.get("env_where")]
     return names
 
