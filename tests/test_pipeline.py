@@ -188,7 +188,9 @@ def test_two_photos_nudge_the_estimate():
     assert fast.source == "fallback: photo curve" and "Fallback used" in fast.note
     assert fast.value["day90"] < base < slow.value["day90"]
     assert slow.value["day90"] <= base * pipeline.MAX_NUDGE + 1e-9          # capped at 30 %
-    assert run(food(photos=photos(2, t50=3.0))).warnings.value             # "only 2 photos" warning
+    w = run(food(photos=photos(2, t50=3.0))).warnings.value                # 2 photo days: calm line, no "at least 3"
+    assert any("Early days" in x for x in w) and not any("at least" in x for x in w)
+    assert not any("Only" in x for x in run(food(photos=photos(1))).warnings.value)   # 1 photo day: nothing
 
 
 def test_four_photos_forecast_takes_over():

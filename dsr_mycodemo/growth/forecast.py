@@ -91,8 +91,8 @@ def forecast_by_photo(t, c, model="logistic", min_photos=2):
 def forecast_warnings(t, c, result):
     """Warnings for a weak forecast: too few photos, or 90% not reached within 60 days."""
     out = []
-    if len(t) < MIN_PHOTOS:
-        out.append(f"Only {len(t)} photo(s): at least {MIN_PHOTOS} are needed for a forecast you can trust.")
+    if len(t) < MIN_PHOTOS:   # 2 photo days: calm line, no number
+        out.append("Early days: the forecast still leans mostly on the consensus curve.")
     if result["params"] is None:
         out.append("The curve could not be fitted to these photos.")
     elif np.isnan(result["day90"]):

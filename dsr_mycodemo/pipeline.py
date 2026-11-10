@@ -67,7 +67,7 @@ MAX_NUDGE = 1.3                       # 1-2 photos move the estimate by at most 
 # ref_2 range + temperature rule and logistic fit, used when the model files are missing or a call fails.
 SOURCES = ("typical range", "our model", "your photos", "preview", "consensus model", "photos + consensus model",
            "fallback: typical range", "fallback: photo curve", MATERIALS_PREVIEW)
-MIN_PHOTOS = 3                        # the Colonisation forecast takes over from here
+FALLBACK_MIN_PHOTOS = 3               # backup method only: its S-curve fit starts at 3 photo days (the Colonisation forecast works from 1)
 STAGE_TARGET = 0.90                   # 90 % of the photo is a surface marker, not the end of stage 1
 # Endpoint wording (project assumption, 10-18): the consensus typical colonisation day is taken as 90 % visible
 # coverage; the induction planning marker is that day + POST_90_DAYS (the bottom-white day cannot be predicted).
@@ -563,7 +563,7 @@ def _forecast_fallback(batch, est):
     t, c = _photo_series(batch)
     n = len(t)
     name = "Colonisation forecast"
-    if n >= MIN_PHOTOS:
+    if n >= FALLBACK_MIN_PHOTOS:
         res = forecast(t, c)
         if res["params"] is not None and not np.isnan(res["day90"]):
             d90 = float(res["day90"])
@@ -592,7 +592,7 @@ def _forecast_fallback(batch, est):
     return Step(name, {"day90": mid / speed, "day90_range": (lo / speed, hi / speed), "method": "nudged",
                        "speed": speed, "n_photos": n}, "your photos",
                 f"{n} photo(s): {100 * c_last:.0f}% on day {t_last:.0f} is {pace} a typical curve, so the estimate "
-                f"is nudged (at most {MAX_NUDGE - 1:.0%}). {MIN_PHOTOS} photos are needed for the S-curve forecast.")
+                f"is nudged (at most {MAX_NUDGE - 1:.0%}). (Backup method: the S-curve fit starts at {FALLBACK_MIN_PHOTOS} photo days.)")
 
 
 def dates_step(batch, fc):
@@ -658,9 +658,8 @@ def warnings_step(batch, est, fc):
     msgs = list(recipe_step(batch).value["rec"]["warnings"])
     t, c = _photo_series(batch)
     if len(t):
-        res = forecast(t, c) if len(t) >= 2 else {"params": None, "day90": np.nan, "day95": np.nan}
-        msgs += forecast_warnings(t, c, res) if len(t) >= 2 else \
-            [f"Only {len(t)} photo(s): at least {MIN_PHOTOS} are needed for a forecast you can trust."]
+        if len(t) >= 2:      # 1 photo day: nothing to warn about, the forecast already uses it
+            msgs += forecast_warnings(t, c, forecast(t, c))
     br = baseline_row(batch)
     if br is not None:
         r = br[0]

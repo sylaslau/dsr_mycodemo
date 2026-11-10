@@ -324,7 +324,7 @@ class ForecastModel:
             result.update(status="poor_curve_agreement_review", scale_scenarios=None)
             result["notes"].append("Curve disagrees materially with coverage observations; numeric update withheld.")
         if len(c) < 3:
-            result["notes"].append("Fewer than three photos: update remains strongly dependent on the baseline/shape assumptions.")
+            result["notes"].append("Fewer than three photo days: the forecast still leans mostly on the consensus curve.")
         if current_day - days[-1] > rules["stale_photo_days"]:
             result["notes"].append("Latest photo is stale; current progress is unobserved.")
         return result
