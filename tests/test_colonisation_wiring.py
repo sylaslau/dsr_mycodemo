@@ -142,10 +142,10 @@ def test_photos_update_the_forecast_and_the_source_tag(cm):
     assert fc.value["day90"] < est.value["typical"]
 
 
-def test_one_photo_day_uses_the_consensus_update_and_has_no_three_photo_warning(cm):
+def test_one_photo_day_uses_the_consensus_update_and_keeps_the_uneven_growth_warning(cm):
     r = run(food(photos=photos((4,), t50=3.0)))
     assert r.colonisation_forecast.source == "photos + consensus model"
-    assert not any("at least" in w or "3 photos" in w for w in r.warnings.value)
+    assert any("If growth is uneven, at least 3 photos from different surface areas" in w for w in r.warnings.value)
 
 
 def test_flagged_photos_are_not_used(cm):

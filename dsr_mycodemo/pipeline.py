@@ -19,7 +19,7 @@ from dsr_mycodemo import stages
 from dsr_mycodemo.cultivation import baseline_guide
 from dsr_mycodemo.cultivation import recipe as recipe_maths
 from dsr_mycodemo.growth import consensus_estimate, forecast_update
-from dsr_mycodemo.growth.forecast import forecast, forecast_warnings
+from dsr_mycodemo.growth.forecast import UNEVEN_GROWTH_WARNING, forecast, forecast_warnings
 
 # --- constants ------------------------------------------------------------------------------
 # The one switch for materials mode. "limited": materials keep the recipe maths, Photo coverage (% only), the mould
@@ -658,8 +658,8 @@ def warnings_step(batch, est, fc):
     msgs = list(recipe_step(batch).value["rec"]["warnings"])
     t, c = _photo_series(batch)
     if len(t):
-        if len(t) >= 2:      # 1 photo day: nothing to warn about, the forecast already uses it
-            msgs += forecast_warnings(t, c, forecast(t, c))
+        res = forecast(t, c) if len(t) >= 2 else {"params": None, "day90": np.nan, "day95": np.nan}
+        msgs += forecast_warnings(t, c, res) if len(t) >= 2 else [UNEVEN_GROWTH_WARNING]
     br = baseline_row(batch)
     if br is not None:
         r = br[0]

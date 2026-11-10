@@ -11,6 +11,7 @@ import pandas as pd
 from scipy.optimize import OptimizeWarning, curve_fit
 
 MIN_PHOTOS = 3
+UNEVEN_GROWTH_WARNING = "If growth is uneven, at least 3 photos from different surface areas are needed for a proper forecast."
 
 
 def logistic(t, k, t50):
@@ -91,8 +92,8 @@ def forecast_by_photo(t, c, model="logistic", min_photos=2):
 def forecast_warnings(t, c, result):
     """Warnings for a weak forecast: too few photos, or 90% not reached within 60 days."""
     out = []
-    if len(t) < MIN_PHOTOS:   # 2 photo days: calm line, no number
-        out.append("Early days: the forecast still leans mostly on the consensus curve.")
+    if len(t) < MIN_PHOTOS:
+        out.append(UNEVEN_GROWTH_WARNING)
     if result["params"] is None:
         out.append("The curve could not be fitted to these photos.")
     elif np.isnan(result["day90"]):
