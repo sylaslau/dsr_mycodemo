@@ -1,7 +1,7 @@
 """Monitor: one box per environment (residence) with its conditions, and the batches growing there."""
 
 import io
-from datetime import date
+from datetime import date, datetime
 
 import streamlit as st
 
@@ -18,7 +18,7 @@ flow.step_header(4, 6, "Monitor")
 # session-only stores (nothing is written to disk): stage_log {dish: [{stage, date, note}]},
 # harvest {dish: [{date, g}]}, losses {dish: {...}}, dry_g {dish: g}, costs {batch: {...}},
 # batch_fields {dataset: {...}}, dish_fields {dish: {...}}, upload_rows / restored_photos {key: [photo rows]},
-# environments {name: pipeline.Environment} (kept for backups), monitor_env {residence: conditions},
+# environments {name: pipeline.Environment} (kept for backups), monitor_env {residence: latest entry + "log"},
 # sample_photos {sample ID: [photo rows]}, outcomes {sample ID: {colonised: date | None, mould: bool}},
 # share_code (contributor code once this batch was shared)
 ss = st.session_state
@@ -74,7 +74,7 @@ def apply_restore(p):
 # --- helpers -------------------------------------------------------------------------------
 # book ranges for CO2 (ppm): colonisation tolerates a lot, fruiting wants fresh air
 CO2_COLONISING, CO2_FRUITING = (0.0, 20000.0), (500.0, 1000.0)
-LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00"}
+LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00", "grey": "#9E9E9E"}
 # the grower's words in button rows; each maps to a stage_id (Spawning..Ready for induction ST4, the rest ST5)
 STAGE_ROWS = [["Spawning", "Colonising", "Fruiting"], ["Ready for induction", "Ready for harvest"]]
 
@@ -130,6 +130,8 @@ def light(value, rng):
 
 
 def worst(colours):
+    """Worst light of a residence; grey (marked unknown) does not count."""
+    colours = [c for c in colours if c != "grey"]
     return "red" if "red" in colours else "yellow" if "yellow" in colours else "green"
 
 
@@ -245,20 +247,32 @@ for name in residences():
                   ("co2", "🫧", "CO2", "ppm", 100.0, "%.0f")]
         cols = st.columns(len(fields))
         values, colours = {}, []
+        co2_unknown = False
         for col, (key, icon, label, unit, step, fmt) in zip(cols, fields):
             holder = col.empty()
             default = float(rng[key][2]) if rng else None
+            unknown = key == "co2" and ss.get(f"mon_co2_unknown_{name}", False)
             values[key] = col.number_input(f"{label} ({unit})", value=default, step=step, format=fmt,
-                                           key=f"mon_{key}_{name}_{kind}", label_visibility="collapsed")
-            colour = light(values[key], rng[key][:2] if rng else None)
+                                           key=f"mon_{key}_{name}_{kind}", label_visibility="collapsed",
+                                           disabled=unknown)
+            if key == "co2":
+                co2_unknown = col.checkbox("CO2 unknown", key=f"mon_co2_unknown_{name}")
+            colour = "grey" if unknown else light(values[key], rng[key][:2] if rng else None)
             colours.append(colour)
-            holder.markdown(bubble(colour, icon, label,
+            holder.markdown(bubble(colour, icon, label, "unknown" if unknown else
                                    "not entered" if values[key] is None else f"{values[key]:g} {unit}"),
                             unsafe_allow_html=True)
-        m_col, s_col = st.columns([3, 1], vertical_alignment="bottom")
+        m_col, d_col, t_col, s_col = st.columns([2, 1, 1, 1], vertical_alignment="bottom")
         measured = m_col.selectbox("Measured by", pipeline.MEASURED_BY, index=2, key=f"mon_by_{name}")
+        on_day = d_col.date_input("Date", date.today(), key=f"mon_date_{name}")
+        at_time = t_col.time_input("Time", "now", key=f"mon_time_{name}")
         if s_col.button("Save", key=f"mon_save_{name}", use_container_width=True):
-            saved.update(values, measured_by=measured)
+            entry = pipeline.reading_entry(values, measured, datetime.combine(on_day, at_time),
+                                           batch.inoc_date if has_batch else None, co2_unknown)
+            saved.update(entry)
+            saved.setdefault("log", []).append(entry)
+            st.success(f"Saved for {entry['datetime'].replace('T', ' ')}"
+                       + (f" (day {entry['day']} since inoculation)." if entry["day"] is not None else "."))
             ENVIRONMENTS[name] = pipeline.Environment(name, "Tub", float(values["temp"] if values["temp"] is not None
                                                                          else 21.0), values["rh"], measured)
         side_lights[name] = worst(colours)

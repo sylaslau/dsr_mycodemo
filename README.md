@@ -20,5 +20,6 @@ python -m pytest -q
 - `dsr_mycodemo/cultivation/`: the consensus table lookup (`baseline_guide.py`) and recipe maths (`recipe.py`).
 - `dsr_mycodemo/growth/`: colonisation estimate, photo coverage and forecast.
 - `data/`: the data files the app reads (the folder is git-ignored; files are added with `git add -f`).
+  - `data/interim/extracted/cn_ingredients.csv`: carbon and nitrogen % (dry weight) per ingredient, with category and function. These are typical values, not measurements; rows marked `category` use the value for their category. The C:N of a mix is (Σ weight × C%) / (Σ weight × N%), not the average of the ratios; grain spawn (C:N about 20–25) is not counted.
 - `models/colonisation/`: the saved colonisation estimate model.
 - `tests/`: pytest.

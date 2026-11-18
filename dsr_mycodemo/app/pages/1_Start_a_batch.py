@@ -86,5 +86,5 @@ if ss["goal"] == "Materials" and pipeline.materials_mode() == "off":
 elif ss["choice"]:
     st.success(f"Chosen: {flow.choice_label()}"
                + (f" ({ss['material_species']})" if ss["goal"] == "Materials" else ""))
-    st.page_link("pages/2_Environment.py",
-                 label="Next: your environment", icon="➡️")
+    if st.button("Next: your environment", type="primary", key="next"):
+        st.switch_page("pages/2_Environment.py")

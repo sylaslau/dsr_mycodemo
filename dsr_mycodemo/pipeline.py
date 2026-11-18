@@ -126,6 +126,16 @@ class Environment:
         return cls(**d)
 
 
+def reading_entry(values, measured_by, when, inoc_date=None, co2_unknown=False):
+    """One Monitor entry: every reading in it shares the chosen date-time `when`; day since inoculation is counted
+    from it (None without a batch). CO2 marked unknown is saved as missing."""
+    entry = {**values, "measured_by": measured_by, "datetime": when.isoformat(timespec="minutes"),
+             "day": (when.date() - inoc_date).days if inoc_date is not None else None}
+    if co2_unknown:
+        entry["co2"] = None
+    return entry
+
+
 def next_stage(goal, latest_stage):
     """Where "Next stage" goes from the batch's latest logged stage, or None when it is not time yet.
 

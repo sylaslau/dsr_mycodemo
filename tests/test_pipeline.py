@@ -422,7 +422,7 @@ def test_recipe_page_materials_shows_previews_and_strength():
     at.run()
     assert not at.exception
     html_ = " ".join(m.value for m in at.markdown)
-    assert html_.count(pipeline.MATERIALS_PREVIEW_NOTE) >= 5    # estimate, forecast, timeline, Warnings, Harvest readiness
+    assert html_.count(pipeline.MATERIALS_PREVIEW_NOTE) >= 4    # estimate, forecast, timeline, Warnings
     assert not at.warning                                         # no food rules (spawn, temperature)
     if any(m.label == "Density" for m in at.metric):
         assert pipeline.STRENGTH_LABEL in html_

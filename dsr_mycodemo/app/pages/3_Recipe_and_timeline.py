@@ -1,5 +1,5 @@
 """Recipe and timeline: the recipe as steps in the order of the sterilisation method, then colonisation and the
-stage timeline in one figure, stage bubbles, and the harvest note or strength."""
+stage timeline in one figure, stage bubbles, and (Materials) the strength estimate."""
 
 import html
 import math
@@ -179,8 +179,9 @@ if method == "COLD":
     notes.append(ING.COLD_NOTE)
 if notes:
     st.info("\n\n".join(notes))
-if main != OTHER and ING.form_caption(main):
-    st.caption(ING.form_caption(main))
+if method == "STER":
+    st.markdown(f"Weight of mix for each vessel: **{w(amt['per_vessel'])}** (dry + water, before spawn; "
+                f"{n_plan} vessel{'s' if n_plan > 1 else ''}).")
 
 parts = {**({main: 100 - supp_pct} if main != OTHER else {}), **{c["ingredient"]: c["pct"] for c in chosen}}
 cn = ING.mix_cn(parts) if main != OTHER else None      # without the bulk the ratio would mislead
@@ -188,9 +189,6 @@ st.metric("Mix C:N (estimate)", "n/a" if cn is None else f"{cn:.0f}:1",
           help="Sum of weight × C% over sum of weight × N% of the dry ingredients; spawn not counted.")
 if ING.uses_category_values(parts):
     st.caption("(some values are typical for their category)")
-if method == "STER":
-    st.markdown(f"Weight of mix for each vessel: **{w(amt['per_vessel'])}** (dry + water, before spawn; "
-                f"{n_plan} vessel{'s' if n_plan > 1 else ''}).")
 
 # step 2: sterilise or pasteurise
 autoclave_min = jar_size = None
@@ -337,7 +335,7 @@ if base is None and col_setup:
     st.subheader("Colonisation")
     draw(col_setup, None)
 if base is not None:
-    r, row_note = base
+    r, _ = base
     temp = ss["temp_c"]
     species = r["species"]
     st.subheader("Colonisation and stage timeline")
@@ -387,10 +385,6 @@ if base is not None:
                      f"padding:0.6rem 0.8rem; margin:0.4rem 0; height:100%;'>{body}</div>", unsafe_allow_html=True)
     if species == "Lentinula edodes":
         st.info(f"Unresolved: {t['requirements_unresolved']}")
-
-    st.caption(f"Source: {col['source']} · evidence: {r['evidence_type']} · confidence: {col['confidence']}. "
-               f"Row used: {row_note}. Consensus values, not a prediction. CO2 for colonisation and light are "
-               "general consensus.")
 elif flow.is_materials():
     st.subheader("Colonisation and timeline")
     for title in ("Colonisation time estimate (days)", "Colonisation forecast (90% day and dates)",
@@ -430,9 +424,7 @@ for w in result.warnings.value:
 
 # --- harvest record or strength -------------------------------------------------------------
 out = result.outcome
-if ss["goal"] == "Food":
-    st.info("Yield: record your harvest in Monitor.")
-else:
+if ss["goal"] != "Food":
     st.subheader(out.name + " estimate")
     if out.is_preview:
         flow.preview(out.name, out.note)
@@ -443,9 +435,6 @@ else:
         st.markdown(f"**{out.value['species']}**: {out.value['label']}. Based on {out.value['n_rows']} rows for this "
                     f"species, out of {out.value['n_total']}.")
         st.caption(out.note)
-
-if result.harvest_readiness is not None:
-    flow.preview("Harvest readiness", result.harvest_readiness.note)
 
 # --- hand over to Monitor ----------------------------------------------------------------
 if st.button("Save this plan and open Monitor", type="primary"):

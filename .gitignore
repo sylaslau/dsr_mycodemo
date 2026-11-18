@@ -191,3 +191,14 @@ cython_debug/
 .pypirc
 # Streamlit secrets (Supabase keys)
 .streamlit/secrets.toml
+
+# EDA work (kept local, not in the repo) - Sylas 2026-11-10
+notebooks/0.*.ipynb
+dsr_mycodemo/data_eda.py
+reports/figures/eda/
+
+# SYLDD grid score sheets (kept local, not in the repo) - Sylas 2026-11-17
+dsr_mycodemo/growth/grid_sheets.py
+tests/test_grid_sheets.py
+reports/figures/syldd_grid/
+backups/
