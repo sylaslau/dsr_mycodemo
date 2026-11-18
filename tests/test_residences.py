@@ -1,4 +1,4 @@
-"""Part B (11-18): page 2 switches by mode (Materials adds containers and moulds); one residence per stage."""
+"""Part B (11-18): the environment section (page 1 since the 5-page flow) switches by mode (Materials adds containers and moulds); one residence per stage."""
 
 from datetime import date
 from pathlib import Path
@@ -19,7 +19,7 @@ def _page(name):
 
 
 def _env(goal, choice, **state):
-    at = _page("pages/2_Environment.py")
+    at = _page("pages/1_Start_a_batch.py")
     at.session_state["goal"], at.session_state["choice"] = goal, choice
     for k, v in state.items():
         at.session_state[k] = v
@@ -35,7 +35,8 @@ def _labels(at):
 # --- page 2 by mode ---------------------------------------------------------------------------
 def test_materials_shows_containers_and_moulds():
     at = _env("Materials", "Packaging foam")
-    assert [s.value for s in at.subheader][:3] == ["Residence", "Containers", "Vessels"]
+    subs = [s.value for s in at.subheader]
+    assert subs[subs.index("Residence"):][:3] == ["Residence", "Containers", "Vessels"]
     for name in ("Micro box", "Crate", "Filter bag", "Mould (box)", "Mould (cylinder)", "Grow Bag"):
         assert name in _labels(at), name
     for food_only in ("Glass Jar", "Tupperware", "Bucket"):

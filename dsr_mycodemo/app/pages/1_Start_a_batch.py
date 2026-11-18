@@ -1,9 +1,10 @@
-"""Start a batch: one pick in total, a Food (mushroom) or a Thing (mycomaterial)."""
+"""Start a batch: one pick in total, a Food (mushroom) or a Thing (mycomaterial); once picked, the environment
+(residence, containers, vessels, conditions) below it."""
 
 import streamlit as st
 
 from dsr_mycodemo import pipeline
-from dsr_mycodemo.app import flow
+from dsr_mycodemo.app import flow, stage_ui
 from dsr_mycodemo.cultivation import baseline_guide
 
 st.set_page_config(page_title="Start a batch", page_icon="🍄", layout="wide")
@@ -86,5 +87,10 @@ if ss["goal"] == "Materials" and pipeline.materials_mode() == "off":
 elif ss["choice"]:
     st.success(f"Chosen: {flow.choice_label()}"
                + (f" ({ss['material_species']})" if ss["goal"] == "Materials" else ""))
-    if st.button("Next: your environment", type="primary", key="next"):
-        st.switch_page("pages/2_Environment.py")
+    st.divider()
+    stage_ui.environment_section()
+    if ss["environment"]:
+        if st.button("Next: recipe and actions", type="primary", key="next"):
+            st.switch_page("pages/3_Recipe_and_timeline.py")
+    else:
+        st.caption("Choose where you grow to continue.")

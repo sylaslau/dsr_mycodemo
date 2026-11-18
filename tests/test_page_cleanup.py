@@ -22,7 +22,7 @@ def _all_text(at):
 
 # --- Environment ---------------------------------------------------------------------------
 def test_environment_has_no_captions_and_messages_sit_under_their_sliders():
-    at = _page("pages/2_Environment.py")
+    at = _page("pages/1_Start_a_batch.py")
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     at.session_state["environment"], at.session_state["env_where"] = "Room", "Room or Chamber"
     at.run()
@@ -35,16 +35,23 @@ def test_environment_has_no_captions_and_messages_sit_under_their_sliders():
     assert t_col.slider[0].label.startswith("Temperature") and (t_col.success or t_col.warning)
     assert h_col.slider[0].label.startswith("Humidity") and (h_col.success or h_col.warning)
     nxt = at.button(key="next")
-    assert nxt.label == "Next: recipe and preview" and nxt.proto.type == "primary"
+    assert nxt.label == "Next: recipe and actions" and nxt.proto.type == "primary"
 
 
-def test_start_page_next_is_a_primary_button():
+def test_start_page_shows_the_environment_once_a_choice_exists():
     at = _page("pages/1_Start_a_batch.py")
-    at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     at.run()
     assert not at.exception
-    nxt = at.button(key="next")
-    assert nxt.label == "Next: your environment" and nxt.proto.type == "primary"
+    assert "Environment" not in [h.value for h in at.header] and not any(b.key == "next" for b in at.button)
+    at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
+    at.run()
+    assert [h.value for h in at.header] == ["Environment", "Conditions"]
+    assert "Residence" in [s.value for s in at.subheader] and at.slider[0].label == "Temperature (°C)"
+    assert not any(b.key == "next" for b in at.button)                  # no residence yet
+    assert any("Choose where you grow" in c.value for c in at.caption)
+    at.button(key="where_Tent or Cabinet").click().run()
+    assert at.session_state["environment"] == "Shelf or grow tent"
+    assert at.button(key="next").label == "Next: recipe and actions"
 
 
 # --- Recipe and timeline -------------------------------------------------------------------

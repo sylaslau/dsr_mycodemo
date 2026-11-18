@@ -439,7 +439,7 @@ def test_start_page_materials_off_greys_the_things(monkeypatch):
 
 @pytest.mark.parametrize("goal,choice", [("Food", "Blue Oyster"), ("Materials", "Packaging foam")])
 def test_environment_page_shows_monotub_and_keeps_saved_value(goal, choice):
-    at = _page("pages/2_Environment.py")
+    at = _page("pages/1_Start_a_batch.py")
     at.session_state["goal"], at.session_state["choice"] = goal, choice
     at.session_state["env_where"] = "Plastic container"          # value saved by older batches
     at.run()
