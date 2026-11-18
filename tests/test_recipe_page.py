@@ -64,12 +64,10 @@ def test_lime_soak_starts_with_main_bulk_only():
     assert not any(c.value for c in at.checkbox)
 
 
-def test_one_stacked_figure_and_five_bubbles_without_subtext():
+def test_days_to_the_next_step_and_no_figure_or_bubbles():
     at = run_page("STER", "Glass Jar", 1.0, 3)
-    charts = at.get("plotly_chart")
-    assert len(charts) == 1
-    bubbles = [t for t in texts(at) if "border-left:8px" in t]
-    assert [re.search(r"<b>(\w+)</b>", b).group(1) for b in bubbles] == [
-        "Inoculation", "Colonising", "Induction", "Fruiting", "Harvest"]
-    assert all("🌡️" in b and "💧" in b and "🌬️" in b and "💡" in b for b in bubbles)
-    assert all("white all the way through" not in t for t in texts(at))
+    assert not at.get("plotly_chart")
+    assert not [t for t in texts(at) if "border-left:8px" in t]
+    subs = [s.value for s in at.subheader]
+    assert subs.index("Recipe") < subs.index("Inoculation steps") < subs.index("Days to the next step")
+    assert "Duration to 90%" in [m.label for m in at.metric]

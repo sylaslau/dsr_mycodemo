@@ -1,10 +1,6 @@
-"""Recipe and timeline: the recipe as steps in the order of the sterilisation method, then colonisation and the
-stage timeline in one figure, stage bubbles, and (Materials) the strength estimate."""
+"""Recipe and actions: the recipe, the inoculation steps in the order of the sterilisation method, the days to the
+next step, the induction / post-treatment steps on request, Warnings and (Materials) the strength estimate."""
 
-import math
-
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import streamlit as st
 
 from dsr_mycodemo import pipeline
@@ -12,14 +8,13 @@ from dsr_mycodemo.app import flow, stage_ui
 from dsr_mycodemo.cultivation import baseline_guide as bg
 from dsr_mycodemo.cultivation import ingredients as ING
 
-st.set_page_config(page_title="Recipe and timeline", page_icon="🧪", layout="wide")
+st.set_page_config(page_title="Recipe and actions", page_icon="🧪", layout="wide")
 flow.init()
 ss = st.session_state
-flow.need("environment", "Environment", "pages/2_Environment.py")
+flow.need("environment", "Start a batch", "pages/1_Start_a_batch.py")
 
 KG_DRY_PER_LITRE = 0.2                               # our assumption: 1 L vessel = 0.2 kg dry substrate (as ENVIRONMENTS)
 HANDLING = 1.05                                      # 5% extra on everything, for handling
-EVENT_COLOR, STAGE_COLOR = stage_ui.EVENT_COLOR, stage_ui.STAGE_COLOR
 
 
 def code(text, n):
@@ -40,7 +35,7 @@ def suggest_label():
                      ss["inoc_date"].strftime("%y%m%d")])
 
 
-flow.step_header(3, 8, "Recipe and timeline")
+flow.step_header(3, 8, "Recipe and actions")
 d1, d2 = st.columns(2)
 ss["inoc_date"] = d1.date_input("Planned inoculation date", ss["inoc_date"])
 auto = suggest_label()
@@ -75,8 +70,7 @@ def step_heading(key):
     st.markdown(f"#### {no}. {title}")
 
 
-# step 1: recipe table (Ingredient | choice | Include | % of dry weight | Total weight)
-step_heading("recipe")
+# recipe table (Ingredient | choice | Include | % of dry weight | Total weight); step 1 of the actions below
 COLS = [1.6, 2.6, 0.8, 1.3, 1.3]
 for c, label in zip(st.columns(COLS), ["Ingredient", "Choice", "Include", "% of dry weight", "Total weight"]):
     c.markdown(f"**{label}**")
@@ -177,16 +171,19 @@ if method == "COLD":
     notes.append(ING.COLD_NOTE)
 if notes:
     st.info("\n\n".join(notes))
-if method == "STER":
-    st.markdown(f"Weight of mix for each vessel: **{w(amt['per_vessel'])}** (dry + water, before spawn; "
-                f"{n_plan} vessel{'s' if n_plan > 1 else ''}).")
-
 parts = {**({main: 100 - supp_pct} if main != OTHER else {}), **{c["ingredient"]: c["pct"] for c in chosen}}
 cn = ING.mix_cn(parts) if main != OTHER else None      # without the bulk the ratio would mislead
 st.metric("Mix C:N (estimate)", "n/a" if cn is None else f"{cn:.0f}:1",
           help="Sum of weight × C% over sum of weight × N% of the dry ingredients; spawn not counted.")
 if ING.uses_category_values(parts):
     st.caption("(some values are typical for their category)")
+
+# --- inoculation steps: the recipe steps in the order of the method, as an action list ---------------------
+st.subheader("Inoculation steps")
+step_heading("recipe")
+if method == "STER":
+    st.markdown(f"Weight of mix for each vessel: **{w(amt['per_vessel'])}** (dry + water, before spawn; "
+                f"{n_plan} vessel{'s' if n_plan > 1 else ''}).")
 
 # step 2: sterilise or pasteurise
 autoclave_min = jar_size = None
@@ -224,165 +221,30 @@ n = rv["n"]
 if flow.is_materials():
     st.caption(result.recipe.note)
 
-# --- colonisation (top) and stage timeline (bottom), one figure on one days axis ---------------------
-est, fc, dates = result.colonisation_estimate, result.colonisation_forecast, result.dates
-
-
-def logistic(x, t90, c0=0.02, c90=0.90, start=0.0):
-    """Logistic through (start, c0) and (t90, c90); x in days."""
-    def logit(c):
-        return math.log(c / (1 - c))
-    k = (logit(c90) - logit(c0)) / (t90 - start)
-    mid = t90 - logit(c90) / k
-    return [100 / (1 + math.exp(-k * (xi - mid))) for xi in x]
-
-
-def colonisation_setup():
-    """(t90, photos) for the curve, or None when there is no estimate."""
-    if est.is_preview or est.value is None:
-        return None
-    photos = sorted((p for p in batch.photos if p.day >= 0 and not p.quality), key=lambda p: p.day)
-    t90 = float(est.value["typical"])
-    if photos and fc.value is not None and fc.value.get("method") in ("curve fit", "consensus update"):
-        t90 = float(fc.value["day90"])                      # Colonisation forecast (3 or more photos)
-    return (t90, photos) if t90 > 0 else None
-
-
-def colonisation_traces(t90, photos, x_end):
-    """Dotted = estimate or forecast (S-curve assumed), solid = measured photos; drawn to x_end."""
-    out = []
-    if not photos:
-        xs = [x_end * i / 80 for i in range(81)]
-        out.append(go.Scatter(x=xs, y=logistic(xs, t90), mode="lines", line=dict(dash="dot", color=STAGE_COLOR),
-                              name="Estimate"))
-        return out
-    pd_, pc = [p.day for p in photos], [100 * p.coverage for p in photos]
-    out.append(go.Scatter(x=[0] + pd_, y=[0] + pc, mode="lines", line=dict(color=STAGE_COLOR), name="Measured",
-                          hoverinfo="skip"))
-    out.append(go.Scatter(x=pd_, y=pc, mode="markers", marker=dict(size=9, color=STAGE_COLOR), name="Photos",
-                          hovertemplate="day %{x}: %{y:.0f}%<extra></extra>"))
-    last_d, last_c = pd_[-1], min(max(pc[-1], 2.0), 98.0)
-    if last_c < 90 and t90 > last_d:
-        xs = [last_d + (x_end - last_d) * i / 60 for i in range(61)]
-        out.append(go.Scatter(x=xs, y=logistic(xs, t90, c0=last_c / 100, start=last_d), mode="lines",
-                              line=dict(dash="dot", color=STAGE_COLOR), name="Forecast"))
-    return out
-
-
-def colonisation_caption(t90, photos):
-    src = "the Colonisation forecast" if t90 != float(est.value["typical"]) else "the Colonisation time estimate"
-    return (f"Top: % colonised. Dotted: {src} (90% on day {t90:.0f}); the S-curve shape is our assumption. "
-            + ("Solid: measured from your photos in Monitor. " if photos else
-               "Photos added in Monitor are drawn as points with a solid line. ")
-            + "If the temperature changes, the estimate is re-run and the dotted part moves.")
-
-
-def timeline_traces(ind_day, har_day):
-    out = []
-    for name, x0, x1 in (("Colonising", 0, ind_day), ("Fruiting", ind_day, har_day)):
-        out.append(go.Bar(y=["Timeline"], x=[x1 - x0], base=[x0], orientation="h", name=name, width=0.45,
-                          marker_color=STAGE_COLOR, opacity=0.45 if name == "Colonising" else 0.7,
-                          text=name, textposition="inside", insidetextanchor="middle",
-                          hovertemplate=f"{name}: day {x0:g}–{x1:g}<extra></extra>"))
-    for name, day in (("Inoculation", 0), ("Induction", ind_day), ("Harvest", har_day)):
-        out.append(go.Scatter(x=[day], y=["Timeline"], mode="markers+text", name=name,
-                              marker=dict(symbol="line-ns", size=36, line=dict(width=3, color=EVENT_COLOR)),
-                              text=[f"{name}<br>day {int(day)}"], textposition="top center"))
-    return out
-
-
-def draw(col_setup, tl_days):
-    """One figure: colonisation on top (if any), stage timeline below (if any), shared days axis from 0 to the
-    harvest day or the end of the forecast, whichever is later."""
-    parts = [p for p in ("col" if col_setup else None, "tl" if tl_days else None) if p]
-    if not parts:
-        return
-    natural_end = 0.0
-    if col_setup:
-        t90, photos = col_setup
-        natural_end = max(t90 * 1.25, max((p.day for p in photos), default=0))
-    x_end = max(natural_end, tl_days[1] if tl_days else 0)
-    fig = make_subplots(rows=len(parts), cols=1, shared_xaxes=True, vertical_spacing=0.06,
-                        row_heights=[0.65, 0.35] if len(parts) == 2 else None)
-    if col_setup:
-        for tr in colonisation_traces(t90, photos, x_end):
-            fig.add_trace(tr, row=1, col=1)
-        fig.add_hline(y=90, line_dash="dot", line_color="#9aa0a6", annotation_text="90%", row=1, col=1)
-        fig.add_vline(x=t90, line_dash="dot", line_color="#9aa0a6", annotation_text=f"day {t90:.0f}", row=1, col=1)
-        fig.update_yaxes(title_text="% colonised", range=[0, 100], row=1, col=1)
-    if tl_days:
-        for tr in timeline_traces(*tl_days):
-            fig.add_trace(tr, row=len(parts), col=1)
-        fig.update_yaxes(showticklabels=False, row=len(parts), col=1)
-    fig.update_xaxes(range=[0, x_end * 1.03])
-    fig.update_xaxes(title_text="Days since inoculation", row=len(parts), col=1)
-    fig.update_layout(height=230 + 250 * bool(col_setup), margin=dict(l=10, r=10, t=30, b=40), showlegend=False,
-                      barmode="overlay")
-    st.plotly_chart(fig, use_container_width=True)
-    caption = colonisation_caption(t90, photos) if col_setup else ""
-    if tl_days:
-        caption += (" Bottom: stages (bars) and events (ticks) on the guide's typical days. Induction falls on the "
-                    "typical day colonisation ends; Harvest is the typical first-harvest day counted from the start "
-                    "of induction.")
-    st.caption(caption.strip())
-
-
-col_setup = colonisation_setup()
+# --- days to the next step: Food = the Colonisation time estimate as dates; Materials = greyed previews ------
+st.subheader("Days to the next step")
 base = pipeline.baseline_row(batch)
-if base is None and col_setup:
-    st.subheader("Colonisation")
-    draw(col_setup, None)
-if base is not None:
-    r, _ = base
-    temp = ss["temp_c"]
-    species = r["species"]
-    st.subheader("Colonisation and stage timeline")
-    t = bg.load_text()
-    t = t[t["ref_id"] == r["ref_id"]].iloc[0]
-    col, fr = bg.colonisation(r), bg.fruiting(r)
-    inc = col["incubation_temp_C"]
-    state = bg.temp_check(temp, inc["min"], inc["max"])
-    (st.success if state == "inside" else st.warning)(
-        f"{temp:g} °C is {state} the colonisation range ({inc['min']}–{inc['max']} °C)."
-        + ("" if state == "inside" else " The days below assume the guide's own conditions."))
-
-    tl = bg.stages(r).set_index("stage")
-    ind_day, har_day = tl.loc["Start induction", "typical_day"], tl.loc["First harvest", "typical_day"]
-    draw(col_setup, (ind_day, har_day))
-
-    stage_ui.stage_cards(r)           # stage bubbles, one row: name · days, then temperature, humidity, CO2, light
-    if species == "Lentinula edodes":
-        st.info(f"Unresolved: {t['requirements_unresolved']}")
-elif flow.is_materials():
-    st.subheader("Colonisation and timeline")
-    for title in ("Colonisation time estimate (days)", "Colonisation forecast (90% day and dates)",
-                  "Stage timeline and " + pipeline.MARKER_LABEL):
-        flow.materials_preview(title)
+if flow.is_materials():
+    stage_ui.materials_timing_previews()
 else:
-    st.subheader("Stage 1: Colonisation")
-    if est.is_preview:
-        flow.preview("Colonisation time estimate", est.note)
-    else:
-        lo, hi = est.value["days"]
-        ev1 = {n: (a, b) for n, a, b in dates.value}
-        full = ev1[pipeline.ENDPOINT_LABEL]
+    if base is not None:
+        stage_ui.temperature_line(base[0], ss["temp_c"])
+    stage_ui.colonisation_days(result, source=False)
+st.caption("The colonisation curve, the stage timeline and the stage bubbles are on Timeline.")
 
-        def span1(a, b):
-            return f"{a.strftime('%d %b')} – {b.strftime('%d %b')}"
-
-        c1, c2, c3 = st.columns(3)
-        c1.metric(pipeline.ENDPOINT_LABEL, span1(*full), help="Project assumption")
-        mk = ev1.get(pipeline.MARKER_LABEL)
-        if mk:
-            c2.metric(pipeline.MARKER_LABEL, span1(*mk), help="Project assumption: the 90% day + 2 days")
-        c3.metric("Duration to 90%", f"{lo:.0f}–{hi:.0f} days", help=f"Typical {est.value['typical']:.0f} days")
-        st.progress(0.0, text=f"Day 0 → day {hi:.0f}")
-        st.caption(flow.ENDPOINT_ASSUMPTION_NOTE)
-        flow.show_source(est)
-        if fc.value is not None and fc.value["method"] != "estimate":
-            st.caption(f"Your photos have changed this: {fc.note}")
+# --- induction / post-treatment steps, shown on request (show_next_steps) --------------------------------
+ss.setdefault("show_next_steps", False)
+next_title = stage_ui.next_titles(flow.is_materials())[0]
+if st.button(("Hide " if ss["show_next_steps"] else "Show ") + f"{next_title.lower()} steps", key="show_next_steps_btn"):
+    ss["show_next_steps"] = not ss["show_next_steps"]
+    st.rerun()
+if ss["show_next_steps"]:
+    with st.container(border=True):
+        st.subheader(next_title)
+        if flow.is_materials():
+            stage_ui.post_treatment_section(ss.get("batch"), result)
         else:
-            st.caption("Your photos in Monitor will update it into the Colonisation forecast.")
+            stage_ui.induction_section(flow.sample_batch(), ss.get("batch"))
 
 # --- warnings -----------------------------------------------------------------------------------
 if result.warnings.is_preview:

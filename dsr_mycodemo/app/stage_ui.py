@@ -277,6 +277,180 @@ def stage_cards(r, names=STAGE_CARDS):
                      f"padding:0.6rem 0.8rem; margin:0.4rem 0; height:100%;'>{body}</div>", unsafe_allow_html=True)
 
 
+# --- days to the next step (moved from Recipe and timeline; Timeline shows the same metrics) ------------------
+def temperature_line(r, temp):
+    """The batch temperature against the guide's colonisation range, above the days."""
+    inc = bg.colonisation(r)["incubation_temp_C"]
+    state = bg.temp_check(temp, inc["min"], inc["max"])
+    (st.success if state == "inside" else st.warning)(
+        f"{temp:g} °C is {state} the colonisation range ({inc['min']}–{inc['max']} °C)."
+        + ("" if state == "inside" else " The days below assume the guide's own conditions."))
+
+
+def colonisation_days(result, source=True):
+    """Food: the Colonisation time estimate as dates (90% day, Induction planning marker) and the duration, or its
+    greyed box when there is no estimate. source=False leaves out the source caption (Recipe page clean-up, 11-10)."""
+    est, fc, dates = result.colonisation_estimate, result.colonisation_forecast, result.dates
+    if est.is_preview:
+        flow.preview("Colonisation time estimate", est.note)
+        return
+    lo, hi = est.value["days"]
+    ev1 = {n: (a, b) for n, a, b in dates.value}
+    full = ev1[pipeline.ENDPOINT_LABEL]
+
+    def span1(a, b):
+        return f"{a.strftime('%d %b')} – {b.strftime('%d %b')}"
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric(pipeline.ENDPOINT_LABEL, span1(*full), help="Project assumption")
+    mk = ev1.get(pipeline.MARKER_LABEL)
+    if mk:
+        c2.metric(pipeline.MARKER_LABEL, span1(*mk), help="Project assumption: the 90% day + 2 days")
+    c3.metric("Duration to 90%", f"{lo:.0f}–{hi:.0f} days", help=f"Typical {est.value['typical']:.0f} days")
+    st.progress(0.0, text=f"Day 0 → day {hi:.0f}")
+    st.caption(flow.ENDPOINT_ASSUMPTION_NOTE)
+    if source:
+        flow.show_source(est)
+    if fc.value is not None and fc.value["method"] != "estimate":
+        st.caption(f"Your photos have changed this: {fc.note}")
+    else:
+        st.caption("Your photos in Monitor will update it into the Colonisation forecast.")
+
+
+MATERIALS_TIMING = ("Colonisation time estimate (days)", "Colonisation forecast (90% day and dates)",
+                    "Stage timeline and " + pipeline.MARKER_LABEL)
+
+
+def materials_timing_previews():
+    for title in MATERIALS_TIMING:
+        flow.materials_preview(title)
+
+
+# --- induction / post-treatment steps (was page 7 Next stage; now on Recipe and actions) -----------------
+def _residence_section(help_text):
+    ss = _ss()
+    where_col, note_col = st.columns(2)
+    with where_col:
+        residence_picker("next")
+    with note_col:
+        st.subheader("Colonised in")
+        st.write(residence_label(ss.get("env_where")))
+        st.caption(help_text)
+    return chosen_residence("next")
+
+
+def confirmed_start():
+    """The next-stage start date confirmed on Monitor (next_start), or None while the batch is still colonising."""
+    return st.session_state.get("next_start")
+
+
+def _start_date(label, default, source):
+    """The confirmed date from Monitor when there is one (shown, not asked); else a date input with the default."""
+    confirmed = confirmed_start()
+    if confirmed:
+        st.markdown(f"**{label}:** {confirmed:%d %b %Y}")
+        st.caption("Confirmed on Monitor.")
+        return confirmed
+    start = st.date_input(label, value=default, key="plan_next_start")
+    if source:
+        st.caption(source)
+    return start
+
+
+def induction_section(batch, plan):
+    """Food: start date, residence for fruiting, induction steps in words, stage bubbles, conditions check, dates."""
+    typed, n_typed = colonised_date(plan["batch_label"] if plan else None)
+    if typed:
+        default = typed
+        source = (f"From your Monitor record: 'Fully colonised on' ({n_typed} sample(s) typed; the latest date is "
+                  "used).")
+    else:
+        default = pipeline.induction_date(batch)
+        source = (f"{pipeline.MARKER_LABEL}: the Colonisation forecast's 90% day + {pipeline.POST_90_DAYS} days "
+                  "(project assumption). Type 'Fully colonised on' in Monitor to use your own date.")
+        if default is None:
+            source = "No forecast for this mushroom: choose the start date yourself."
+    start = _start_date("Start of induction", default, source + " " + flow.FULLY_COLONISED_NOTE)
+
+    residence = _residence_section("Choose again if the batch moves for fruiting (for example from a box to a "
+                                   "tent). Nothing chosen = it stays where it colonised.")
+
+    br = pipeline.baseline_row(batch)
+    if br is None:
+        st.info("This mushroom has no row in the consensus guide, so there are no induction steps, fruiting ranges "
+                "or dates.")
+        return
+    r, _ = br
+    fr = bg.fruiting(r)
+    acts = fr["induction_actions"]
+
+    st.subheader("Induction steps")
+    t = fr["fruiting_temp_C"]
+    lines = [acts["overview"],
+             f"**Temperature:** {acts['temperature']} (fruiting range {t['min']}–{t['max']} °C).",
+             f"**Light:** {acts['light']}", f"**Fresh air:** {acts['fresh_air']}", f"**Humidity:** {acts['humidity']}"]
+    st.markdown("\n".join(f"{i}. {line}" for i, line in enumerate(lines, start=1)))
+    if fr["induction_evidence_status"] == "inferred_from_existing_columns":
+        st.caption("These steps are inferred from other columns of the guide, not stated in it.")
+    stage_cards(r, names=("Induction", "Fruiting", "Harvest"))
+
+    st.subheader("Conditions check")
+    ranges = pipeline.next_stage_ranges(batch)
+    reading = latest_reading("next", residence) if residence else {}
+    conditions_check(ranges, reading)
+    if reading:
+        st.caption(f"Latest reading in {residence_label(residence)}: {reading['datetime'].replace('T', ' ')}. "
+                   "Ranges: fruiting columns of the consensus guide.")
+    else:
+        st.caption(f"No reading yet for {residence_label(residence)}; log one on Monitor.")
+
+    st.subheader("Dates")
+    dates = pipeline.fruiting_dates(batch, start)
+    if dates.value:
+        for col, (label, day) in zip(st.columns(len(dates.value)), dates.value):
+            col.metric(label, day.strftime("%d %b"), help="Consensus days from the guide, not a model")
+    st.caption(dates.note)
+
+
+def post_treatment_section(plan, result):
+    """Materials: start date, residence (oven, drying rack or room, press), method, Material strength after
+    colonisation and the matched-pair note of the method."""
+    ss = _ss()
+    typed, n_typed = colonised_date(plan["batch_label"] if plan else None)
+    source = (f"From your Monitor record: 'Fully colonised on' ({n_typed} sample(s) typed; the latest date is "
+              "used).") if typed else ""
+    start = _start_date("Start of post-treatment", typed, source)
+    if start is None:
+        st.info("No 'Fully colonised on' date is typed in Monitor yet. Choose the day the blocks are fully "
+                "colonised, or type it in Monitor.")
+
+    _residence_section("Where the blocks go after colonisation: an oven, a drying rack or room, or a press.")
+
+    st.subheader("Method")
+    methods = {m["protocol_id"]: m for m in pipeline.post_treatment_methods()}
+    if not methods:
+        st.warning("The post-treatment table is missing (run python -m dsr_mycodemo.post_treatment_data).")
+        return
+    ss.setdefault("pt_method", next(iter(methods)) if "OVEN-DRY" not in methods else "OVEN-DRY")
+    method = st.radio("Post-treatment method", list(methods), key="pt_method",
+                      format_func=lambda k: pipeline.post_treatment_label(methods[k]))
+    st.markdown(pipeline.post_treatment_text(methods[method]))
+    st.caption("Values from the post-treatment steps of the studies in our data (process.csv), summarised per "
+               "method; nothing is filled in where a study gives no number.")
+
+    out = result.outcome
+    st.subheader("Material strength")
+    if out.is_preview:
+        flow.preview(out.name, out.note)
+    else:
+        m1, m2 = st.columns(2)
+        m1.metric("Stress at 10 % strain (after colonisation)", f"{out.value['stress_mpa']:.3f} MPa")
+        m2.metric("Density (after colonisation)", f"{out.value['density']:.0f} kg/m³")
+        st.caption(out.note)
+    st.info(pipeline.post_treatment_note(method))
+
+
+
 # --- traffic lights (moved from Monitor) --------------------------------------------------------
 LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00", "grey": "#9E9E9E"}
 # reading key -> (icon, label, unit, step, format)

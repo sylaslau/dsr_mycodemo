@@ -28,6 +28,11 @@ def _page(name, goal="Food", choice="Pleurotus ostreatus", **state):
     return at
 
 
+def _steps(**state):
+    """Recipe and actions with the induction / post-treatment steps shown (was page 7)."""
+    return _page("3_Recipe_and_timeline.py", show_next_steps=True, **state)
+
+
 def _md(at):
     return " ".join(m.value for m in at.markdown)
 
@@ -71,42 +76,42 @@ def test_every_page_says_step_n_of_8():
 @pytest.mark.parametrize("goal, choice, t7, t8", [("Food", "Pleurotus ostreatus", "Induction", "Monitor fruiting"),
                                                   ("Materials", "Foam", "Post-treatment", "Monitor post-treatment")])
 def test_titles_follow_the_mode(goal, choice, t7, t8):
-    at7 = _page("7_Next_stage.py", goal, choice)
+    at7 = _page("7_Next_stage.py", goal, choice)     # removed in part 5
     assert at7.title[0].value == t7 and "Step 7 of 8" in _md(at7)
     at8 = _page("8_Monitor_next_stage.py", goal, choice)
     assert at8.title[0].value == t8 and "Step 8 of 8" in _md(at8)
 
 
-# --- page 7 Induction --------------------------------------------------------------------------------
+# --- induction steps on Recipe and actions (was page 7) --------------------------------------------------------------------------------
 def test_induction_page_shows_steps_bubbles_check_and_dates():
-    at = _page("7_Next_stage.py", batch=PLAN)
+    at = _steps(batch=PLAN)
     r, _ = pipeline.baseline_row(Batch(goal="Food", choice="Pleurotus ostreatus"))
     acts = bg.fruiting(r)["induction_actions"]
     text = _md(at)
     for key in ("overview", "light", "fresh_air", "humidity"):
         assert acts[key] in text, key
     assert [b.split("</b>")[0].split("<b>")[1] for b in _bubbles(at)] == ["Induction", "Fruiting", "Harvest"]
-    assert [m.label for m in at.metric] == ["Start of induction", "Pinning", "First harvest"]
+    assert [m.label for m in at.metric][-3:] == ["Start of induction", "Pinning", "First harvest"]
     assert any("Consensus days" in c.value and "Not a model" in c.value for c in at.caption)
     assert "Temperature" in text and "not entered" in text                 # conditions check with no reading yet
 
 
 def test_start_date_is_the_typed_fully_colonised_date():
     typed = date(2026, 10, 25)
-    at = _page("7_Next_stage.py", batch=PLAN, outcomes={"B1-01": {"colonised": date(2026, 10, 23), "mould": False},
+    at = _steps(batch=PLAN, outcomes={"B1-01": {"colonised": date(2026, 10, 23), "mould": False},
                                                          "B1-02": {"colonised": typed, "mould": False}})
-    assert at.date_input(key="next_start").value == typed
+    assert at.date_input(key="plan_next_start").value == typed
     assert any("Fully colonised on" in c.value and "2 sample(s)" in c.value for c in at.caption)
 
 
 def test_start_date_falls_back_to_the_induction_marker():
-    at = _page("7_Next_stage.py", batch=PLAN)
-    assert at.date_input(key="next_start").value is not None
+    at = _steps(batch=PLAN)
+    assert at.date_input(key="plan_next_start").value is not None
     assert any(pipeline.MARKER_LABEL in c.value for c in at.caption)
 
 
 def test_residence_for_the_next_stage_is_saved_separately():
-    at = _page("7_Next_stage.py", batch=PLAN)
+    at = _steps(batch=PLAN)
     at.button(key="next_where_Tent or Cabinet").click().run()
     assert at.session_state["residences"]["next"] == "Tent or Cabinet"
     assert at.session_state["env_where"] == "Plastic container"            # colonisation residence unchanged
@@ -115,8 +120,8 @@ def test_residence_for_the_next_stage_is_saved_separately():
 
 def test_conditions_check_reads_the_next_residence():
     reading = {"temp": 40.0, "rh": 90.0, "co2": 800.0, "datetime": "2026-10-30T08:00"}
-    at = _page("7_Next_stage.py", batch=PLAN, residences={"next": "Tent or Cabinet"},
-               monitor_env_next={"Tent or Cabinet": reading})
+    at = _steps(batch=PLAN, residences={"next": "Tent or Cabinet"},
+               monitor_env={"Tent or Cabinet": reading})
     text = _md(at)
     assert "40 °C" in text and "#F12430" in text                             # too hot = red
     assert any("Latest reading in Tent or Cabinet" in c.value for c in at.caption)
@@ -148,3 +153,22 @@ def test_monitor_fruiting_without_residence_links_back():
     at.run()
     assert not at.exception
     assert any("Choose the residence on Induction first" in i.value for i in at.info)
+
+
+def test_next_step_button_toggles_the_induction_section():
+    at = _page("3_Recipe_and_timeline.py", batch=PLAN)
+    btn = at.button(key="show_next_steps_btn")
+    assert btn.label == "Show induction steps" and "Induction steps" not in [s.value for s in at.subheader]
+    btn.click().run()
+    assert at.session_state["show_next_steps"] is True
+    assert "Induction steps" in [s.value for s in at.subheader]
+    assert at.button(key="show_next_steps_btn").label == "Hide induction steps"
+    at.button(key="show_next_steps_btn").click().run()
+    assert "Induction steps" not in [s.value for s in at.subheader]
+
+
+def test_confirmed_start_from_monitor_replaces_the_date_input():
+    at = _steps(batch=PLAN, batch_stage="Fruiting", next_start=date(2026, 11, 2))
+    assert not any(d.key == "plan_next_start" for d in at.date_input)
+    assert "**Start of induction:** 02 Nov 2026" in _md(at)
+    assert at.metric[-3].value == "02 Nov"

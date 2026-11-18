@@ -31,6 +31,11 @@ def _page(name, **state):
     return at
 
 
+def _steps(**state):
+    """Recipe and actions with the post-treatment steps shown (was page 7)."""
+    return _page("3_Recipe_and_timeline.py", show_next_steps=True, **state)
+
+
 def _text(at):
     return " ".join([m.value for m in at.markdown] + [c.value for c in at.caption] + [i.value for i in at.info])
 
@@ -86,8 +91,8 @@ def test_method_text_shows_values_or_says_there_are_none():
     assert pipeline.post_treatment_text(by_id["COMPACT-50"]) == "No values in our data (4 rows from 1 study)."
 
 
-def test_page7_method_picker_lists_the_csv_methods():
-    at = _page("7_Next_stage.py", batch=PLAN)
+def test_steps_method_picker_lists_the_csv_methods():
+    at = _steps(batch=PLAN)
     radio = at.radio(key="pt_method")
     assert radio.options == [pipeline.post_treatment_label(m) for m in pipeline.post_treatment_methods()]
     assert "Compact 50% after colonisation" in radio.options
@@ -122,9 +127,9 @@ def test_matched_pair_notes_match_the_strength_table():
         assert (n, round(factor, 2)) == (stated_n, stated), pid
 
 
-def test_page7_strength_after_colonisation_and_note_is_text_only():
-    at = _page("7_Next_stage.py", batch=PLAN)
-    labels = [m.label for m in at.metric]
+def test_steps_strength_after_colonisation_and_note_is_text_only():
+    at = _steps(batch=PLAN)
+    labels = [m.label for m in at.metric if "after colonisation" in m.label]
     if not labels:
         pytest.skip("property_table.csv not available")
     assert labels == ["Stress at 10 % strain (after colonisation)", "Density (after colonisation)"]
@@ -133,16 +138,16 @@ def test_page7_strength_after_colonisation_and_note_is_text_only():
     assert "×4" not in _text(at)                                    # pressing while growing belongs to colonisation
 
 
-def test_page7_start_date_asks_when_nothing_is_typed():
-    at = _page("7_Next_stage.py", batch=PLAN)
-    assert at.date_input(key="next_start").value is None
+def test_steps_start_date_asks_when_nothing_is_typed():
+    at = _steps(batch=PLAN)
+    assert at.date_input(key="plan_next_start").value is None
     assert any("No 'Fully colonised on' date" in i.value for i in at.info)
-    typed = _page("7_Next_stage.py", batch=PLAN, outcomes={"M1-01": {"colonised": D, "mould": False}})
-    assert typed.date_input(key="next_start").value == D
+    typed = _steps(batch=PLAN, outcomes={"M1-01": {"colonised": D, "mould": False}})
+    assert typed.date_input(key="plan_next_start").value == D
 
 
-def test_page7_materials_residences():
-    at = _page("7_Next_stage.py", batch=PLAN)
+def test_steps_materials_residences():
+    at = _steps(batch=PLAN)
     labels = [b.label for b in at.button if b.key and b.key.startswith("next_where_")]
     assert labels == ["Oven", "Drying rack or room", "Press"]
     at.button(key="next_where_Oven").click().run()
@@ -167,3 +172,11 @@ def test_page8_weight_log_and_dry_message():
     at.number_input(key="w_g_M1-01").set_value(140.0).run()
     at.button(key="w_add_M1-01").click().run()
     assert at.session_state["weights"]["M1-01"][-1]["g"] == 140.0
+
+
+def test_next_step_button_toggles_the_post_treatment_section():
+    at = _page("3_Recipe_and_timeline.py", batch=PLAN)
+    assert at.button(key="show_next_steps_btn").label == "Show post-treatment steps"
+    assert not any(r.key == "pt_method" for r in at.radio)
+    at.button(key="show_next_steps_btn").click().run()
+    assert any(r.key == "pt_method" for r in at.radio)
