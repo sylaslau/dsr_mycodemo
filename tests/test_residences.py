@@ -78,7 +78,7 @@ def test_old_session_keys_still_load():
 
 
 def test_mould_litres_feed_the_recipe_scale():
-    at = _page("pages/3_Recipe_and_timeline.py")
+    at = _page("pages/2_Recipe_and_actions.py")
     s = at.session_state
     s["goal"], s["choice"], s["material_species"], s["temp_c"] = "Materials", "Packaging foam", "Trametes versicolor", 22.0
     s["environment"], s["env_where"] = "Small plastic container (about 1 L)", "Plastic container"
@@ -89,7 +89,7 @@ def test_mould_litres_feed_the_recipe_scale():
 
 
 def test_food_vessel_is_ignored_in_materials_mode():
-    at = _page("pages/3_Recipe_and_timeline.py")
+    at = _page("pages/2_Recipe_and_actions.py")
     s = at.session_state
     s["goal"], s["choice"], s["temp_c"] = "Materials", "Packaging foam", 22.0
     s["environment"], s["env_where"] = "Small plastic container (about 1 L)", "Plastic container"

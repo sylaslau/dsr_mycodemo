@@ -56,7 +56,7 @@ def test_start_page_shows_the_environment_once_a_choice_exists():
 
 # --- Recipe and timeline -------------------------------------------------------------------
 def test_recipe_page_drops_form_and_source_captions_and_yield_box():
-    at = _page("pages/3_Recipe_and_timeline.py")
+    at = _page("pages/2_Recipe_and_actions.py")
     s = at.session_state
     s["goal"], s["choice"], s["temp_c"] = "Food", "Pleurotus ostreatus", 22.0
     s["environment"], s["env_where"] = "Small plastic container (about 1 L)", "Plastic container"
@@ -84,7 +84,7 @@ def test_co2_unknown_saves_empty():
 
 
 def _monitor():
-    at = _page("pages/4_Monitor.py")
+    at = _page("pages/3_Monitor.py")
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     at.session_state["env_where"], at.session_state["env_size"] = "Tent or Cabinet", {"Tent or Cabinet": 1.0}
     at.session_state["batch"] = {"batch_label": "B1", "species": "Pleurotus ostreatus", "inoc_date": START,

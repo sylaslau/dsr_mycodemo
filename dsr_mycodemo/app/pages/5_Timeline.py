@@ -14,10 +14,10 @@ from dsr_mycodemo.cultivation import baseline_guide as bg
 st.set_page_config(page_title="Timeline", page_icon="📅", layout="wide")
 flow.init()
 ss = st.session_state
-flow.need("batch", "Recipe and actions", "pages/3_Recipe_and_timeline.py")
+flow.need("batch", "Recipe and actions", "pages/2_Recipe_and_actions.py")
 
 EVENT_COLOR, STAGE_COLOR = stage_ui.EVENT_COLOR, stage_ui.STAGE_COLOR
-flow.step_header(6, 8, "Timeline")
+flow.step_header(5, 5, "Timeline")
 batch = flow.sample_batch()
 result = pipeline.run(batch)
 

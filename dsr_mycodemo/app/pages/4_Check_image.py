@@ -11,7 +11,7 @@ from dsr_mycodemo.growth.traced_coverage import coverage_from_marks, editor_imag
 
 st.set_page_config(page_title="Check image", page_icon="🔍", layout="wide")
 flow.init()
-flow.step_header(5, 8, "Check image")
+flow.step_header(4, 5, "Check image")
 
 ss = st.session_state
 SAMPLE_PHOTOS = ss.setdefault("sample_photos", {})      # {sample ID: [photo rows]}, filled on Monitor
@@ -32,7 +32,7 @@ def label(r):
 samples = [s for s, rows in SAMPLE_PHOTOS.items() if any(r.get("data") for r in rows)]
 if not samples:
     st.info("Upload a photo of a sample on Monitor first, then press Check image there.")
-    st.page_link("pages/4_Monitor.py", label="Monitor", icon="📷")
+    st.page_link("pages/3_Monitor.py", label="Monitor", icon="📷")
     st.stop()
 
 target = ss.get("check_target") or {}
@@ -84,7 +84,7 @@ if row.get("method") == pipeline.MARKED_METHOD:
 
     missing = []
     if not PLAN:
-        missing.append("no plan batch yet (make one on Recipe and timeline)")
+        missing.append("no plan batch yet (make one on Recipe and actions)")
     elif not start:
         missing.append("no inoculation date in the plan batch")
     if flow.is_materials():

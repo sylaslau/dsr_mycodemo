@@ -152,7 +152,7 @@ def test_autoclave_line_from_the_page2_vessel():
     assert ING.autoclave_line("Grow bag", 5.0, 2, 2.5)[0] == 150
     minutes, text = ING.autoclave_line("Grow bag", 10.0, 2, 5.0)
     assert minutes is None and text.endswith(ING.OVER_3KG_MESSAGE)
-    assert ING.autoclave_line(None, None, 1, 0.5) == (None, "Choose a vessel on Environment.")
+    assert ING.autoclave_line(None, None, 1, 0.5) == (None, "Choose a vessel on Start a batch.")
 
 
 def test_grams_switch_to_kg_at_1000():

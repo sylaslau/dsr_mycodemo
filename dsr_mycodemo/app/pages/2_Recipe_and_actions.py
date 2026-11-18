@@ -35,7 +35,7 @@ def suggest_label():
                      ss["inoc_date"].strftime("%y%m%d")])
 
 
-flow.step_header(3, 8, "Recipe and actions")
+flow.step_header(2, 5, "Recipe and actions")
 d1, d2 = st.columns(2)
 ss["inoc_date"] = d1.date_input("Planned inoculation date", ss["inoc_date"])
 auto = suggest_label()
@@ -44,7 +44,7 @@ if ss.get("batch_label") in (None, "", ss.get("batch_label_auto")):   # follow t
 ss["batch_label_auto"] = auto
 batch_label = d2.text_input("Batch label", key="batch_label", help="Suggested automatically; you can change it.")
 
-# vessels set on Environment: size x amount, summed (only the vessel chosen there counts; others may be stale)
+# vessels set on Start a batch: size x amount, summed (only the vessel chosen there counts; others may be stale)
 vessel = ss.get("env_container")
 ss["plan_size"] = None
 vessel_litres = None
@@ -278,4 +278,4 @@ if st.button("Save this plan and open Monitor", type="primary"):
                    "species": row["species"] if row else ss["material_species"] if flow.is_materials() else what,
                    "inoc_date": ss["inoc_date"], "n_containers": n, "temp_c": ss["temp_c"],
                    "substrate": substrate, "spawn_pct": float(pipeline.SPAWN_PCT)}
-    st.switch_page("pages/4_Monitor.py")
+    st.switch_page("pages/3_Monitor.py")

@@ -34,7 +34,7 @@ def is_food(shown):
     return ss["goal"] == "Food" and ss["choice"] == FOOD_SPECIES[shown]
 
 
-flow.step_header(1, 8, "Start a batch")
+flow.step_header(1, 5, "Start a batch")
 st.write("What do you want to grow? Pick one for this batch.")
 left, right = st.columns(2)
 
@@ -93,6 +93,6 @@ elif ss["choice"]:
     stage_ui.environment_section()
     if ss["environment"]:
         if st.button("Next: recipe and actions", type="primary", key="next"):
-            st.switch_page("pages/3_Recipe_and_timeline.py")
+            st.switch_page("pages/2_Recipe_and_actions.py")
     else:
         st.caption("Choose where you grow to continue.")

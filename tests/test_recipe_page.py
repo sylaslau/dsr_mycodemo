@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-PAGE = str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/3_Recipe_and_timeline.py")
+PAGE = str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/2_Recipe_and_actions.py")
 
 
 def run_page(method, vessel=None, litres=None, amount=1, choice="Pleurotus ostreatus"):
@@ -48,7 +48,7 @@ def test_glass_jar_from_page2_sets_the_autoclave_time():
     assert any(t.startswith("Your 0.5 L glass jar,") and "60 min" in t for t in texts(run_page("STER", "Glass Jar", 0.5)))
     assert any(t.startswith("Your 1 L glass jars,") and "90 min" in t
                for t in texts(run_page("STER", "Glass Jar", 1.0, 3)))
-    assert "Choose a vessel on Environment." in [i.value for i in run_page("STER").info]
+    assert "Choose a vessel on Start a batch." in [i.value for i in run_page("STER").info]
 
 
 def test_grow_bag_table_switches_to_kg():

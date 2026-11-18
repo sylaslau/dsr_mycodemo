@@ -7,7 +7,7 @@ from pathlib import Path
 
 from dsr_mycodemo import pipeline
 
-PAGE = str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/6_Calendar_and_tasks.py")
+PAGE = str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/5_Timeline.py")
 START = date(2026, 10, 8)
 PLAN = {"batch_label": "B1", "species": "Pleurotus ostreatus", "inoc_date": START, "n_containers": 2,
         "temp_c": 22.0, "substrate": "sawdust", "spawn_pct": 10.0}

@@ -395,7 +395,7 @@ def test_old_backup_without_environments_still_restores():
 
 def test_monitor_page_environment_boxes_stages_and_sample_photo():
     from streamlit.testing.v1 import AppTest
-    at = AppTest.from_file(str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/4_Monitor.py"), default_timeout=60)
+    at = AppTest.from_file(str(Path(__file__).parents[1] / "dsr_mycodemo/app/pages/3_Monitor.py"), default_timeout=60)
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     at.session_state["env_where"], at.session_state["env_size"] = "Tent or Cabinet", {"Tent or Cabinet": 1.0}
     at.session_state["batch"] = {"batch_label": "B1", "species": "Pleurotus ostreatus", "inoc_date": START,
@@ -416,7 +416,7 @@ def _page(name):
 
 
 def test_recipe_page_materials_shows_previews_and_strength():
-    at = _page("pages/3_Recipe_and_timeline.py")
+    at = _page("pages/2_Recipe_and_actions.py")
     at.session_state["goal"], at.session_state["choice"] = "Materials", "Packaging foam"
     at.session_state["material_species"] = "Ganoderma"
     at.session_state["environment"], at.session_state["temp_c"] = "Grow bag (about 3 kg)", 22.0

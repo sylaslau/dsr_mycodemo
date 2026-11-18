@@ -1,9 +1,8 @@
-"""Part C (11-18): page 7 Induction and page 8 Monitor fruiting (Food); titles switch by mode; Step n of 8."""
+"""Part C (11-18), 5-page flow: induction steps on Recipe and actions (was page 7); Step n of 5. The fruiting
+record (was page 8) is tested in test_monitor_stages."""
 
 from datetime import date, timedelta
 from pathlib import Path
-
-import pytest
 
 from dsr_mycodemo import pipeline
 from dsr_mycodemo.cultivation import baseline_guide as bg
@@ -30,7 +29,7 @@ def _page(name, goal="Food", choice="Pleurotus ostreatus", **state):
 
 def _steps(**state):
     """Recipe and actions with the induction / post-treatment steps shown (was page 7)."""
-    return _page("3_Recipe_and_timeline.py", show_next_steps=True, **state)
+    return _page("2_Recipe_and_actions.py", show_next_steps=True, **state)
 
 
 def _md(at):
@@ -67,19 +66,13 @@ def test_next_stage_ranges_food_from_the_guide_materials_none():
 
 
 # --- step headers and titles ----------------------------------------------------------------------
-def test_every_page_says_step_n_of_8():
-    for f in sorted((APP / "pages").glob("[1-8]_*.py")):
+def test_every_page_says_step_n_of_5():
+    pages = sorted((APP / "pages").glob("[0-9]_*.py"))
+    assert [f.name for f in pages] == ["1_Start_a_batch.py", "2_Recipe_and_actions.py", "3_Monitor.py",
+                                       "4_Check_image.py", "5_Timeline.py"]
+    for n, f in enumerate(pages, start=1):
         src = f.read_text()
-        assert "step_header(" in src and ", 8, " in src.split("step_header(")[1].split("\n")[0], f.name
-
-
-@pytest.mark.parametrize("goal, choice, t7, t8", [("Food", "Pleurotus ostreatus", "Induction", "Monitor fruiting"),
-                                                  ("Materials", "Foam", "Post-treatment", "Monitor post-treatment")])
-def test_titles_follow_the_mode(goal, choice, t7, t8):
-    at7 = _page("7_Next_stage.py", goal, choice)     # removed in part 5
-    assert at7.title[0].value == t7 and "Step 7 of 8" in _md(at7)
-    at8 = _page("8_Monitor_next_stage.py", goal, choice)
-    assert at8.title[0].value == t8 and "Step 8 of 8" in _md(at8)
+        assert f"step_header({n}, 5, " in src, f.name
 
 
 # --- induction steps on Recipe and actions (was page 7) --------------------------------------------------------------------------------
@@ -127,36 +120,8 @@ def test_conditions_check_reads_the_next_residence():
     assert any("Latest reading in Tent or Cabinet" in c.value for c in at.caption)
 
 
-# --- page 8 Monitor fruiting ----------------------------------------------------------------------------
-def test_monitor_fruiting_uses_the_next_residence_and_saves_its_own_log():
-    at = _page("8_Monitor_next_stage.py", batch=PLAN)
-    assert at.subheader[0].value == "Monotub or Plastic Container"          # next empty = colonisation residence
-    at.button(key="next_mon_save_Plastic container").click().run()
-    saved = at.session_state["monitor_env_next"]["Plastic container"]
-    assert len(saved["log"]) == 1 and saved["day"] is not None
-    assert "Plastic container" not in at.session_state["monitor_env"]     # Monitor's own log untouched
-
-
-def test_monitor_fruiting_records_flushes_and_shows_harvest_readiness_preview():
-    at = _page("8_Monitor_next_stage.py", batch=PLAN)
-    assert at.selectbox(key="next_sample").options == ["B1-01", "B1-02"]
-    assert "Harvest readiness" in _md(at) and "PREVIEW" in _md(at)
-    at.number_input(key="next_h_g_B1-01").set_value(120.0).run()
-    at.button(key="next_h_add_B1-01").click().run()
-    assert at.session_state["harvest"]["B1-01"][0]["g"] == 120.0
-
-
-def test_monitor_fruiting_without_residence_links_back():
-    from streamlit.testing.v1 import AppTest
-    at = AppTest.from_file(str(APP / "pages/8_Monitor_next_stage.py"), default_timeout=60)
-    at.session_state["goal"], at.session_state["choice"] = "Food", "Pleurotus ostreatus"
-    at.run()
-    assert not at.exception
-    assert any("Choose the residence on Induction first" in i.value for i in at.info)
-
-
 def test_next_step_button_toggles_the_induction_section():
-    at = _page("3_Recipe_and_timeline.py", batch=PLAN)
+    at = _page("2_Recipe_and_actions.py", batch=PLAN)
     btn = at.button(key="show_next_steps_btn")
     assert btn.label == "Show induction steps" and "Induction steps" not in [s.value for s in at.subheader]
     btn.click().run()

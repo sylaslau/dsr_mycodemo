@@ -287,9 +287,9 @@ def autoclave_size_key(litres=None, damp_kg=None) -> str:
 
 
 def autoclave_line(vessel, litres, n, damp_kg):
-    """(minutes or None, one line) for the vessel chosen on Environment; minutes None when none is chosen."""
+    """(minutes or None, one line) for the vessel chosen on Start a batch; minutes None when none is chosen."""
     if vessel is None or litres is None:
-        return None, "Choose a vessel on Environment."
+        return None, "Choose a vessel on Start a batch."
     minutes, text = autoclave_time(autoclave_size_key(litres, damp_kg))
     what = VESSEL_PLURAL.get(vessel, vessel.lower()) if n > 1 else vessel.lower()
     start = f"Your {litres:g} L {what}, about {damp_kg:.2f} kg damp mix each: "

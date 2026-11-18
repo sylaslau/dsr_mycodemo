@@ -108,7 +108,7 @@ def size_amount(name, spec, on, sizes="env_size", amounts="env_amount", prefix="
 def residence_picker(stage_key):
     """The Residence box: one button per residence with its size fields. Saves the choice per stage in
     ss['residences'][stage_key]; colonisation also keeps the old keys (env_where, environment = recipe scale) and
-    clears the plan, as the Environment page always did. Returns the chosen residence or None."""
+    clears the plan, as the old Environment page always did. Returns the chosen residence or None."""
     ss = _ss()
     options = residence_options(stage_key)
     nxt = stage_key == "next"
@@ -499,7 +499,7 @@ def _range(ranges, key):
 
 
 def environment_log(stage, residence, ranges, inoc_date=None, kind="grow", fields=("temp", "rh", "co2")):
-    """The reading box of one residence for a stage ('colonisation' = Monitor, 'next' = Monitor next stage): one
+    """The reading box of one residence for a stage ('colonisation' = Monitor, 'next' = the old Monitor next stage page): one
     input per field with its traffic light against ranges ({key: (lo, hi, prefill)} or None), Measured by, date,
     time and Save. Returns (worst light, the entry saved on this run or None)."""
     ss = _ss()

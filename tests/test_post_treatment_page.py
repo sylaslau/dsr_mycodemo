@@ -1,4 +1,5 @@
-"""Part E (11-18): page 7 Post-treatment and page 8 Monitor post-treatment (Materials); the dry check."""
+"""Part E (11-18), 5-page flow: post-treatment steps on Recipe and actions (was page 7) and the post-treatment
+record on Monitor (was page 8); the dry check."""
 
 from datetime import date, timedelta
 from pathlib import Path
@@ -33,7 +34,7 @@ def _page(name, **state):
 
 def _steps(**state):
     """Recipe and actions with the post-treatment steps shown (was page 7)."""
-    return _page("3_Recipe_and_timeline.py", show_next_steps=True, **state)
+    return _page("2_Recipe_and_actions.py", show_next_steps=True, **state)
 
 
 def _text(at):
@@ -154,18 +155,23 @@ def test_steps_materials_residences():
     assert at.session_state["residences"]["next"] == "Oven"
 
 
-# --- page 8 Monitor post-treatment -------------------------------------------------------------------------
-def test_page8_reading_box_has_temperature_and_humidity_only():
-    at = _page("8_Monitor_next_stage.py", batch=PLAN, residences={"next": "Oven"})
-    assert at.subheader[0].value == "Oven"
+# --- post-treatment on Monitor (was page 8) ------------------------------------------------------------------
+def _monitor(**state):
+    return _page("3_Monitor.py", batch=PLAN, residences={"next": "Oven"}, batch_stage="Post-treatment", next_start=D,
+                 **state)
+
+
+def test_monitor_post_treatment_box_has_temperature_and_humidity_only():
+    at = _monitor()
+    assert [h.value for h in at.subheader][-1] == "Oven"
     keys = {n.key for n in at.number_input}
-    assert "next_mon_temp_Oven_next" in keys and "next_mon_rh_Oven_next" in keys
-    assert not any(k.startswith("next_mon_co2") for k in keys)
+    assert "mon_temp_Oven_post" in keys and "mon_rh_Oven_post" in keys
+    assert not any(k and k.startswith("mon_co2_Oven") for k in keys)
 
 
-def test_page8_weight_log_and_dry_message():
+def test_monitor_weight_log_and_dry_message():
     log = _log(200, 150, 149, 148.5)
-    at = _page("8_Monitor_next_stage.py", batch=PLAN, residences={"next": "Oven"}, weights={"M1-01": log})
+    at = _monitor(weights={"M1-01": log})
     text = _text(at)
     assert "M1-01 is dry" in " ".join(s.value for s in at.success)
     assert "-25.0 % per day" in text and "Project rule" in text
@@ -175,7 +181,7 @@ def test_page8_weight_log_and_dry_message():
 
 
 def test_next_step_button_toggles_the_post_treatment_section():
-    at = _page("3_Recipe_and_timeline.py", batch=PLAN)
+    at = _page("2_Recipe_and_actions.py", batch=PLAN)
     assert at.button(key="show_next_steps_btn").label == "Show post-treatment steps"
     assert not any(r.key == "pt_method" for r in at.radio)
     at.button(key="show_next_steps_btn").click().run()
