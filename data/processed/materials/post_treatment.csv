@@ -1,0 +1,7 @@
+protocol_id,name,n_rows,n_studies,studies,n_temp,temp_c_min,temp_c_median,temp_c_max,n_hours,hours_min,hours_median,hours_max,values
+COMPACT-50,Compact 50% after growth,4,1,d023,0,,,,0,,,,no values in our data
+OVEN-DRY,Oven dry,31,7,d004 d005 d006 d007 d016 d017 d023,31,40.0,70.0,103.0,28,10.0,12.0,48.0,
+OVEN-BAKE,Oven bake,4,1,d023,4,100.0,100.0,100.0,4,6.0,6.0,6.0,
+DRY,Dry (method not stated),1,1,d003,0,,,,0,,,,no values in our data
+CHITOSAN-2L,"Chitosan coating, 2 layers",1,1,d007,0,,,,0,,,,no values in our data
+CHITOSAN-4L,"Chitosan coating, 4 layers",1,1,d007,0,,,,0,,,,no values in our data
