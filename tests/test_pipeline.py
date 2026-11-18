@@ -95,7 +95,7 @@ def test_material_strength_uses_the_chosen_species():
     assert tv.value["stress_mpa"] != gan.value["stress_mpa"]
     assert tv.value["n_total"] == 213
     assert (tv.value["n_rows"], gan.value["n_rows"]) == (110, 63)      # Ganoderma = sessile 39 + lingzhi 18 + lucidum 6
-    assert "based on 63 rows for this species, out of 213" in gan.note
+    assert "(63 for this species, out of 213)" in gan.note
 
 
 def test_materials_hide_the_spawn_warning_food_keeps_it():

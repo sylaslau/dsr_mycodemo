@@ -39,6 +39,10 @@ MAIN_CATEGORIES = ("STRAW", "HUSK")          # plus every WOOD_* category
 RISKY_UNSTERILISED = ("PROT", "QSUR")        # start unticked unless the mix is autoclaved
 SOFTWOOD_NOTE = "Softwoods contain natural defensive compounds against fungi that can cause slower growth."
 DEFAULT_MAIN = "beech_sawdust"
+# main material -> substrate_group of the strength table (Material strength): id prefix first, then wood_type
+STRENGTH_PREFIX = {"hemp": "hemp", "flax": "flax", "arboloco_pith": "pith"}
+STRENGTH_WOOD = {"soft": "softwood", "hard": "hardwood"}
+STRENGTH_FALLBACK = "hardwood"
 
 # method key -> (label, protocol_id in protocol.csv or None, instruction)
 METHODS = {
@@ -139,6 +143,21 @@ def main_options(species) -> list[str]:
     df = load()
     ok = df["category"].map(is_main) & ((df["wood_type"] != "soft") | is_pleurotus(species))
     return df.index[ok].tolist()
+
+
+def strength_group(ingredient):
+    """The strength table's substrate_group (property_data.SUBSTRATE_GROUP) for a main material: hemp, flax, pith,
+    softwood or hardwood (by wood_type), straw (cereal straws); None when the strength data has no matching group."""
+    df = load()
+    if ingredient not in df.index:
+        return None
+    for prefix, group in STRENGTH_PREFIX.items():
+        if ingredient.startswith(prefix):
+            return group
+    wood = df.at[ingredient, "wood_type"]
+    if wood in STRENGTH_WOOD:
+        return STRENGTH_WOOD[wood]
+    return "straw" if ingredient.endswith("_straw") else None
 
 
 def form_caption(ingredient: str) -> str:

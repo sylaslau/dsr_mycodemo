@@ -724,28 +724,48 @@ def _strength_table():
 def _strength_model():
     from dsr_mycodemo.property_model import TwoStepModel, training_rows
     table = _strength_table()
-    return TwoStepModel().fit(training_rows(table)), table["species_name"].value_counts().to_dict(), len(table)
+    pairs = table.groupby(["species_name", "substrate_group"]).size().to_dict()
+    return (TwoStepModel().fit(training_rows(table)), table["species_name"].value_counts().to_dict(), len(table),
+            pairs)
+
+
+def strength_group(batch):
+    """(substrate_group, matched) for Material strength: the recipe's main ingredient mapped to the strength table's
+    groups (ingredients.strength_group); hardwood with matched False when there is no match."""
+    from dsr_mycodemo.cultivation import ingredients
+    main = (batch.recipe or {}).get("main")
+    group = ingredients.strength_group(main) if main else None
+    return (group, True) if group else (ingredients.STRENGTH_FALLBACK, False)
 
 
 def outcome_step(batch):
-    """Harvest-record placeholder (Food) or Material strength (Materials) for the chosen materials species."""
+    """Harvest-record placeholder (Food) or Material strength (Materials) for the chosen materials species and the
+    substrate group of the recipe's main ingredient."""
     if not is_materials(batch):
         return Step("Harvest record", None, "preview", "Record your harvest in Monitor; no yield estimate is provided.")
     if materials_mode() == "off":
         return Step("Material strength", None, "preview", "Materials mode is switched off; only Food runs.")
     species = material_species(batch)
+    group, matched = strength_group(batch)
     try:
-        frame = pd.DataFrame({"species_name": [species], "substrate_group": ["hardwood"]})
-        model, counts, total = _strength_model()
+        frame = pd.DataFrame({"species_name": [species], "substrate_group": [group]})
+        model, counts, total, pairs = _strength_model()
         stress, dens = float(model.predict_stress(frame)[0]), float(model.predict_density(frame)[0])
     except (FileNotFoundError, ValueError, KeyError):
         return Step("Material strength", None, "preview", "The material model could not be loaded.")
-    n = int(counts.get(species, 0))
+    n, n_pair = int(counts.get(species, 0)), int(pairs.get((species, group), 0))
+    note = f"Estimate for {group} and {species}, based on {n_pair} rows for this species on {group}"
+    note += f" ({n} for this species, out of {total})."
+    if not matched:
+        note += (" Your main ingredient has no substrate group in the strength data, so hardwood is used "
+                 "instead.")
+    if n_pair == 0:
+        note += f" No row has this species on {group}: the estimate leans on the other rows."
+    note += (f" The model has no input for the product, so it is the same for {', '.join(PRODUCTS).lower()}; "
+             f"{STRENGTH_LABEL}.")
     return Step("Material strength", {"stress_mpa": stress, "density": dens, "species": species, "n_rows": n,
-                                      "n_total": total, "label": STRENGTH_LABEL}, "our model",
-                f"Estimate for hardwood sawdust and {species}, based on {n} rows for this species, out of {total}. "
-                f"The model has no input for the product, so it is the same for {', '.join(PRODUCTS).lower()}; "
-                f"{STRENGTH_LABEL}.")
+                                      "substrate_group": group, "group_matched": matched, "n_pair": n_pair,
+                                      "n_total": total, "label": STRENGTH_LABEL}, "our model", note)
 
 
 def days_to_next_stage(batch, cover, temp_c):

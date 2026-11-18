@@ -432,8 +432,9 @@ if ss["goal"] != "Food":
         m1, m2 = st.columns(2)
         m1.metric("Stress at 10 % strain", f"{out.value['stress_mpa']:.3f} MPa")
         m2.metric("Density", f"{out.value['density']:.0f} kg/m³")
-        st.markdown(f"**{out.value['species']}**: {out.value['label']}. Based on {out.value['n_rows']} rows for this "
-                    f"species, out of {out.value['n_total']}.")
+        st.markdown(f"**{out.value['species']}** on **{out.value['substrate_group']}**: {out.value['label']}. Based "
+                    f"on {out.value['n_pair']} rows for this species on {out.value['substrate_group']} "
+                    f"({out.value['n_rows']} for this species, out of {out.value['n_total']}).")
         st.caption(out.note)
 
 # --- hand over to Monitor ----------------------------------------------------------------
