@@ -555,6 +555,84 @@ def fruiting_dates(batch, start):
                 f"Row used: {fr.value['row']}.")
 
 
+# --- post-treatment (Materials, page 7 and 8) ------------------------------------------------------------
+# matched pairs of notebook 0.3 (same lab and recipe, only the treatment differs; geometric mean of the ratios),
+# checked against the strength table in tests/test_post_treatment_page.py. Text only: never multiplied into the estimate.
+POST_TREATMENT_PAIRS = {
+    "COMPACT-50": ("Compaction after colonisation (to half thickness)", "density", 1.47, 6, "d023"),
+    "CHITOSAN-2L": ("Chitosan coating, 2 layers", "strength", 0.67, 8, "d007"),
+    "CHITOSAN-4L": ("Chitosan coating, 4 layers", "strength", 0.73, 7, "d007"),
+    "OVEN-BAKE": ("Baking instead of oven drying", "density", 1.03, 6, "d023"),
+    "OVEN-DRY": ("Baking instead of oven drying", "density", 1.03, 6, "d023"),
+}
+DRY_LIMIT_PCT, DRY_READINGS = 1.0, 2    # project rule: "dry" = under 1 % change per day, 2 readings in a row
+
+
+def post_treatment_methods(path=None):
+    """The ST6 methods with their study values (data/processed/materials/post_treatment.csv), as a list of dicts in
+    file order; [] when the file is missing."""
+    from dsr_mycodemo.post_treatment_data import OUTPUT_PATH
+    try:
+        t = pd.read_csv(path or OUTPUT_PATH, keep_default_na=False, na_values=[""])
+    except FileNotFoundError:
+        return []
+    t["values"] = t["values"].fillna("")
+    return [{k: (None if isinstance(v, float) and np.isnan(v) else v) for k, v in r.items()}
+            for r in t.to_dict("records")]
+
+
+def post_treatment_label(m):
+    """The method's name as shown: protocol.csv says 'after growth', the app says 'after colonisation'."""
+    return str(m["name"]).replace("after growth", "after colonisation")
+
+
+def post_treatment_text(m):
+    """'40-103 °C (median 70), 10-48 h (median 12). 31 rows from 7 studies.' or the 'no values' wording."""
+    count = f"{m['n_rows']} row{'s' if m['n_rows'] != 1 else ''} from {m['n_studies']} " \
+            f"stud{'ies' if m['n_studies'] != 1 else 'y'}"
+    if m["values"]:
+        return f"{m['values'].capitalize()} ({count})."
+
+    def span(lo, med, hi, unit):
+        if lo is None:
+            return f"{unit} not stated"
+        return f"{lo:g} {unit}" if lo == hi else f"{lo:g}–{hi:g} {unit} (median {med:g})"
+    return (f"{span(m['temp_c_min'], m['temp_c_median'], m['temp_c_max'], '°C')}, "
+            f"{span(m['hours_min'], m['hours_median'], m['hours_max'], 'h')}. {count.capitalize()}.")
+
+
+def post_treatment_note(protocol_id):
+    """The matched-pair note for a method, or a line saying there is none. Text only."""
+    if protocol_id not in POST_TREATMENT_PAIRS:
+        return "No matched pairs for this method in our data."
+    what, measure, factor, n, lab = POST_TREATMENT_PAIRS[protocol_id]
+    return (f"{what}: {measure} ×{factor:.2f} in our data ({n} matched pairs, {lab}; notebook 0.3). "
+            "Shown as a note, not applied to the estimate above.")
+
+
+def weight_changes(log):
+    """Weight log [{'date', 'g'}] sorted by date, each with 'pct_per_day': the change since the reading before, in %
+    of that weight per day (negative = losing weight); None for the first reading or a same-day reading."""
+    rows = sorted(log, key=lambda r: r["date"])
+    out = []
+    for i, r in enumerate(rows):
+        pct = None
+        if i:
+            prev = rows[i - 1]
+            days = (r["date"] - prev["date"]).days
+            if days > 0 and prev["g"] > 0:
+                pct = 100 * (r["g"] - prev["g"]) / prev["g"] / days
+        out.append({**r, "pct_per_day": pct})
+    return out
+
+
+def is_dry(log, limit=DRY_LIMIT_PCT, readings=DRY_READINGS):
+    """True when the last `readings` changes are each under `limit` % per day (project rule, not a model)."""
+    pcts = [r["pct_per_day"] for r in weight_changes(log)][1:]
+    last = pcts[-readings:]
+    return len(last) == readings and all(p is not None and abs(p) < limit for p in last)
+
+
 def forecast_photos(batch):
     """The photos the Colonisation forecast uses: a photo checked by the user replaces the HSV one(s) of the same
     sample and day."""

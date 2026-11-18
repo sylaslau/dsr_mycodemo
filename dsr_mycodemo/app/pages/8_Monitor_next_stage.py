@@ -27,7 +27,10 @@ ranges = pipeline.next_stage_ranges(batch)
 fields = ("temp", "rh") if materials else ("temp", "rh", "co2")
 with st.container(border=True):
     st.subheader(stage_ui.residence_label(residence))
-    if ranges is None and not materials:
+    if materials:
+        st.caption("Temperature and humidity are a record only: our data has no wanted ranges for post-treatment, "
+                   "so the lights stay yellow.")
+    elif ranges is None:
         st.caption("No fruiting ranges are known for this mushroom.")
     elif not materials:
         st.caption("Lights: fruiting ranges of the consensus guide.")

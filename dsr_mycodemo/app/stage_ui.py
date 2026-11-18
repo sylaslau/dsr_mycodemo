@@ -329,9 +329,34 @@ def photo_record(sample, label="Photo of this sample"):
     return rows
 
 
+DRY_RULE = (f"Project rule, not a model: a sample counts as **dry** when its weight changes by under "
+            f"{pipeline.DRY_LIMIT_PCT:g} % per day for {pipeline.DRY_READINGS} readings in a row.")
+
+
+def weight_log(sample):
+    """Weight log of one sample (date, grams) in ss['weights'][sample], with the % change per day and the dry check."""
+    log = _ss()["weights"].setdefault(sample, [])
+    st.markdown("**Weight**")
+    w1, w2, w3 = st.columns([2, 2, 1], vertical_alignment="bottom")
+    when = w1.date_input("Date", date.today(), key=f"w_date_{sample}")
+    grams = w2.number_input("Weight (g)", 0.0, step=1.0, key=f"w_g_{sample}")
+    if w3.button("Add weight", key=f"w_add_{sample}", disabled=grams <= 0, use_container_width=True):
+        log.append({"date": when, "g": float(grams)})
+    for r in pipeline.weight_changes(log):
+        change = "" if r["pct_per_day"] is None else f", {r['pct_per_day']:+.1f} % per day"
+        st.caption(f"{r['date']:%Y-%m-%d}: {r['g']:g} g{change}")
+    if pipeline.is_dry(log):
+        st.success(f"{sample} is dry: the weight has stopped dropping.")
+    elif log:
+        st.info(f"{sample} is not dry yet: keep weighing.")
+    st.caption(DRY_RULE)
+    return log
+
+
 def sample_log(stage, sample, inoc_date, materials=False):
     """The record of one sample at a stage. 'colonisation' (Monitor): fully colonised date, mould seen and, for Food,
-    the harvest flushes. 'next' (Monitor next stage): Food = photo (record only) and the flushes."""
+    the harvest flushes. 'next' (Monitor next stage): Food = photo (record only) and the flushes; Materials = weight
+    log with the dry check and a photo (record only)."""
     ss = _ss()
     if stage == "colonisation":
         out = ss["outcomes"].setdefault(sample, {"colonised": None, "mould": False})
@@ -345,6 +370,10 @@ def sample_log(stage, sample, inoc_date, materials=False):
         return
     if stage != "next":
         raise ValueError(f"unknown stage {stage!r}")
+    if materials:
+        weight_log(sample)
+        photo_record(sample)
+        return
     rows = photo_record(sample)
     ready = pipeline.harvest_readiness([r["file"] for r in rows])
     flow.preview("Harvest readiness", f"Planned: photos tell you young or ready to pick ({ready['n_photos']} "

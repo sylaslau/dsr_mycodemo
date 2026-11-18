@@ -89,8 +89,48 @@ def food_page():
     st.caption(dates.note)
 
 
+def materials_page():
+    # --- start date: the typed "fully colonised on" date, else ask (no forecast for materials yet) ----------------
+    if typed:
+        start = st.date_input("Start of post-treatment", value=typed, key="next_start")
+        st.caption(f"From your Monitor record: 'Fully colonised on' ({n_typed} sample(s) typed; the latest date is "
+                   "used).")
+    else:
+        start = st.date_input("Start of post-treatment", value=None, key="next_start")
+        if start is None:
+            st.info("No 'Fully colonised on' date is typed in Monitor yet. Choose the day the blocks are fully "
+                    "colonised, or type it in Monitor.")
+
+    residence_section("Where the blocks go after colonisation: an oven, a drying rack or room, or a press.")
+
+    # --- method picker: one choice per ST6 protocol, with the values of our data -----------------------------------
+    st.subheader("Method")
+    methods = {m["protocol_id"]: m for m in pipeline.post_treatment_methods()}
+    if not methods:
+        st.warning("The post-treatment table is missing (run python -m dsr_mycodemo.post_treatment_data).")
+        return
+    ss.setdefault("pt_method", next(iter(methods)) if "OVEN-DRY" not in methods else "OVEN-DRY")
+    method = st.radio("Post-treatment method", list(methods), key="pt_method",
+                      format_func=lambda k: pipeline.post_treatment_label(methods[k]))
+    st.markdown(pipeline.post_treatment_text(methods[method]))
+    st.caption("Values from the post-treatment steps of the studies in our data (process.csv), summarised per "
+               "method; nothing is filled in where a study gives no number.")
+
+    # --- Material strength after colonisation, with the matched-pair note for the method ----------------------------
+    out = flow.run().outcome
+    st.subheader("Material strength")
+    if out.is_preview:
+        flow.preview(out.name, out.note)
+    else:
+        m1, m2 = st.columns(2)
+        m1.metric("Stress at 10 % strain (after colonisation)", f"{out.value['stress_mpa']:.3f} MPa")
+        m2.metric("Density (after colonisation)", f"{out.value['density']:.0f} kg/m³")
+        st.caption(out.note)
+    st.info(pipeline.post_treatment_note(method))
+
+
 if materials:
-    st.info("Post-treatment planning is not built yet.")
+    materials_page()
 else:
     food_page()
 
