@@ -69,6 +69,7 @@ def get_batch():
     b.material_species = ss.get("material_species")
     b.environment, b.temp_c, b.recipe, b.inoc_date = ss["environment"], ss["temp_c"], ss["recipe"], ss["inoc_date"]
     b.plan_size = ss.get("plan_size")
+    b.residences = {k: v for k, v in {**ss.get("residences", {}), "colonisation": ss.get("env_where")}.items() if v}
     return b
 
 

@@ -1,71 +1,32 @@
 import streamlit as st
 
 from dsr_mycodemo import pipeline
-from dsr_mycodemo.app import flow
+from dsr_mycodemo.app import flow, stage_ui
 from dsr_mycodemo.cultivation import baseline_guide
 
 st.set_page_config(page_title="Environment", page_icon="📦", layout="wide")
 flow.init()
 ss = st.session_state
 flow.need("choice", "Start a batch", "pages/1_Start_a_batch.py")
-for key, value in {"env_where": None, "env_size": {}, "env_amount": {}, "env_container": None, "rh_pct": 80.0}.items():
-    ss.setdefault(key, value)
-
-# Where -> (label the pipeline plans the recipe scale from, size label, min, max, default, step)
-WHERE = {
-    "Plastic container": ("Small plastic container (about 1 L)", "Size (litres)", 0.5, 15.0, 1.0, 0.1),
-    "Shelf or vitrine": ("Shelf or grow tent", "Size (total volume, m³)", 0.1, 2.0, 0.5, 0.1),
-    "Tent or Cabinet": ("Shelf or grow tent", "Size (total volume, m³)", 0.3, 5.0, 1.0, 0.1),
-    "Room or Chamber": ("Room", "Size (total volume, m³)", 5.0, 20.0, 5.0, 1.0),
-}
-# Shown names (the saved keys stay the same so old batches load)
-WHERE_SHOWN = {"Plastic container": "Monotub or Plastic Container",
-               "Shelf or vitrine": "Shelf or Vitrine"}
-CONTAINERS_SHOWN = {"Grow bag": "Grow Bag"}
-CONTAINERS = {
-    "Glass Jar": ("Size (litres)", 0.2, 5.0, 1.0, 0.1),
-    "Tupperware": ("Size (litres)", 0.2, 5.0, 1.0, 0.1),
-    "Grow bag": ("Size (litres)", 0.5, 10.0, 1.0, 0.1),
-    "Bucket": ("Size (litres)", 0.5, 10.0, 1.0, 0.5),
-}
-
-
-def size_amount(name, size_label, lo, hi, default, step, on, second=("Amount", 1)):
-    """Size on the left; on the right the second field (Amount, or Layers of shelves), or none if second is None."""
-    c1, c2 = st.columns(2)
-    size = c1.number_input(size_label, lo, hi, ss["env_size"].get(name, default), step,
-                           key=f"size_{name}", disabled=not on)
-    amount = 1
-    if second:
-        amount = c2.number_input(second[0], 1, value=int(ss["env_amount"].get(name, second[1])), step=1,
-                                 key=f"amount_{name}", disabled=not on)
-    if on:
-        ss["env_size"][name], ss["env_amount"][name] = size, int(amount)
-
+ss.setdefault("rh_pct", 80.0)
 
 flow.step_header(2, 6, "Environment")
+materials = flow.is_materials()
 st.write("Where do you grow them, and in what?")
-where_col, cont_col = st.columns(2)
+if materials:      # Materials: residence, then the optional container inside it, then the vessel (mould or bag)
+    where_col, box_col, cont_col = st.columns(3)
+    with box_col:
+        stage_ui.item_picker("Containers", {k: v[1] for k, v in stage_ui.CONTAINERS.items()}, "env_box", "box",
+                             optional=True)
+        st.caption("Optional: a box, crate or filter bag inside the residence. Click again to clear.")
+else:
+    where_col, cont_col = st.columns(2)
 
 with where_col:
-    st.subheader("Residence")
-    for name, (label, size_label, lo, hi, default, step) in WHERE.items():
-        on = ss["env_where"] == name
-        if st.button(WHERE_SHOWN.get(name, name), key=f"where_{name}", type="primary" if on else "secondary", use_container_width=True):
-            ss["env_where"], ss["environment"] = name, label
-            ss["recipe"] = ss["batch"] = None
-            st.rerun()
-        size_amount(name, size_label, lo, hi, default, step, on,
-                    second=None if name == "Plastic container" else ("Layers of shelves", 1))
+    stage_ui.residence_picker("colonisation")
 
 with cont_col:
-    st.subheader("Vessels")
-    for name in CONTAINERS:
-        on = ss["env_container"] == name
-        if st.button(CONTAINERS_SHOWN.get(name, name), key=f"cont_{name}", type="primary" if on else "secondary", use_container_width=True):
-            ss["env_container"] = name
-            st.rerun()
-        size_amount(name, *CONTAINERS[name], on)
+    stage_ui.item_picker("Vessels", stage_ui.vessels_for(materials), "env_container", "cont")
 
 st.divider()
 st.header("Conditions")

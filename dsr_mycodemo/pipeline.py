@@ -136,6 +136,19 @@ def reading_entry(values, measured_by, when, inoc_date=None, co2_unknown=False):
     return entry
 
 
+RESIDENCE_STAGES = ("colonisation", "next")
+
+
+def residence(batch, stage="colonisation"):
+    """The residence the batch is in for a stage ('colonisation' or 'next'). An empty 'next' falls back to the
+    colonisation residence (the Environment page's env_where), so batches saved before residences were kept per stage
+    still load; with neither, env_name (the Grow Log environment) or None."""
+    if stage not in RESIDENCE_STAGES:
+        raise ValueError(f"unknown stage {stage!r}; use one of {RESIDENCE_STAGES}")
+    r = batch.residences or {}
+    return r.get(stage) or r.get("colonisation") or batch.env_name
+
+
 def next_stage(goal, latest_stage):
     """Where "Next stage" goes from the batch's latest logged stage, or None when it is not time yet.
 
@@ -166,6 +179,7 @@ class Batch:
     conditions: list[Condition] = field(default_factory=list)
     stages: list[StageEntry] = field(default_factory=list)
     fruiting_photos: list[str] = field(default_factory=list)   # for Harvest readiness (Food)
+    residences: dict = field(default_factory=dict)   # one residence per stage: {"colonisation": ..., "next": ...}
 
     def to_dict(self):
         """Plain dict for the JSON backup (dates as ISO text)."""

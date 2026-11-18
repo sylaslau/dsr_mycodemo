@@ -9,7 +9,7 @@ from plotly.subplots import make_subplots
 import streamlit as st
 
 from dsr_mycodemo import pipeline
-from dsr_mycodemo.app import flow
+from dsr_mycodemo.app import flow, stage_ui
 from dsr_mycodemo.cultivation import baseline_guide as bg
 from dsr_mycodemo.cultivation import ingredients as ING
 
@@ -18,7 +18,6 @@ flow.init()
 ss = st.session_state
 flow.need("environment", "Environment", "pages/2_Environment.py")
 
-VESSELS = ["Glass Jar", "Tupperware", "Grow bag", "Bucket"]   # all vessel names of the Environment page
 KG_DRY_PER_LITRE = 0.2                               # our assumption: 1 L vessel = 0.2 kg dry substrate (as ENVIRONMENTS)
 HANDLING = 1.05                                      # 5% extra on everything, for handling
 EVENT_COLOR, STAGE_COLOR = "#8A5A3B", "#5E6B3A"
@@ -55,7 +54,7 @@ batch_label = d2.text_input("Batch label", key="batch_label", help="Suggested au
 vessel = ss.get("env_container")
 ss["plan_size"] = None
 vessel_litres = None
-if vessel in VESSELS and vessel in ss.get("env_size", {}):
+if vessel in stage_ui.vessels_for(flow.is_materials()) and vessel in ss.get("env_size", {}):   # moulds too
     vessel_litres = float(ss["env_size"][vessel])
     ss["plan_size"] = (int(ss["env_amount"].get(vessel, 1)), vessel_litres * KG_DRY_PER_LITRE)
 

@@ -78,7 +78,7 @@ QUICK_ENERGY_NOTE = "Simple starch and sugar support a quick start, but also fee
 UNSTERILISED_NOTE = "Protein and quick-energy supplements raise mould risk without sterilising."
 COLD_NOTE = "Supplements wash out in the soak, or raise mould risk without sterilising; main bulk only by default."
 VESSEL_PLURAL = {"Glass Jar": "glass jars", "Tupperware": "tupperware boxes", "Grow bag": "grow bags",
-                 "Bucket": "buckets"}
+                 "Bucket": "buckets", "Mould (box)": "box moulds", "Mould (cylinder)": "cylinder moulds"}
 # autoclave size key -> (label, minutes or None)
 AUTOCLAVE_SIZES = {
     "under_1l": ("Under 1 L", 60),             # 20 min is an agar time (Sylas 11-10)

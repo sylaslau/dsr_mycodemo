@@ -68,7 +68,9 @@ def apply_restore(p):
         if pb.goal:                              # the plan keys the pages share follow the restored batch
             ss.update(goal=pb.goal, choice=pb.choice, custom_name=pb.custom_name, environment=pb.environment,
                       temp_c=pb.temp_c, recipe=pb.recipe, inoc_date=pb.inoc_date,
-                      material_species=pipeline.material_species(pb))
+                      material_species=pipeline.material_species(pb), residences=dict(pb.residences))
+            if pb.residences.get("colonisation"):   # older backups have no residences: env_where stays as it is
+                ss["env_where"] = pb.residences["colonisation"]
 
 
 # --- helpers -------------------------------------------------------------------------------
