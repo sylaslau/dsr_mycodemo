@@ -1,6 +1,8 @@
-"""Monitor: one box per environment (residence) with its conditions, and the batches growing there."""
+"""Monitor: one box per residence (colonisation and, if chosen, the next one) with one reading log each; the batch
+bubble sits in the residence of its current stage. The stage changes only when the grower confirms it."""
 
 import io
+import json
 from datetime import date
 
 import streamlit as st
@@ -20,7 +22,8 @@ flow.step_header(4, 8, "Monitor")
 # batch_fields {dataset: {...}}, dish_fields {dish: {...}}, upload_rows / restored_photos {key: [photo rows]},
 # environments {name: pipeline.Environment} (kept for backups), monitor_env {residence: latest entry + "log"},
 # sample_photos {sample ID: [photo rows]}, outcomes {sample ID: {colonised: date | None, mould: bool}},
-# share_code (contributor code once this batch was shared)
+# share_code (contributor code once this batch was shared); batch_stage (the grower's word, confirmed here) and
+# next_start (date the next stage started)
 ss = st.session_state
 STAGE_LOG = ss.setdefault("stage_log", {})
 HARVEST = ss.setdefault("harvest", {})
@@ -40,8 +43,25 @@ WIDGET_PREFIXES = ("b_", "h_", "l_", "c_")      # their values come from the sto
 PLAN = ss["batch"]
 
 
-def apply_restore(p):
-    """Refill the stores from a restored log; a backup replaces everything, a CSV only its own containers."""
+def stage_from_backup(text):
+    """batch_stage and next_start from a JSON backup (optional top-level keys; CSVs and older backups have none)."""
+    if not text.lstrip().startswith("{"):
+        return {}
+    doc, out = json.loads(text), {}
+    if doc.get("batch_stage") in flow.STAGES_FOOD + flow.STAGES_MATERIAL:
+        out["batch_stage"] = doc["batch_stage"]
+    if doc.get("next_start"):
+        out["next_start"] = date.fromisoformat(str(doc["next_start"])[:10])
+    return out
+
+
+def apply_restore(p, stage=None):
+    """Refill the stores from a restored log; a backup replaces everything, a CSV only its own containers.
+    stage = {batch_stage, next_start} from the backup (stage_from_backup)."""
+    if p["replace"]:
+        for k in ("batch_stage", "next_start"):          # the restored batch has its own stage (or starts again)
+            ss.pop(k, None)
+    ss.update(stage or {})
     if p["replace"]:
         for store in (STAGE_LOG, HARVEST, LOSSES, DRY_G, COSTS, DISH_FIELDS, UPLOAD_ROWS, RESTORED_PHOTOS):
             store.clear()
@@ -76,35 +96,54 @@ def apply_restore(p):
 # --- helpers -------------------------------------------------------------------------------
 # book ranges for CO2 (ppm): colonisation tolerates a lot, fruiting wants fresh air
 CO2_COLONISING, CO2_FRUITING = (0.0, 20000.0), (500.0, 1000.0)
-# the grower's words in button rows; each maps to a stage_id (Spawning..Ready for induction ST4, the rest ST5)
-STAGE_ROWS = [["Spawning", "Colonising", "Fruiting"], ["Ready for induction", "Ready for harvest"]]
+MATERIALS = flow.is_materials()
+STAGES = flow.STAGES_MATERIAL if MATERIALS else flow.STAGES_FOOD
+FIRST_STAGE = "Colonisation" if MATERIALS else "Colonising"
+# mode -> (stage after colonisation, confirm button)
+NEXT_STAGE = {False: ("Fruiting", "Confirm induction started"),
+              True: ("Post-treatment", "Confirm post-treatment started")}[MATERIALS]
+
+SHOWN = stage_ui.SHOWN       # shown name; the saved value stays the same (old batches load)
 
 
-SHOWN = {"Plastic container": "Monotub or Plastic Container", "Shelf or vitrine": "Shelf or Vitrine"}     # shown name; the saved value stays the same (old batches load)
+def next_residence():
+    """The residence chosen for the next stage on Recipe and actions, or None."""
+    name = ss.get("residences", {}).get("next")
+    return name if name in stage_ui.residence_options("next") else None
 
 
 def residences():
-    """Residences entered on the Environment page, in that page's order."""
-    names = [n for n in ("Plastic container", "Shelf or vitrine", "Tent or Cabinet", "Room or Chamber")
-             if n in ss.get("env_size", {}) or n == ss.get("env_where")]
-    return names
+    """Residences entered on Start a batch, in that order, then the next-stage residence if chosen."""
+    names = [n for n in stage_ui.RESIDENCES if n in ss.get("env_size", {}) or n == ss.get("env_where")]
+    nxt = next_residence()
+    return names + ([nxt] if nxt and nxt not in names else [])
 
 
-def current_stage(batch, today=None):
-    """Where the batch is now, from the pipeline's dates (inoculation, 90% day, induction marker, pinning, first harvest)."""
+def batch_stage():
+    """The stage the grower confirmed (session_state['batch_stage']); colonisation until a confirm button is pressed."""
+    if ss.get("batch_stage") not in STAGES:
+        ss["batch_stage"] = FIRST_STAGE
+    return ss["batch_stage"]
+
+
+def batch_residence():
+    """Where the batch is: the next residence once the next stage was confirmed (if one was chosen), else the
+    colonisation residence."""
+    return next_residence() if ss.get("next_start") and next_residence() else ss.get("env_where")
+
+
+def stage_hint(batch, today=None):
+    """What the dates suggest, as a hint only (the stage never follows the dates)."""
     today = today or date.today()
+    if MATERIALS:
+        typed, _ = stage_ui.colonised_date(PLAN["batch_label"])
+        return (f"Your record says: fully colonised on {typed:%d %b}." if typed else
+                "No colonisation dates for materials yet: confirm when the blocks are fully colonised.")
     ev = {name: (a, b) for name, a, b in pipeline.run(batch).dates.value}
-    if today <= batch.inoc_date:
-        return "Spawning"
-    if pipeline.ENDPOINT_LABEL not in ev or pipeline.MARKER_LABEL not in ev:        # Materials or no dates
-        return "Colonising"
-    if today < ev[pipeline.MARKER_LABEL][0]:
-        return "Colonising"
-    if today < ev["Pinning"][0]:
-        return "Ready for induction"
-    if today < ev["First harvest"][0]:
-        return "Fruiting"
-    return "Ready for harvest"
+    if pipeline.MARKER_LABEL not in ev:
+        return "No dates for this mushroom: confirm by eye."
+    marker = ev[pipeline.MARKER_LABEL][0]
+    return f"Dates say: ready for induction {'from' if today < marker else 'since'} {marker:%d %b}."
 
 
 def wanted_ranges(batch, stage):
@@ -121,6 +160,19 @@ def wanted_ranges(batch, stage):
     t, h = f["fruiting_temp_C"], f["fruiting_rh_pct"]
     return {"temp": (t["min"], t["max"], t["opt"]), "rh": (h["min"], h["max"], (h["min"] + h["max"]) / 2),
             "co2": (*CO2_FRUITING, 750.0)}
+
+
+def box_setup(batch, name):
+    """(ranges, prefill kind, fields, caption) of one residence box: the ranges follow the stage of the batch in it
+    (colonisation, fruiting, or a record only for post-treatment); with no batch in it, colonisation ranges."""
+    if not (PLAN and name == batch_residence() and ss.get("next_start")):
+        return wanted_ranges(batch, "Colonising"), "grow", ("temp", "rh", "co2"), None
+    if MATERIALS:
+        return None, "post", ("temp", "rh"), ("Temperature and humidity are a record only: our data has no wanted "
+                                              "ranges for post-treatment, so the lights stay yellow.")
+    ranges = pipeline.next_stage_ranges(batch)
+    return ranges, "fruit", ("temp", "rh", "co2"), ("Lights: fruiting ranges of the consensus guide." if ranges else
+                                                    "No fruiting ranges are known for this mushroom.")
 
 
 dot = stage_ui.dot                                 # traffic lights live in stage_ui (shared with page 8)
@@ -142,7 +194,7 @@ def batch_record():
 
 
 def sample_record(sample, inoc_date):
-    """Outcome (fully colonised date, mould seen) and, for Food, the harvest flushes of one sample."""
+    """Outcome of one sample while colonising: fully colonised date and mould seen."""
     stage_ui.sample_log("colonisation", sample, inoc_date, materials=flow.is_materials())
 
 
@@ -192,70 +244,100 @@ with st.sidebar:
             st.error(f"Could not restore {restore_file.name}: {err}")
         else:
             if ss.get("restored_id") != restore_file.file_id:
-                apply_restore(restored)
+                apply_restore(restored, stage_from_backup(restore_file.getvalue().decode("utf-8")))
                 ss["restored_id"] = restore_file.file_id
             st.success(f"Restored from {restore_file.name}.")
 
-# --- main area: one box per environment ---------------------------------------------------
+# --- main area: one box per residence ----------------------------------------------------
+def stage_controls(batch, stage):
+    """Confirm buttons: colonisation -> next stage (with its date), Food fruiting -> harvested, contaminated any time."""
+    if not ss.get("next_start") and stage != "Contaminated":
+        nxt_stage, label = NEXT_STAGE
+        if next_residence():
+            d_col, b_col = st.columns([1, 2], vertical_alignment="bottom")
+            on = d_col.date_input("Started on", date.today(), key="confirm_date")
+            if b_col.button(label, key="confirm_next", type="primary"):
+                ss["batch_stage"], ss["next_start"] = nxt_stage, on
+                st.rerun()
+        else:
+            if st.button(label, key="confirm_next", type="primary"):
+                ss["show_next_steps"] = True
+                st.switch_page("pages/3_Recipe_and_timeline.py")
+            st.caption(f"Choose where the batch goes next in the {stage_ui.next_titles(MATERIALS)[0].lower()} steps on "
+                       "Recipe and actions first.")
+        st.caption(stage_hint(batch))
+    if stage == "Fruiting" and st.button("Mark harvested", key="mark_harvested"):
+        ss["batch_stage"] = "Harvested"
+        st.rerun()
+    if stage != "Contaminated" and st.button("Contaminated", key="mark_contaminated"):
+        ss["batch_stage"] = "Contaminated"
+        st.rerun()
+
+
+def coverage_photo(name, sample):
+    """Colonising: a photo of the sample with the quick coverage guess (feeds the Colonisation forecast)."""
+    up = st.file_uploader("Photo of this sample", type=["jpg", "jpeg", "png"], key=f"photo_{name}_{sample}")
+    if up is None:
+        return
+    try:
+        taken = photo_datetime(up).date()
+    except ValueError:
+        taken = date.today()
+    a_ = analyse_photo(up.getvalue())
+    row = {"series_id": sample, "day": days_since(taken, batch.inoc_date), "file": f"upload: {up.name}",
+           "coverage": a_["coverage"], "method": a_["method"], "quality": a_["quality"],
+           "date": taken.isoformat(), "data": up.getvalue()}     # data: for Check image (session only)
+    rows = SAMPLE_PHOTOS.setdefault(sample, [])
+    if not any((r["file"], r["day"]) == (row["file"], row["day"]) for r in rows):
+        rows.append(row)
+    ss["pipeline_result"] = pipeline.run(batch_record())     # Photo coverage -> Colonisation forecast
+    st.success(f"Photo saved under {sample}. Check the quick guess with your own marks on Check image.")
+    m1, m2 = st.columns(2)
+    m1.metric("Coverage (quick guess)", f"{100 * a_['coverage']:.0f} %", help=a_["method"])
+    m2.metric("Day since inoculation", row["day"])
+    if st.button("Check image", key=f"check_{name}_{sample}", type="primary"):
+        ss["check_target"] = {"sample": sample, "file": row["file"]}
+        st.switch_page("pages/5_Check_image.py")
+
+
+def batch_bubble(batch, name):
+    """The plan batch in its residence: the stage as a row of labels, the confirm buttons, one sample's record."""
+    stage = batch_stage()
+    with st.container(border=True):
+        st.markdown(f"**{PLAN['batch_label']}**")
+        st.markdown(stage_ui.stage_labels(STAGES, stage), unsafe_allow_html=True)
+        stage_controls(batch, stage)
+        samples = stage_ui.plan_samples(PLAN)
+        sample = st.selectbox("Sample (one bag, jar or mould)", samples, key=f"sample_{name}")
+        if ss.get("next_start"):                 # fruiting / harvested, or post-treatment
+            stage_ui.sample_log("next", sample, PLAN["inoc_date"], materials=MATERIALS)
+        else:
+            coverage_photo(name, sample)
+            sample_record(sample, batch.inoc_date)
+
+
 batch = batch_record()
-stage = current_stage(batch) if PLAN else "Colonising"
-want = wanted_ranges(batch, stage)
-grow_in = ss.get("env_where")                    # the residence the plan batch grows in
 side_lights = {}
 for name in residences():
     with st.container(border=True):
         st.subheader(SHOWN.get(name, name))
-        has_batch = PLAN and name == grow_in
-        env_stage = stage if has_batch else "Colonising"
-        rng = wanted_ranges(batch, env_stage)
-        kind = "grow" if env_stage in ("Spawning", "Colonising") else "fruit"   # prefill follows the stage
+        has_batch = bool(PLAN) and name == batch_residence()
+        rng, kind, fields, note = box_setup(batch, name)
+        if note:
+            st.caption(note)
         colour, entry = stage_ui.environment_log("colonisation", name, rng, batch.inoc_date if has_batch else None,
-                                                 kind)
+                                                 kind, fields=fields)
         if entry is not None:
             values = entry
             ENVIRONMENTS[name] = pipeline.Environment(name, "Tub", float(values["temp"] if values["temp"] is not None
                                                                          else 21.0), values["rh"], values["measured_by"])
         side_lights[name] = colour
-
-        if has_batch:                            # the plan batch grows in this residence
-            with st.container(border=True):
-                st.markdown(f"**{PLAN['batch_label']}**")
-                if flow.is_materials():
-                    flow.materials_preview("Stage timeline")
-                else:
-                    for row in STAGE_ROWS:
-                        for col, s in zip(st.columns(len(STAGE_ROWS[0])), row):
-                            col.button(s, key=f"stage_{name}_{s}",
-                                       type="primary" if s == stage else "secondary", use_container_width=True)
-                n = int(PLAN["n_containers"])
-                samples = [f"{PLAN['batch_label']}-{i:02d}" for i in range(1, n + 1)]
-                sample = st.selectbox("Sample (one bag or jar)", samples, key=f"sample_{name}")
-                up = st.file_uploader("Photo of this sample", type=["jpg", "jpeg", "png"], key=f"photo_{name}_{sample}")
-                if up is not None:
-                    try:
-                        taken = photo_datetime(up).date()
-                    except ValueError:
-                        taken = date.today()
-                    a_ = analyse_photo(up.getvalue())
-                    row = {"series_id": sample, "day": days_since(taken, batch.inoc_date), "file": f"upload: {up.name}",
-                           "coverage": a_["coverage"], "method": a_["method"], "quality": a_["quality"],
-                           "date": taken.isoformat(), "data": up.getvalue()}     # data: for Check image (session only)
-                    rows = SAMPLE_PHOTOS.setdefault(sample, [])
-                    if not any((r["file"], r["day"]) == (row["file"], row["day"]) for r in rows):
-                        rows.append(row)
-                    ss["pipeline_result"] = pipeline.run(batch_record())     # Photo coverage -> Colonisation forecast
-                    st.success(f"Photo saved under {sample}. Check the quick guess with your own marks on Check image.")
-                    m1, m2 = st.columns(2)
-                    m1.metric("Coverage (quick guess)", f"{100 * a_['coverage']:.0f} %", help=a_["method"])
-                    m2.metric("Day since inoculation", row["day"])
-                    if st.button("Check image", key=f"check_{name}_{sample}", type="primary"):
-                        ss["check_target"] = {"sample": sample, "file": row["file"]}
-                        st.switch_page("pages/5_Check_image.py")
-                sample_record(sample, batch.inoc_date)
+        if has_batch:
+            batch_bubble(batch, name)
 
 if not residences():
-    st.info("Choose where you grow on the Environment page first.")
-    st.page_link("pages/2_Environment.py", label="Environment", icon="📦")
+    st.info("Choose where you grow on Start a batch first.")
+    st.page_link("pages/1_Start_a_batch.py", label="Start a batch", icon="🍄")
 
 # --- share this batch for research ------------------------------------------------------
 if PLAN:

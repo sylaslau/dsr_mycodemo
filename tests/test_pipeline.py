@@ -404,7 +404,8 @@ def test_monitor_page_environment_boxes_stages_and_sample_photo():
     assert not at.exception
     assert [s.value for s in at.subheader] == ["Tent or Cabinet"]
     assert at.selectbox(key="sample_Tent or Cabinet").options == ["B1-01", "B1-02"]
-    assert [b.label for b in at.button if b.label in ("Spawning", "Ready for harvest")] == ["Spawning", "Ready for harvest"]
+    html_ = " ".join(m.value for m in at.markdown)
+    assert all(word in html_ for word in ("Inoculated", "Colonising", "Fruiting", "Harvested", "Contaminated"))
     assert any(b.label == "Save" for b in at.button)
 
 

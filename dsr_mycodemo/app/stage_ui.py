@@ -477,6 +477,18 @@ def dot(colour):
     return f'<span style="color:{LIGHTS[colour]}">●</span>'
 
 
+def stage_labels(stages, current):
+    """The batch stage as a row of labels; the current one filled in chestnut."""
+    out = []
+    for name in stages:
+        on = name == current
+        style = (f"background:{EVENT_COLOR};color:#fff;border:2px solid {EVENT_COLOR}" if on else
+                 f"border:2px solid {LIGHTS['grey']};color:{LIGHTS['grey']}")
+        out.append(f'<span style="{style};border-radius:999px;padding:0.15rem 0.8rem;margin-right:0.3rem;'
+                   f'display:inline-block">{"<b>" if on else ""}{html.escape(name)}{"</b>" if on else ""}</span>')
+    return "".join(out)
+
+
 def bubble(colour, icon, label, text):
     return (f'<div style="background:{LIGHTS[colour]}22;border:2px solid {LIGHTS[colour]};border-radius:999px;'
             f'padding:0.2rem 0.9rem;margin-bottom:0.3rem;display:inline-block">{icon} <b>{label}</b> {text}</div>')
@@ -524,13 +536,9 @@ def environment_log(stage, residence, ranges, inoc_date=None, kind="grow", field
 
 
 def latest_reading(stage, residence):
-    """The latest saved reading for a residence at a stage; 'next' falls back to Monitor's reading of the same
-    residence (a batch that stays where it colonised). {} when nothing is saved."""
-    ss = _ss()
-    found = {k: v for k, v in ss["monitor_env_next"].get(residence, {}).items() if k != "log"} if stage == "next" else {}
-    if not found:
-        found = {k: v for k, v in ss["monitor_env"].get(residence, {}).items() if k != "log"}
-    return found
+    """The latest reading saved on Monitor for a residence (one log per residence, whatever the stage); {} when
+    nothing is saved. stage is kept for the callers and not used."""
+    return {k: v for k, v in _ss()["monitor_env"].get(residence, {}).items() if k != "log"}
 
 
 def conditions_check(ranges, reading, fields=("temp", "rh", "co2")):
@@ -605,8 +613,8 @@ def weight_log(sample):
 
 
 def sample_log(stage, sample, inoc_date, materials=False):
-    """The record of one sample at a stage. 'colonisation' (Monitor): fully colonised date, mould seen and, for Food,
-    the harvest flushes. 'next' (Monitor next stage): Food = photo (record only) and the flushes; Materials = weight
+    """The record of one sample at a stage. 'colonisation': fully colonised date and mould seen. 'next' (fruiting or
+    post-treatment): Food = photo (record only), the Harvest readiness preview and the flushes; Materials = weight
     log with the dry check and a photo (record only)."""
     ss = _ss()
     if stage == "colonisation":
@@ -616,8 +624,6 @@ def sample_log(stage, sample, inoc_date, materials=False):
             out["colonised"] = c1.date_input("Fully colonised on", value=out["colonised"], min_value=inoc_date,
                                              key=f"o_col_{sample}", help="Leave empty while it is still colonising.")
             out["mould"] = c2.checkbox("Mould seen", value=out["mould"], key=f"o_mould_{sample}")
-            if not materials:
-                _flush_record(sample, inoc_date)
         return
     if stage != "next":
         raise ValueError(f"unknown stage {stage!r}")

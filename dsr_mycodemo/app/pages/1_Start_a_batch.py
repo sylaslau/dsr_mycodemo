@@ -25,6 +25,8 @@ def pick(goal, choice, custom_name=""):
     """Save the one pick the way the old Start and What to grow pages did; a new pick resets the recipe."""
     ss["goal"], ss["choice"], ss["custom_name"] = goal, choice, custom_name
     ss["recipe"] = ss["batch"] = None
+    for k in ("batch_stage", "next_start"):      # a new pick is a new batch: its stage starts again
+        ss.pop(k, None)
     st.rerun()
 
 

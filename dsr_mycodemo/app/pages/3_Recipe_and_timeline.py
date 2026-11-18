@@ -270,7 +270,11 @@ if ss["goal"] != "Food":
 # --- hand over to Monitor ----------------------------------------------------------------
 if st.button("Save this plan and open Monitor", type="primary"):
     row = flow.species_row()
-    ss["batch"] = {"batch_label": batch_label or f"{what} {ss['inoc_date'].isoformat()}",
+    label = batch_label or f"{what} {ss['inoc_date'].isoformat()}"
+    if (ss.get("batch") or {}).get("batch_label") != label:     # a new batch: its stage starts again on Monitor
+        for k in ("batch_stage", "next_start"):
+            ss.pop(k, None)
+    ss["batch"] = {"batch_label": label,
                    "species": row["species"] if row else ss["material_species"] if flow.is_materials() else what,
                    "inoc_date": ss["inoc_date"], "n_containers": n, "temp_c": ss["temp_c"],
                    "substrate": substrate, "spawn_pct": float(pipeline.SPAWN_PCT)}
