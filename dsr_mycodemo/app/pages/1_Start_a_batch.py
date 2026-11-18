@@ -31,7 +31,7 @@ def is_food(shown):
     return ss["goal"] == "Food" and ss["choice"] == FOOD_SPECIES[shown]
 
 
-flow.step_header(1, 6, "Start a batch")
+flow.step_header(1, 8, "Start a batch")
 st.write("What do you want to grow? Pick one for this batch.")
 left, right = st.columns(2)
 

@@ -1,7 +1,6 @@
 """Recipe and timeline: the recipe as steps in the order of the sterilisation method, then colonisation and the
 stage timeline in one figure, stage bubbles, and (Materials) the strength estimate."""
 
-import html
 import math
 
 import plotly.graph_objects as go
@@ -20,7 +19,7 @@ flow.need("environment", "Environment", "pages/2_Environment.py")
 
 KG_DRY_PER_LITRE = 0.2                               # our assumption: 1 L vessel = 0.2 kg dry substrate (as ENVIRONMENTS)
 HANDLING = 1.05                                      # 5% extra on everything, for handling
-EVENT_COLOR, STAGE_COLOR = "#8A5A3B", "#5E6B3A"
+EVENT_COLOR, STAGE_COLOR = stage_ui.EVENT_COLOR, stage_ui.STAGE_COLOR
 
 
 def code(text, n):
@@ -41,7 +40,7 @@ def suggest_label():
                      ss["inoc_date"].strftime("%y%m%d")])
 
 
-flow.step_header(3, 6, "Recipe and timeline")
+flow.step_header(3, 8, "Recipe and timeline")
 d1, d2 = st.columns(2)
 ss["inoc_date"] = d1.date_input("Planned inoculation date", ss["inoc_date"])
 auto = suggest_label()
@@ -348,40 +347,10 @@ if base is not None:
         + ("" if state == "inside" else " The days below assume the guide's own conditions."))
 
     tl = bg.stages(r).set_index("stage")
-    ind_row, har_row = tl.loc["Start induction"], tl.loc["First harvest"]
-    ind_day, har_day, col_days = ind_row["typical_day"], har_row["typical_day"], col["colonisation_days"]
+    ind_day, har_day = tl.loc["Start induction", "typical_day"], tl.loc["First harvest", "typical_day"]
     draw(col_setup, (ind_day, har_day))
 
-    # --- stage bubbles, one row: name · days, then temperature, humidity, CO2, light -------------------
-    NIG = "not in guide"
-
-    def val(x, unit="", before=""):
-        return NIG if str(x) in ("", "nan", "None") else f"{before}{x:g}{unit}"
-
-    def rng(lo, hi, unit):
-        return NIG if str(lo) == "nan" or str(hi) == "nan" else (f"{lo:g}–{hi:g}{unit}" if lo != hi else f"{lo:g}{unit}")
-
-    def span(label):
-        s_ = tl.loc[label]
-        return f"day {s_['start_day']}–{s_['end_day']} (typical {s_['typical_day']})"
-
-    inc_c = (rng(r["incubation_temp_min_C"], r["incubation_temp_max_C"], " °C"),
-             val(r["incubation_RH_pct"], " %", ">"), "high CO2 fine (closed)", "not required")
-    fr_c = (rng(r["fruiting_temp_min_C"], r["fruiting_temp_max_C"], " °C"),
-            rng(r["fruiting_RH_min_pct"], r["fruiting_RH_max_pct"], " %"),
-            val(r["fruiting_CO2_max_ppm"], " ppm", "< "), "500-1000 lux")
-    bubbles = [(EVENT_COLOR, "Inoculation", "day 0", inc_c),
-               (STAGE_COLOR, "Colonising", f"day {col_days['min']}–{col_days['max']} (typical {col_days['typical']})",
-                inc_c),
-               (EVENT_COLOR, "Induction", span("Start induction"), fr_c),
-               (STAGE_COLOR, "Fruiting", (f"day {ind_row['start_day']}–{har_row['end_day']} "
-                                          f"(typical {ind_day:g}–{har_day:g})"), fr_c),
-               (EVENT_COLOR, "Harvest", span("First harvest"), fr_c)]
-    for box, (color, name, when, (tmp, rh, co2, lt)) in zip(st.columns(5), bubbles):
-        body = (f"<b>{html.escape(name)}</b> · {html.escape(when)}<br>🌡️ {html.escape(tmp)}<br>💧 {html.escape(rh)}"
-                f"<br>🌬️ {html.escape(co2)}<br>💡 {html.escape(lt)}")
-        box.markdown(f"<div style='border:2px solid {color}; border-left:8px solid {color}; border-radius:8px; "
-                     f"padding:0.6rem 0.8rem; margin:0.4rem 0; height:100%;'>{body}</div>", unsafe_allow_html=True)
+    stage_ui.stage_cards(r)           # stage bubbles, one row: name · days, then temperature, humidity, CO2, light
     if species == "Lentinula edodes":
         st.info(f"Unresolved: {t['requirements_unresolved']}")
 elif flow.is_materials():

@@ -1,19 +1,19 @@
 """Monitor: one box per environment (residence) with its conditions, and the batches growing there."""
 
 import io
-from datetime import date, datetime
+from datetime import date
 
 import streamlit as st
 
 from dsr_mycodemo import collect, pipeline
-from dsr_mycodemo.app import flow
+from dsr_mycodemo.app import flow, stage_ui
 from dsr_mycodemo.cultivation import baseline_guide
 from dsr_mycodemo.growth.coverage import days_since, photo_coverage, photo_datetime, photo_quality
 from dsr_mycodemo.growth.forecast import restore_from_text
 
 st.set_page_config(page_title="Monitor", page_icon="📷", layout="wide")
 flow.init()
-flow.step_header(4, 6, "Monitor")
+flow.step_header(4, 8, "Monitor")
 
 # session-only stores (nothing is written to disk): stage_log {dish: [{stage, date, note}]},
 # harvest {dish: [{date, g}]}, losses {dish: {...}}, dry_g {dish: g}, costs {batch: {...}},
@@ -76,7 +76,6 @@ def apply_restore(p):
 # --- helpers -------------------------------------------------------------------------------
 # book ranges for CO2 (ppm): colonisation tolerates a lot, fruiting wants fresh air
 CO2_COLONISING, CO2_FRUITING = (0.0, 20000.0), (500.0, 1000.0)
-LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00", "grey": "#9E9E9E"}
 # the grower's words in button rows; each maps to a stage_id (Spawning..Ready for induction ST4, the rest ST5)
 STAGE_ROWS = [["Spawning", "Colonising", "Fruiting"], ["Ready for induction", "Ready for harvest"]]
 
@@ -124,26 +123,7 @@ def wanted_ranges(batch, stage):
             "co2": (*CO2_FRUITING, 750.0)}
 
 
-def light(value, rng):
-    """green in range, red out of range, yellow when not entered or no range is known."""
-    if value is None or rng is None:
-        return "yellow"
-    return "green" if rng[0] <= value <= rng[1] else "red"
-
-
-def worst(colours):
-    """Worst light of a residence; grey (marked unknown) does not count."""
-    colours = [c for c in colours if c != "grey"]
-    return "red" if "red" in colours else "yellow" if "yellow" in colours else "green"
-
-
-def dot(colour):
-    return f'<span style="color:{LIGHTS[colour]}">●</span>'
-
-
-def bubble(colour, icon, label, text):
-    return (f'<div style="background:{LIGHTS[colour]}22;border:2px solid {LIGHTS[colour]};border-radius:999px;'
-            f'padding:0.2rem 0.9rem;margin-bottom:0.3rem;display:inline-block">{icon} <b>{label}</b> {text}</div>')
+dot = stage_ui.dot                                 # traffic lights live in stage_ui (shared with page 8)
 
 
 @st.cache_data(show_spinner=False, max_entries=64)
@@ -163,22 +143,7 @@ def batch_record():
 
 def sample_record(sample, inoc_date):
     """Outcome (fully colonised date, mould seen) and, for Food, the harvest flushes of one sample."""
-    out = OUTCOMES.setdefault(sample, {"colonised": None, "mould": False})
-    with st.expander(f"Record for {sample}"):
-        c1, c2 = st.columns(2, vertical_alignment="bottom")
-        out["colonised"] = c1.date_input("Fully colonised on", value=out["colonised"], min_value=inoc_date,
-                                         key=f"o_col_{sample}", help="Leave empty while it is still colonising.")
-        out["mould"] = c2.checkbox("Mould seen", value=out["mould"], key=f"o_mould_{sample}")
-        if flow.is_materials():
-            return
-        st.markdown("**Harvest**")
-        h1, h2, h3 = st.columns([2, 2, 1], vertical_alignment="bottom")
-        when = h1.date_input("Harvest date", date.today(), min_value=inoc_date, key=f"h_date_{sample}")
-        grams = h2.number_input("Fresh weight (g)", 0.0, step=10.0, key=f"h_g_{sample}")
-        if h3.button("Add flush", key=f"h_add_{sample}", disabled=grams <= 0, use_container_width=True):
-            HARVEST.setdefault(sample, []).append({"date": when, "g": float(grams)})
-        for k, f in enumerate(HARVEST.get(sample, []), start=1):
-            st.caption(f"Flush {k}: {f['date']:%Y-%m-%d}, {f['g']:g} g fresh")
+    stage_ui.sample_log("colonisation", sample, inoc_date, materials=flow.is_materials())
 
 
 def supabase_config():
@@ -235,49 +200,22 @@ with st.sidebar:
 batch = batch_record()
 stage = current_stage(batch) if PLAN else "Colonising"
 want = wanted_ranges(batch, stage)
-home = ss.get("env_where")                       # the residence the plan batch grows in
+grow_in = ss.get("env_where")                    # the residence the plan batch grows in
 side_lights = {}
 for name in residences():
     with st.container(border=True):
         st.subheader(SHOWN.get(name, name))
-        has_batch = PLAN and name == home
+        has_batch = PLAN and name == grow_in
         env_stage = stage if has_batch else "Colonising"
         rng = wanted_ranges(batch, env_stage)
-        saved = MONITOR_ENV.setdefault(name, {})
         kind = "grow" if env_stage in ("Spawning", "Colonising") else "fruit"   # prefill follows the stage
-        fields = [("temp", "🌡️", "Temperature", "°C", 0.5, "%.1f"), ("rh", "💧", "Humidity", "%", 1.0, "%.0f"),
-                  ("co2", "🫧", "CO2", "ppm", 100.0, "%.0f")]
-        cols = st.columns(len(fields))
-        values, colours = {}, []
-        co2_unknown = False
-        for col, (key, icon, label, unit, step, fmt) in zip(cols, fields):
-            holder = col.empty()
-            default = float(rng[key][2]) if rng else None
-            unknown = key == "co2" and ss.get(f"mon_co2_unknown_{name}", False)
-            values[key] = col.number_input(f"{label} ({unit})", value=default, step=step, format=fmt,
-                                           key=f"mon_{key}_{name}_{kind}", label_visibility="collapsed",
-                                           disabled=unknown)
-            if key == "co2":
-                co2_unknown = col.checkbox("CO2 unknown", key=f"mon_co2_unknown_{name}")
-            colour = "grey" if unknown else light(values[key], rng[key][:2] if rng else None)
-            colours.append(colour)
-            holder.markdown(bubble(colour, icon, label, "unknown" if unknown else
-                                   "not entered" if values[key] is None else f"{values[key]:g} {unit}"),
-                            unsafe_allow_html=True)
-        m_col, d_col, t_col, s_col = st.columns([2, 1, 1, 1], vertical_alignment="bottom")
-        measured = m_col.selectbox("Measured by", pipeline.MEASURED_BY, index=2, key=f"mon_by_{name}")
-        on_day = d_col.date_input("Date", date.today(), key=f"mon_date_{name}")
-        at_time = t_col.time_input("Time", "now", key=f"mon_time_{name}")
-        if s_col.button("Save", key=f"mon_save_{name}", use_container_width=True):
-            entry = pipeline.reading_entry(values, measured, datetime.combine(on_day, at_time),
-                                           batch.inoc_date if has_batch else None, co2_unknown)
-            saved.update(entry)
-            saved.setdefault("log", []).append(entry)
-            st.success(f"Saved for {entry['datetime'].replace('T', ' ')}"
-                       + (f" (day {entry['day']} since inoculation)." if entry["day"] is not None else "."))
+        colour, entry = stage_ui.environment_log("colonisation", name, rng, batch.inoc_date if has_batch else None,
+                                                 kind)
+        if entry is not None:
+            values = entry
             ENVIRONMENTS[name] = pipeline.Environment(name, "Tub", float(values["temp"] if values["temp"] is not None
-                                                                         else 21.0), values["rh"], measured)
-        side_lights[name] = worst(colours)
+                                                                         else 21.0), values["rh"], values["measured_by"])
+        side_lights[name] = colour
 
         if has_batch:                            # the plan batch grows in this residence
             with st.container(border=True):

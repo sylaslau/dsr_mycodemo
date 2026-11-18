@@ -524,6 +524,37 @@ def fruiting_estimate(batch):
     return Step(name, {**f, "inferred": inferred, "row": row_note}, "typical range", note)
 
 
+def next_stage_ranges(batch):
+    """Wanted ranges after colonisation, {'temp': (lo, hi, prefill), 'rh': ..., 'co2': (0, max, max)}: Food from the
+    guide's fruiting columns (baseline_guide.fruiting); None for Materials (no conditions in our data) or a mushroom
+    without a guide row."""
+    if is_materials(batch):
+        return None
+    br = baseline_row(batch)
+    if br is None:
+        return None
+    f = baseline_guide.fruiting(br[0])
+    t, h, co2 = f["fruiting_temp_C"], f["fruiting_rh_pct"], float(f["co2_max_ppm"])
+    return {"temp": (t["min"], t["max"], t["opt"]), "rh": (h["min"], h["max"], (h["min"] + h["max"]) / 2),
+            "co2": (0.0, co2, co2)}
+
+
+def fruiting_dates(batch, start):
+    """Pinning and first harvest from a start-of-induction date: the guide's typical days (consensus days, not a
+    model). value = [(label, date)] from 'Start of induction'; a preview without a guide row."""
+    name = "Fruiting dates"
+    fr = fruiting_estimate(batch)
+    if fr.value is None or start is None:
+        return Step(name, [], "preview", fr.note if fr.value is None else "No start date yet.")
+    events = [("Start of induction", start),
+              ("Pinning", start + timedelta(days=fr.value["days_to_pinning"])),
+              ("First harvest", start + timedelta(days=fr.value["first_harvest"]))]
+    return Step(name, events, "typical range",
+                f"Consensus days from the guide (typical values), counted from the start of induction: pinning after "
+                f"{fr.value['days_to_pinning']} days, first harvest after {fr.value['first_harvest']}. Not a model. "
+                f"Row used: {fr.value['row']}.")
+
+
 def forecast_photos(batch):
     """The photos the Colonisation forecast uses: a photo checked by the user replaces the HSV one(s) of the same
     sample and day."""

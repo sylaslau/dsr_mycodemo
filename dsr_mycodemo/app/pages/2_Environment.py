@@ -10,7 +10,7 @@ ss = st.session_state
 flow.need("choice", "Start a batch", "pages/1_Start_a_batch.py")
 ss.setdefault("rh_pct", 80.0)
 
-flow.step_header(2, 6, "Environment")
+flow.step_header(2, 8, "Environment")
 materials = flow.is_materials()
 st.write("Where do you grow them, and in what?")
 if materials:      # Materials: residence, then the optional container inside it, then the vessel (mould or bag)
