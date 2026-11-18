@@ -234,7 +234,7 @@ st.caption("The colonisation curve, the stage timeline and the stage bubbles are
 
 # --- induction / post-treatment steps, shown on request (show_next_steps) --------------------------------
 ss.setdefault("show_next_steps", False)
-next_title = stage_ui.next_titles(flow.is_materials())[0]
+next_title = stage_ui.next_titles(flow.is_materials())
 if st.button(("Hide " if ss["show_next_steps"] else "Show ") + f"{next_title.lower()} steps", key="show_next_steps_btn"):
     ss["show_next_steps"] = not ss["show_next_steps"]
     st.rerun()

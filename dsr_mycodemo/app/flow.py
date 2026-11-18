@@ -12,7 +12,6 @@ from dsr_mycodemo.growth.forecast import (
 )
 
 MATERIAL_SPECIES = pipeline.MATERIAL_SPECIES
-PRODUCTS, ENVIRONMENTS = pipeline.PRODUCTS, pipeline.ENVIRONMENTS
 FULLY_COLONISED_NOTE = ("Start induction when the substrate is white all the way through, bottom included; "
                         "90% on a photo is only a surface marker.")
 ENDPOINT_ASSUMPTION_NOTE = (
@@ -120,11 +119,6 @@ def species_row():
 
 def choice_label():
     return pipeline.choice_label(get_batch())
-
-
-def predicted_dates():
-    """Predicted events as (label, from_date, to_date) from run(); empty list while no estimate exists."""
-    return run().dates.value
 
 
 def show_source(step):

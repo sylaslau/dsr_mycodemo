@@ -102,7 +102,6 @@ def test_one_reading_log_per_residence_whatever_the_stage():
     at.button(key="mon_save_Plastic container").click().run()
     env = at.session_state["monitor_env"]
     assert len(env["Tent or Cabinet"]["log"]) == 1 and len(env["Plastic container"]["log"]) == 1
-    assert "monitor_env_next" not in at.session_state or not at.session_state["monitor_env_next"]
 
 
 def test_box_ranges_follow_the_stage_of_the_batch_in_it():

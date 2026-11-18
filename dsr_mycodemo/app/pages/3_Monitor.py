@@ -36,7 +36,6 @@ UPLOAD_ROWS = ss.setdefault("upload_rows", {})
 RESTORED_PHOTOS = ss.setdefault("restored_photos", {})
 ENVIRONMENTS = ss.setdefault("environments", {})
 SAMPLE_PHOTOS = ss.setdefault("sample_photos", {})
-MONITOR_ENV = ss.setdefault("monitor_env", {})
 OUTCOMES = ss.setdefault("outcomes", {})
 RADIO = {"ref": "d005 (reference)", "syldd": "syldd (my batch)"}
 WIDGET_PREFIXES = ("b_", "h_", "l_", "c_")      # their values come from the stores above after a restore
@@ -94,8 +93,8 @@ def apply_restore(p, stage=None):
 
 
 # --- helpers -------------------------------------------------------------------------------
-# book ranges for CO2 (ppm): colonisation tolerates a lot, fruiting wants fresh air
-CO2_COLONISING, CO2_FRUITING = (0.0, 20000.0), (500.0, 1000.0)
+# book range for CO2 (ppm): colonisation tolerates a lot
+CO2_COLONISING = (0.0, 20000.0)
 MATERIALS = flow.is_materials()
 STAGES = flow.STAGES_MATERIAL if MATERIALS else flow.STAGES_FOOD
 FIRST_STAGE = "Colonisation" if MATERIALS else "Colonising"
@@ -146,27 +145,23 @@ def stage_hint(batch, today=None):
     return f"Dates say: ready for induction {'from' if today < marker else 'since'} {marker:%d %b}."
 
 
-def wanted_ranges(batch, stage):
-    """{'temp': (lo, hi, optimum), 'rh': (lo, hi, target), 'co2': (lo, hi, target)} from the baseline, or None."""
+def wanted_ranges(batch):
+    """Colonisation ranges {'temp': (lo, hi, optimum), 'rh': (lo, hi, target), 'co2': (lo, hi, target)} from the
+    baseline, or None. (Fruiting ranges come from pipeline.next_stage_ranges.)"""
     br = pipeline.baseline_row(batch)
     if br is None:
         return None
-    if stage in ("Spawning", "Colonising"):
-        c = baseline_guide.colonisation(br[0])
-        t, lo_h, hi_h = c["incubation_temp_C"], *pipeline.HUMIDITY_RANGE
-        return {"temp": (t["min"], t["max"], t["opt"]), "rh": (lo_h, hi_h, float(c["incubation_rh_pct"])),
-                "co2": (*CO2_COLONISING, 20000.0)}
-    f = baseline_guide.fruiting(br[0])
-    t, h = f["fruiting_temp_C"], f["fruiting_rh_pct"]
-    return {"temp": (t["min"], t["max"], t["opt"]), "rh": (h["min"], h["max"], (h["min"] + h["max"]) / 2),
-            "co2": (*CO2_FRUITING, 750.0)}
+    c = baseline_guide.colonisation(br[0])
+    t, lo_h, hi_h = c["incubation_temp_C"], *pipeline.HUMIDITY_RANGE
+    return {"temp": (t["min"], t["max"], t["opt"]), "rh": (lo_h, hi_h, float(c["incubation_rh_pct"])),
+            "co2": (*CO2_COLONISING, 20000.0)}
 
 
 def box_setup(batch, name):
     """(ranges, prefill kind, fields, caption) of one residence box: the ranges follow the stage of the batch in it
     (colonisation, fruiting, or a record only for post-treatment); with no batch in it, colonisation ranges."""
     if not (PLAN and name == batch_residence() and ss.get("next_start")):
-        return wanted_ranges(batch, "Colonising"), "grow", ("temp", "rh", "co2"), None
+        return wanted_ranges(batch), "grow", ("temp", "rh", "co2"), None
     if MATERIALS:
         return None, "post", ("temp", "rh"), ("Temperature and humidity are a record only: our data has no wanted "
                                               "ranges for post-treatment, so the lights stay yellow.")
@@ -263,7 +258,7 @@ def stage_controls(batch, stage):
             if st.button(label, key="confirm_next", type="primary"):
                 ss["show_next_steps"] = True
                 st.switch_page("pages/2_Recipe_and_actions.py")
-            st.caption(f"Choose where the batch goes next in the {stage_ui.next_titles(MATERIALS)[0].lower()} steps on "
+            st.caption(f"Choose where the batch goes next in the {stage_ui.next_titles(MATERIALS).lower()} steps on "
                        "Recipe and actions first.")
         st.caption(stage_hint(batch))
     if stage == "Fruiting" and st.button("Mark harvested", key="mark_harvested"):
@@ -325,7 +320,7 @@ for name in residences():
         rng, kind, fields, note = box_setup(batch, name)
         if note:
             st.caption(note)
-        colour, entry = stage_ui.environment_log("colonisation", name, rng, batch.inoc_date if has_batch else None,
+        colour, entry = stage_ui.environment_log(name, rng, batch.inoc_date if has_batch else None,
                                                  kind, fields=fields)
         if entry is not None:
             values = entry

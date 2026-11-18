@@ -47,7 +47,6 @@ MATERIAL_VESSELS = {
     "Mould (cylinder)": ("Size (litres)", 0.1, 10.0, 1.0, 0.1),
     "Grow bag": ("Size (litres)", 0.5, 10.0, 1.0, 0.1),
 }
-ALL_VESSELS = list(dict.fromkeys([*FOOD_VESSELS, *MATERIAL_VESSELS]))
 # containers inside the residence (Materials, optional): name -> (compartment.csv container_type, size spec).
 # Default litres from compartment.csv: micro box 185 x 185 x 78 mm (C-007), EURO crate 60 x 40 x 18.5 cm (C-012),
 # 4 L filter bag (C-014)
@@ -63,7 +62,7 @@ def _ss():
     ss = st.session_state
     for key, value in {"env_where": None, "env_size": {}, "env_amount": {}, "env_container": None, "env_box": None,
                        "residences": {}, "env_size_next": {}, "env_amount_next": {}, "monitor_env": {},
-                       "monitor_env_next": {}, "outcomes": {}, "harvest": {}, "next_photos": {}, "weights": {}}.items():
+                       "outcomes": {}, "harvest": {}, "next_photos": {}, "weights": {}}.items():
         ss.setdefault(key, value)
     return ss
 
@@ -396,7 +395,7 @@ def induction_section(batch, plan):
 
     st.subheader("Conditions check")
     ranges = pipeline.next_stage_ranges(batch)
-    reading = latest_reading("next", residence) if residence else {}
+    reading = latest_reading(residence) if residence else {}
     conditions_check(ranges, reading)
     if reading:
         st.caption(f"Latest reading in {residence_label(residence)}: {reading['datetime'].replace('T', ' ')}. "
@@ -457,7 +456,7 @@ LIGHTS = {"green": "#B4BC44", "red": "#F12430", "yellow": "#FFBF00", "grey": "#9
 READING_FIELDS = {"temp": ("🌡️", "Temperature", "°C", 0.5, "%.1f"), "rh": ("💧", "Humidity", "%", 1.0, "%.0f"),
                   "co2": ("🫧", "CO2", "ppm", 100.0, "%.0f")}
 # stage -> (session store {residence: latest entry + "log"}, widget key prefix); colonisation = Monitor's own keys
-READING_STORES = {"colonisation": ("monitor_env", "mon_"), "next": ("monitor_env_next", "next_mon_")}
+READING_STORE, READING_PREFIX = "monitor_env", "mon_"     # one log per residence, whatever the stage
 
 
 def light(value, rng):
@@ -498,13 +497,12 @@ def _range(ranges, key):
     return ranges[key][:2] if ranges and key in ranges else None
 
 
-def environment_log(stage, residence, ranges, inoc_date=None, kind="grow", fields=("temp", "rh", "co2")):
-    """The reading box of one residence for a stage ('colonisation' = Monitor, 'next' = the old Monitor next stage page): one
-    input per field with its traffic light against ranges ({key: (lo, hi, prefill)} or None), Measured by, date,
+def environment_log(residence, ranges, inoc_date=None, kind="grow", fields=("temp", "rh", "co2")):
+    """The reading box of one residence on Monitor (one log per residence, whatever the stage): one input per field with its traffic light against ranges ({key: (lo, hi, prefill)} or None), Measured by, date,
     time and Save. Returns (worst light, the entry saved on this run or None)."""
     ss = _ss()
-    store, p = READING_STORES[stage]
-    saved = ss[store].setdefault(residence, {})
+    p = READING_PREFIX
+    saved = ss[READING_STORE].setdefault(residence, {})
     values, colours, co2_unknown = {}, [], False
     for col, key in zip(st.columns(len(fields)), fields):
         icon, label, unit, step, fmt = READING_FIELDS[key]
@@ -535,10 +533,10 @@ def environment_log(stage, residence, ranges, inoc_date=None, kind="grow", field
     return worst(colours), entry
 
 
-def latest_reading(stage, residence):
+def latest_reading(residence):
     """The latest reading saved on Monitor for a residence (one log per residence, whatever the stage); {} when
-    nothing is saved. stage is kept for the callers and not used."""
-    return {k: v for k, v in _ss()["monitor_env"].get(residence, {}).items() if k != "log"}
+    nothing is saved."""
+    return {k: v for k, v in _ss()[READING_STORE].get(residence, {}).items() if k != "log"}
 
 
 def conditions_check(ranges, reading, fields=("temp", "rh", "co2")):
@@ -638,9 +636,9 @@ def sample_log(stage, sample, inoc_date, materials=False):
     _flush_record(sample, inoc_date, p="next_")
 
 
-# --- next-stage pages (7 and 8) ---------------------------------------------------------------------
-# mode -> (page 7 title, page 8 title)
-NEXT_TITLES = {False: ("Induction", "Monitor fruiting"), True: ("Post-treatment", "Monitor post-treatment")}
+# --- next-stage titles and plan samples ---------------------------------------------------------------------
+# mode -> title of the next stage (Recipe and actions button, Monitor)
+NEXT_TITLES = {False: "Induction", True: "Post-treatment"}
 
 
 def next_titles(materials):
