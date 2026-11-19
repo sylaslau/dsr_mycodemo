@@ -84,7 +84,7 @@ def test_co2_unknown_saves_empty():
 
 
 def _monitor():
-    at = _page("pages/3_Monitor.py")
+    at = _page("pages/4_Monitor.py")
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     at.session_state["env_where"], at.session_state["env_size"] = "Tent or Cabinet", {"Tent or Cabinet": 1.0}
     at.session_state["batch"] = {"batch_label": "B1", "species": "Pleurotus ostreatus", "inoc_date": START,

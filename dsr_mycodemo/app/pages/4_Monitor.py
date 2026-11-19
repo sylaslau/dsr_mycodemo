@@ -15,7 +15,7 @@ from dsr_mycodemo.growth.forecast import restore_from_text
 
 st.set_page_config(page_title="Monitor", page_icon="📷", layout="wide")
 flow.init()
-flow.step_header(3, 5, "Monitor")
+flow.header("Monitor")
 
 # session-only stores (nothing is written to disk): stage_log {dish: [{stage, date, note}]},
 # harvest {dish: [{date, g}]}, losses {dish: {...}}, dry_g {dish: g}, costs {batch: {...}},
@@ -292,7 +292,7 @@ def coverage_photo(name, sample):
     m2.metric("Day since inoculation", row["day"])
     if st.button("Check image", key=f"check_{name}_{sample}", type="primary"):
         ss["check_target"] = {"sample": sample, "file": row["file"]}
-        st.switch_page("pages/4_Check_image.py")
+        st.switch_page("pages/5_Check_image.py")
 
 
 def batch_bubble(batch, name):

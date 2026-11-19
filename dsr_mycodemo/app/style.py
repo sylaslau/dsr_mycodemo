@@ -15,6 +15,5 @@ CSS = """
 .sf-arrow {text-align: center; font-size: 1.3rem; line-height: 1.6rem; color: #8a8f94;}
 div[data-testid="stMetric"] {background: var(--pink); border: 1px solid var(--mauve); border-radius: 8px;
   padding: 0.5rem 0.8rem;}
-.mc-step {color: var(--moss); font-size: 0.85rem; font-weight: 600; margin-bottom: -0.8rem;}
 </style>
 """

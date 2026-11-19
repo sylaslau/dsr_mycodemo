@@ -294,8 +294,8 @@ if ss["goal"] != "Food":
                     f"({out.value['n_rows']} for this species, out of {out.value['n_total']}).")
         st.caption(out.note)
 
-# --- hand over to Monitor ----------------------------------------------------------------
-if st.button("Save this plan and open Monitor", type="primary"):
+# --- hand over to Timeline ----------------------------------------------------------------
+if st.button("Save this plan and open Timeline", type="primary"):
     row = flow.species_row()
     label = batch_label or f"{what} {ss['inoc_date'].isoformat()}"
     # a new batch: its stage starts again on Monitor
@@ -306,4 +306,4 @@ if st.button("Save this plan and open Monitor", type="primary"):
                    "species": row["species"] if row else ss["material_species"] if flow.is_materials() else what,
                    "inoc_date": ss["inoc_date"], "n_containers": n, "temp_c": ss["temp_c"],
                    "substrate": substrate, "spawn_pct": float(pipeline.SPAWN_PCT)}
-    st.switch_page("pages/3_Monitor.py")
+    st.switch_page("pages/3_Timeline.py")

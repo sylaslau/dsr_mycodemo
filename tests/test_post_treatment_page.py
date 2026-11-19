@@ -157,7 +157,7 @@ def test_steps_materials_residences():
 
 # --- post-treatment on Monitor (was page 8) ------------------------------------------------------------------
 def _monitor(**state):
-    return _page("3_Monitor.py", batch=PLAN, residences={"next": "Oven"}, batch_stage="Post-treatment", next_start=D,
+    return _page("4_Monitor.py", batch=PLAN, residences={"next": "Oven"}, batch_stage="Post-treatment", next_start=D,
                  **state)
 
 

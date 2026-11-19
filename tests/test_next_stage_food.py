@@ -66,15 +66,13 @@ def test_next_stage_ranges_food_from_the_guide_materials_none():
 
 
 # --- step headers and titles ----------------------------------------------------------------------
-def test_pages_3_to_5_say_step_n_of_5():          # pages 1 and 2 have no step line (Step 1 / Step 2 are sections)
+def test_five_pages_in_order_with_plain_headers():   # no "Step n of 5" line any more (11-19)
     pages = sorted((APP / "pages").glob("[0-9]_*.py"))
-    assert [f.name for f in pages] == ["1_Start_a_batch.py", "2_Recipe_and_actions.py", "3_Monitor.py",
-                                       "4_Check_image.py", "5_Timeline.py"]
-    for n, f in enumerate(pages, start=1):
-        if n < 3:
-            continue
+    assert [f.name for f in pages] == ["1_Start_a_batch.py", "2_Recipe_and_actions.py", "3_Timeline.py",
+                                       "4_Monitor.py", "5_Check_image.py"]
+    for f in pages:
         src = f.read_text()
-        assert f"step_header({n}, 5, " in src, f.name
+        assert "step_header" not in src and "flow.header(" in src, f.name
 
 
 # --- induction steps on Recipe and actions (was page 7) --------------------------------------------------------------------------------

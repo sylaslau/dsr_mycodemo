@@ -176,13 +176,13 @@ def test_induction_date_is_forecast_90_day_plus_two():
 
 # --- the page in AppTest, with a fake Save value from the component -----------------------------------
 def page(monkeypatch, save_value, plan=True):
-    """AppTest of 4_Check_image.py: one uploaded HSV photo of sample B1-01 on day 6; the component returns save_value."""
+    """AppTest of 5_Check_image.py: one uploaded HSV photo of sample B1-01 on day 6; the component returns save_value."""
     from streamlit.testing.v1 import AppTest
 
     from dsr_mycodemo.app import components
     if save_value != "real":
         monkeypatch.setattr(components, "check_image", lambda **kw: save_value)
-    at = AppTest.from_file(str(ROOT / "dsr_mycodemo/app/pages/4_Check_image.py"), default_timeout=60)
+    at = AppTest.from_file(str(ROOT / "dsr_mycodemo/app/pages/5_Check_image.py"), default_timeout=60)
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     if plan:
         at.session_state["batch"] = {"batch_label": "B1", "species": "Pleurotus ostreatus", "inoc_date": START,
@@ -253,7 +253,7 @@ def test_page_runs_with_the_real_component(monkeypatch):
 
 def test_page_with_no_photos_points_to_monitor():
     from streamlit.testing.v1 import AppTest
-    at = AppTest.from_file(str(ROOT / "dsr_mycodemo/app/pages/4_Check_image.py"), default_timeout=60)
+    at = AppTest.from_file(str(ROOT / "dsr_mycodemo/app/pages/5_Check_image.py"), default_timeout=60)
     at.run()
     assert "Upload a photo" in at.info[0].value
     # st.page_link cannot find pages in a single-page AppTest (AppTest limit, not the app)
