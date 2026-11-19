@@ -203,3 +203,6 @@ tests/test_grid_sheets.py
 reports/figures/syldd_grid/
 reports/figures/d005_grid/
 backups/
+
+# Reports folder kept local, not in the repo - Sylas 2026-11-19
+reports/
