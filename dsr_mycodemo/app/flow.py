@@ -33,6 +33,11 @@ def init():
     st.markdown(style.CSS, unsafe_allow_html=True)
 
 
+def header(title):
+    """The page title."""
+    st.title(title)
+
+
 def step_header(n, total, title):
     """The page title with a small "Step n of total" line above it."""
     st.markdown(f'<div class="mc-step">Step {n} of {total}</div>', unsafe_allow_html=True)

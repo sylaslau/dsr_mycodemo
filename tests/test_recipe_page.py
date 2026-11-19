@@ -69,5 +69,8 @@ def test_days_to_the_next_step_and_no_figure_or_bubbles():
     assert not at.get("plotly_chart")
     assert not [t for t in texts(at) if "border-left:8px" in t]
     subs = [s.value for s in at.subheader]
-    assert subs.index("Recipe") < subs.index("Inoculation steps") < subs.index("Days to the next step")
-    assert "Duration to 90%" in [m.label for m in at.metric]
+    assert (subs.index("Step 3. Build your recipe") < subs.index("Step 4. Inoculation")
+            < subs.index("Days to the next step"))
+    labels = [m.label for m in at.metric]
+    assert "Duration to 90%" in labels and "90% visible (consensus day)" not in labels
+    assert not at.progress and not [c for c in [*at.success, *at.warning] if "colonisation range" in c.value]

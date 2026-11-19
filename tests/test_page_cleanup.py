@@ -29,7 +29,7 @@ def test_environment_has_no_captions_and_messages_sit_under_their_sliders():
     assert not at.exception
     text = _all_text(at)
     assert "Row used" not in text and "Fruiting later" not in text and "We plan" not in text
-    assert not at.caption
+    assert len(at.caption) == 2          # only the Residence and Vessels definitions
     # conditions row: the second set of two columns holds slider + message each
     t_col, h_col = [c for c in at.columns if c.slider][:2]
     assert t_col.slider[0].label.startswith("Temperature") and (t_col.success or t_col.warning)
@@ -42,10 +42,10 @@ def test_start_page_shows_the_environment_once_a_choice_exists():
     at = _page("pages/1_Start_a_batch.py")
     at.run()
     assert not at.exception
-    assert "Environment" not in [h.value for h in at.header] and not any(b.key == "next" for b in at.button)
+    assert "Step 2. Describe your growth environment" not in [h.value for h in at.header] and not any(b.key == "next" for b in at.button)
     at.session_state["goal"], at.session_state["choice"] = "Food", "Blue Oyster"
     at.run()
-    assert [h.value for h in at.header] == ["Environment", "Conditions"]
+    assert [h.value for h in at.header] == ["Step 1. Pick what you want to grow", "Step 2. Describe your growth environment", "Conditions"]
     assert "Residence" in [s.value for s in at.subheader] and at.slider[0].label == "Temperature (°C)"
     assert not any(b.key == "next" for b in at.button)                  # no residence yet
     assert any("Choose where you grow" in c.value for c in at.caption)

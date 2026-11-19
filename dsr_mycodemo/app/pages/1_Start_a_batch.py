@@ -1,6 +1,3 @@
-"""Start a batch: one pick in total, a Food (mushroom) or a Thing (mycomaterial); once picked, the environment
-(residence, containers, vessels, conditions) below it."""
-
 import streamlit as st
 
 from dsr_mycodemo import pipeline
@@ -15,17 +12,18 @@ ss = st.session_state
 FOODS = {"Pearl or Blue Oyster": "Pearl Oyster", "King Oyster": "King Oyster", "Shiitake": "Shiitake",
          "Lion's mane": "Lion's Mane", "Enoki": "Enoki"}
 THINGS = ["Packaging foam", "Acoustic panel",
-          "Mycoleather", "Bricks or blocks", "Game pieces"]
-FOOD_OWN, THING_OWN = "Your next culinary invention", "Your next thingiverse invention"
-SPECIES_BY_COMMON_NAME = {s["common_name"]: s["species"] for s in baseline_guide.species_list()}
-FOOD_SPECIES = {shown: SPECIES_BY_COMMON_NAME[common_name] for shown, common_name in FOODS.items()}
+          "Bricks or blocks", "Game pieces"]
+FOOD_OWN, THING_OWN = "Another Mushroom", "Your next thingiverse invention"
+SPECIES_BY_COMMON_NAME = {s["common_name"]: s["species"]
+                          for s in baseline_guide.species_list()}
+FOOD_SPECIES = {shown: SPECIES_BY_COMMON_NAME[common_name]
+                for shown, common_name in FOODS.items()}
 
 
 def pick(goal, choice, custom_name=""):
-    """Save the one pick the way the old Start and What to grow pages did; a new pick resets the recipe."""
     ss["goal"], ss["choice"], ss["custom_name"] = goal, choice, custom_name
     ss["recipe"] = ss["batch"] = None
-    for k in ("batch_stage", "next_start"):      # a new pick is a new batch: its stage starts again
+    for k in ("batch_stage", "next_start"):
         ss.pop(k, None)
     st.rerun()
 
@@ -34,12 +32,12 @@ def is_food(shown):
     return ss["goal"] == "Food" and ss["choice"] == FOOD_SPECIES[shown]
 
 
-flow.step_header(1, 5, "Start a batch")
-st.write("What do you want to grow? Pick one for this batch.")
+flow.header("Start a batch")
+st.header("Step 1. Pick what you want to grow")
 left, right = st.columns(2)
 
 with left:
-    st.subheader("Food")
+    st.subheader("Mushrooms for Food")
     for shown in FOODS:
         on = is_food(shown)
         if st.button(shown, key=f"food_{shown}", type="primary" if on else "secondary", use_container_width=True):
@@ -58,10 +56,11 @@ with left:
                    "I'll help you track with the experimental conditions.")
 
 with right:
-    st.subheader("Things")
+    st.subheader("Materials or Things")
     materials_off = pipeline.materials_mode() == "off"
     if materials_off:
-        flow.preview("Materials", "Switched off in this version: only Food runs.")
+        flow.preview(
+            "Materials", "Switched off in this version: only Food runs.")
     for p in THINGS:
         on = ss["goal"] == "Materials" and ss["choice"] == p
         if st.button(p, key=f"thing_{p}", type="primary" if on else "secondary", use_container_width=True,
@@ -74,9 +73,9 @@ with right:
     if ss["goal"] == "Materials" and not materials_off:
         ss["material_species"] = st.radio(
             "Fungus", pipeline.MATERIAL_SPECIES, horizontal=True, key="material_species_in",
+            label_visibility="collapsed",
             index=pipeline.MATERIAL_SPECIES.index(ss["material_species"])
-            if ss["material_species"] in pipeline.MATERIAL_SPECIES else 0,
-            help="Ganoderma covers G. sessile, G. lingzhi and G. lucidum in the strength data.")
+            if ss["material_species"] in pipeline.MATERIAL_SPECIES else 0)
     if own and not materials_off:
         name = st.text_input("What is it called?",
                              value=ss["custom_name"], key="thing_own_in")

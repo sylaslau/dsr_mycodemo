@@ -201,4 +201,5 @@ reports/figures/eda/
 dsr_mycodemo/growth/grid_sheets.py
 tests/test_grid_sheets.py
 reports/figures/syldd_grid/
+reports/figures/d005_grid/
 backups/

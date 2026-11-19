@@ -36,8 +36,8 @@ def _labels(at):
 def test_materials_shows_containers_and_moulds():
     at = _env("Materials", "Packaging foam")
     subs = [s.value for s in at.subheader]
-    assert subs[subs.index("Residence"):][:3] == ["Residence", "Containers", "Vessels"]
-    for name in ("Micro box", "Crate", "Filter bag", "Mould (box)", "Mould (cylinder)", "Grow Bag"):
+    assert subs[subs.index("Residence"):][:3] == ["Residence", "Containers (optional)", "Vessels"]
+    for name in ("Micro box", "Crate", "Filter bag", "Mould", "Grow Bag"):
         assert name in _labels(at), name
     for food_only in ("Glass Jar", "Tupperware", "Bucket"):
         assert food_only not in _labels(at)
@@ -46,7 +46,7 @@ def test_materials_shows_containers_and_moulds():
 def test_food_shows_no_containers():
     at = _env("Food", "Blue Oyster")
     assert "Containers" not in [s.value for s in at.subheader]
-    for name in ("Micro box", "Crate", "Filter bag", "Mould (box)"):
+    for name in ("Micro box", "Crate", "Filter bag", "Mould"):
         assert name not in _labels(at)
     assert {"Glass Jar", "Tupperware", "Grow Bag", "Bucket"} <= set(_labels(at))
 
@@ -82,7 +82,7 @@ def test_mould_litres_feed_the_recipe_scale():
     s = at.session_state
     s["goal"], s["choice"], s["material_species"], s["temp_c"] = "Materials", "Packaging foam", "Trametes versicolor", 22.0
     s["environment"], s["env_where"] = "Small plastic container (about 1 L)", "Plastic container"
-    s["env_container"], s["env_size"], s["env_amount"] = "Mould (box)", {"Mould (box)": 2.0}, {"Mould (box)": 3}
+    s["env_container"], s["env_size"], s["env_amount"] = "Mould", {"Mould": 2.0}, {"Mould": 3}
     at.run()
     assert not at.exception
     assert at.session_state["plan_size"] == (3, 2.0 * 0.2)

@@ -43,8 +43,7 @@ FOOD_VESSELS = {
     "Bucket": ("Size (litres)", 0.5, 10.0, 1.0, 0.5),
 }
 MATERIAL_VESSELS = {
-    "Mould (box)": ("Size (litres)", 0.1, 10.0, 1.0, 0.1),
-    "Mould (cylinder)": ("Size (litres)", 0.1, 10.0, 1.0, 0.1),
+    "Mould": ("Size (litres)", 0.1, 10.0, 1.0, 0.1),
     "Grow bag": ("Size (litres)", 0.5, 10.0, 1.0, 0.1),
 }
 # containers inside the residence (Materials, optional): name -> (compartment.csv container_type, size spec).
@@ -104,7 +103,7 @@ def size_amount(name, spec, on, sizes="env_size", amounts="env_amount", prefix="
         ss[sizes][name], ss[amounts][name] = size, int(amount)
 
 
-def residence_picker(stage_key):
+def residence_picker(stage_key, caption=None):
     """The Residence box: one button per residence with its size fields. Saves the choice per stage in
     ss['residences'][stage_key]; colonisation also keeps the old keys (env_where, environment = recipe scale) and
     clears the plan, as the old Environment page always did. Returns the chosen residence or None."""
@@ -114,6 +113,8 @@ def residence_picker(stage_key):
     sizes, amounts, prefix = ("env_size_next", "env_amount_next", "next_") if nxt else ("env_size", "env_amount", "")
     current = ss["residences"].get("next") if nxt else ss["env_where"]
     st.subheader("Residence")
+    if caption:
+        st.caption(caption)
     for name, (label, spec) in options.items():
         on = current == name
         if st.button(SHOWN.get(name, name), key=f"{prefix}where_{name}", type="primary" if on else "secondary",
@@ -128,17 +129,24 @@ def residence_picker(stage_key):
     return current if current in options else None
 
 
-def item_picker(title, items, key, button_prefix, optional=False, shown=SHOWN):
+def item_picker(title, items, key, button_prefix, optional=False, shown=SHOWN, caption=None):
     """A column of buttons (vessels or containers) with Size and Amount each; saves the choice in ss[key].
     optional: a second click on the chosen one clears it."""
     ss = _ss()
     st.subheader(title)
+    if caption:
+        st.caption(caption)
     for name, spec in items.items():
         on = ss[key] == name
         if st.button(shown.get(name, name), key=f"{button_prefix}_{name}", type="primary" if on else "secondary",
                      use_container_width=True):
             ss[key] = None if (optional and on) else name
             st.rerun()
+        if name == "Mould" and on:
+            st.caption("Enter the dimensions of the mould at its widest and tallest points.")
+            ss["mould_dims"] = st.text_input("Mould dimensions (widest × tallest, cm)",
+                                             value=ss.get("mould_dims", ""), key="mould_dims_in",
+                                             placeholder="e.g. 20 × 10").strip()
         size_amount(name, spec, on)
 
 
@@ -196,24 +204,22 @@ def environment_section():
     ss = _ss()
     ss.setdefault("rh_pct", 80.0)
     materials = flow.is_materials()
-    st.header("Environment")
-    st.write("Where do you grow them, and in what?")
+    st.header("Step 2. Describe your growth environment")
     if materials:      # Materials: residence, then the optional container inside it, then the vessel (mould or bag)
         where_col, box_col, cont_col = st.columns(3)
         with box_col:
-            item_picker("Containers", {k: v[1] for k, v in CONTAINERS.items()}, "env_box", "box", optional=True)
-            st.caption("Optional: a box, crate or filter bag inside the residence. Click again to clear.")
+            item_picker("Containers (optional)", {k: v[1] for k, v in CONTAINERS.items()}, "env_box", "box",
+                        optional=True, caption="A box, crate or filter bag placed inside the residence.")
     else:
         where_col, cont_col = st.columns(2)
     with where_col:
-        residence_picker("colonisation")
+        residence_picker("colonisation", caption="The space where your batch grows: a tub, shelf, tent or room.")
     with cont_col:
-        item_picker("Vessels", vessels_for(materials), "env_container", "cont")
+        item_picker("Vessels", vessels_for(materials), "env_container", "cont",
+                    caption="What holds the substrate and the mushroom culture: a bag, mould, jar or bucket.")
 
     st.divider()
     st.header("Conditions")
-    st.markdown("**Input method**")
-    st.markdown(":green[●] Slider (active)")
     t_col, h_col = st.columns(2)
     row = flow.species_row()
     br = pipeline.baseline_row(flow.get_batch())
@@ -286,9 +292,10 @@ def temperature_line(r, temp):
         + ("" if state == "inside" else " The days below assume the guide's own conditions."))
 
 
-def colonisation_days(result, source=True):
+def colonisation_days(result, source=True, compact=False):
     """Food: the Colonisation time estimate as dates (90% day, Induction planning marker) and the duration, or its
-    greyed box when there is no estimate. source=False leaves out the source caption (Recipe page clean-up, 11-10)."""
+    greyed box when there is no estimate. source=False leaves out the source caption (Recipe page clean-up, 11-10).
+    compact=True (Recipe) shows only the induction marker and the duration: no 90% date, progress bar or captions."""
     est, fc, dates = result.colonisation_estimate, result.colonisation_forecast, result.dates
     if est.is_preview:
         flow.preview("Colonisation time estimate", est.note)
@@ -300,12 +307,17 @@ def colonisation_days(result, source=True):
     def span1(a, b):
         return f"{a.strftime('%d %b')} – {b.strftime('%d %b')}"
 
-    c1, c2, c3 = st.columns(3)
-    c1.metric(pipeline.ENDPOINT_LABEL, span1(*full), help="Project assumption")
+    if compact:
+        c2, c3 = st.columns(2)
+    else:
+        c1, c2, c3 = st.columns(3)
+        c1.metric(pipeline.ENDPOINT_LABEL, span1(*full), help="Project assumption")
     mk = ev1.get(pipeline.MARKER_LABEL)
     if mk:
         c2.metric(pipeline.MARKER_LABEL, span1(*mk), help="Project assumption: the 90% day + 2 days")
     c3.metric("Duration to 90%", f"{lo:.0f}–{hi:.0f} days", help=f"Typical {est.value['typical']:.0f} days")
+    if compact:
+        return
     st.progress(0.0, text=f"Day 0 → day {hi:.0f}")
     st.caption(flow.ENDPOINT_ASSUMPTION_NOTE)
     if source:

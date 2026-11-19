@@ -25,6 +25,9 @@ def stage_flow(title, stages):
 
 
 st.title("Mycelly")
+st.image(
+    "dsr_mycodemo/app/pages/images/shroom.png", width=100
+)
 st.markdown(
     "<div style='font-size:1.05rem'>Your mycelium cultivation buddy 🍄 I sit by your side to:"
     "<ul>"
@@ -43,10 +46,12 @@ thing.markdown(stage_flow("Thing", [("Culture", False), ("Spawn", False), ("Pre-
                                     ("Block", materials_on), ("Post-treatment", False)]), unsafe_allow_html=True)
 if not materials_on:
     with thing:
-        flow.preview("Materials", "Switched off in this version: only Food runs.")
+        flow.preview(
+            "Materials", "Switched off in this version: only Food runs.")
 
 with st.expander("What we collect"):
-    st.write("Only if you tick the box on Monitor and press Send: " + collect.SHARE_TEXT)
+    st.write("Only if you tick the box on Monitor and press Send: " +
+             collect.SHARE_TEXT)
 
 st.write("")
 st.caption("")
