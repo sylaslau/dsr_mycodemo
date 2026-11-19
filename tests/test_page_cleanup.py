@@ -106,3 +106,10 @@ def test_monitor_entry_uses_chosen_date_time_and_co2_unknown_goes_grey():
     saved = at.session_state["monitor_env"][name]
     assert saved["co2"] is None and saved["datetime"] == "2026-10-18T07:45" and saved["day"] == 10
     assert len(saved["log"]) == 1
+
+
+def test_monitor_has_no_share_section():          # taken off the page 11-19; collect.py stays for later
+    at = _monitor()
+    assert "Share this batch for research" not in [h.value for h in at.header]
+    assert not any(b.label == "Send" for b in at.button)
+    assert not any(c.label == "I agree to share this batch" for c in at.checkbox)

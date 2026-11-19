@@ -7,7 +7,7 @@ from datetime import date
 
 import streamlit as st
 
-from dsr_mycodemo import collect, pipeline
+from dsr_mycodemo import pipeline
 from dsr_mycodemo.app import flow, stage_ui
 from dsr_mycodemo.cultivation import baseline_guide
 from dsr_mycodemo.growth.coverage import days_since, photo_coverage, photo_datetime, photo_quality
@@ -22,7 +22,7 @@ flow.header("Monitor")
 # batch_fields {dataset: {...}}, dish_fields {dish: {...}}, upload_rows / restored_photos {key: [photo rows]},
 # environments {name: pipeline.Environment} (kept for backups), monitor_env {residence: latest entry + "log"},
 # sample_photos {sample ID: [photo rows]}, outcomes {sample ID: {colonised: date | None, mould: bool}},
-# share_code (contributor code once this batch was shared); batch_stage (the grower's word, confirmed here) and
+# batch_stage (the grower's word, confirmed here) and
 # next_start (date the next stage started)
 ss = st.session_state
 STAGE_LOG = ss.setdefault("stage_log", {})
@@ -193,6 +193,8 @@ def sample_record(sample, inoc_date):
     stage_ui.sample_log("colonisation", sample, inoc_date, materials=flow.is_materials())
 
 
+# sharing for research: the "Share this batch for research" section was taken off this page (11-19); these two
+# helpers and collect.py stay for when it comes back.
 def supabase_config():
     """The [supabase] section of .streamlit/secrets.toml (url, anon_key), or None when sharing is not set up."""
     try:
@@ -333,33 +335,6 @@ for name in residences():
 if not residences():
     st.info("Choose where you grow on Start a batch first.")
     st.page_link("pages/1_Start_a_batch.py", label="Start a batch", icon="🍄")
-
-# --- share this batch for research ------------------------------------------------------
-if PLAN:
-    st.divider()
-    st.header("Share this batch for research")
-    st.write(collect.SHARE_TEXT)
-    cfg = supabase_config()
-    if cfg is None:
-        st.info("Sharing not set up.")
-    elif ss.get("share_code"):
-        st.success(f"Sent. Your contributor code: **{ss['share_code']}**. "
-                   "Keep this code if you want your data deleted.")
-    else:
-        rec = flow.run().recipe.value["rec"]
-        fill_g = st.number_input("Wet fill per container (g)", 1.0, value=float(round(1000 * rec["per_container"]["total_mix"])),
-                                 step=10.0, help="Substrate + water + spawn in one bag or jar; used for the yield (BE %).")
-        agreed = st.checkbox("I agree to share this batch", value=False, key="share_ok")
-        if st.button("Send", type="primary", disabled=not agreed):
-            try:
-                from supabase import create_client
-                client = create_client(cfg["url"], cfg["anon_key"])
-                with st.spinner("Sending..."):
-                    ss["share_code"] = collect.submit_batch(client, share_payload(rec, fill_g), collect.LICENCE)
-            except Exception as err:             # network, policy or bucket errors: show, keep the app running
-                st.error(f"Sending failed: {err}")
-            else:
-                st.rerun()
 
 with env_list:
     for name, colour in side_lights.items():
