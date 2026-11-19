@@ -4,9 +4,7 @@ Applied mycology is an emerging field that offers sustainable solutions, and the
 
 For this demo project, I explore how data science can harmonise these heterogeneous parameters and processes into a comparable dataset, and how machine learning tools built on such shared data could accelerate cross-disciplinary R&D towards sustainable solutions for the circular bio-economy.
 
-<!-- Live demo badge, add after deployment on Streamlit Community Cloud (replace the link with the app's own URL):
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
--->
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://mycelly-demo.streamlit.app/)
 
 ![Mycelly overview: one shared core for mycelium cultivation (planning, inoculation, spawn run), then Food mode or Materials mode, each step paired with what the app provides and its status](dsr_mycodemo/app/images/mycelly_architecture.png)
 
