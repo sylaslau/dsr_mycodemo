@@ -4,30 +4,20 @@ Run from the project folder (with the .venv active):
     streamlit run dsr_mycodemo/app/Welcome.py
 """
 
+from pathlib import Path
+
 import streamlit as st
 
-from dsr_mycodemo import collect, pipeline
 from dsr_mycodemo.app import flow
+
+IMAGES = Path(__file__).parent / "images"
 
 st.set_page_config(page_title="Mycelly", page_icon="🍄", layout="wide")
 flow.init()
 
 
-def stage_flow(title, stages):
-    """One vertical flow: boxes top to bottom with a down arrow between; (name, active) pairs."""
-    parts = [f"<h3>{title}</h3>"]
-    for i, (name, active) in enumerate(stages):
-        if i:
-            parts.append('<div class="sf-arrow">↓</div>')
-        parts.append(
-            f'<div class="sf-box{"" if active else " off"}">{name}</div>')
-    return "".join(parts)
-
-
 st.title("Mycelly")
-st.image(
-    "dsr_mycodemo/app/pages/images/shroom.png", width=100
-)
+st.image(str(IMAGES / "shroom.png"), width=100)
 st.markdown(
     "<div style='font-size:1.05rem'>Your mycelium cultivation buddy 🍄 I sit by your side to:"
     "<ul>"
@@ -38,20 +28,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-food, thing = st.columns(2)
-food.markdown(stage_flow("Food", [("Culture", False), ("Spawn", False), ("Block", True),
-                                  ("Flushes", True)]), unsafe_allow_html=True)
-materials_on = pipeline.materials_mode() != "off"
-thing.markdown(stage_flow("Thing", [("Culture", False), ("Spawn", False), ("Pre-treatment", False),
-                                    ("Block", materials_on), ("Post-treatment", False)]), unsafe_allow_html=True)
-if not materials_on:
-    with thing:
-        flow.preview(
-            "Materials", "Switched off in this version: only Food runs.")
+st.image(str(IMAGES / "app_overview.png"), width="stretch")
 
-with st.expander("What we collect"):
-    st.write("Only if you tick the box on Monitor and press Send: " +
-             collect.SHARE_TEXT)
-
-st.write("")
-st.caption("")
+st.subheader("Data collection")
+st.markdown("We do not collect any personal data.")
+st.markdown("We collect data directly related to mycelium cultivation to improve how Mycelly assists. "
+            "Examples: environmental conditions, growing parameters and photos, and product results.")
