@@ -19,8 +19,12 @@ ENDPOINT_ASSUMPTION_NOTE = (
     "coverage**, and the **Induction planning marker** is that day + 2 days. The day the substrate is white all the "
     "way through, bottom included, cannot be predicted; check by eye before starting induction.")
 # the grower's words; each maps to a stage_id in stage.csv via dsr_mycodemo.stages ("Contaminated" is a status)
-STAGES_FOOD = ["Inoculated", "Colonising", "Fruiting", "Harvested", "Contaminated"]
-STAGES_MATERIAL = ["Colonisation", "Post-treatment", "Contaminated"]
+# Monitor (11-19): three stages in all, Spawn run -> Fruiting (Food) or Post-treatment (Materials)
+STAGES_FOOD = ["Spawn run", "Fruiting", "Contaminated"]
+STAGES_MATERIAL = ["Spawn run", "Post-treatment", "Contaminated"]
+# words saved by older versions (backups) -> the current stage word
+OLD_STAGE_WORDS = {"Inoculated": "Spawn run", "Colonising": "Spawn run", "Colonisation": "Spawn run",
+                   "Harvested": "Fruiting"}
 
 
 def init():

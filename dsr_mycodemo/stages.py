@@ -14,6 +14,7 @@ STAGE_PATH = INTERIM_DATA_DIR / "extracted" / "stage.csv"
 
 # user-facing word -> stage_id
 WORD_TO_STAGE = {
+    "Spawn run": "ST4",           # Monitor's word for colonisation (11-19)
     "Spawning": "ST4",            # Monitor: the inoculation day starts the block's colonisation
     "Inoculated": "ST4",
     "Colonising": "ST4",

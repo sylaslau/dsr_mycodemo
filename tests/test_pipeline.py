@@ -368,6 +368,8 @@ def test_environment_temperature_moves_the_colonisation_estimate():
 
 def test_next_stage_after_colonisation_food_and_materials():
     assert pipeline.next_stage("Food", "Colonising") == "Fruiting"
+    assert pipeline.next_stage("Food", "Spawn run") == "Fruiting"
+    assert pipeline.next_stage("Materials", "Spawn run") == "Post-treatment"
     assert pipeline.next_stage("Materials", "Colonisation") == "Post-treatment"
     assert pipeline.next_stage("Food", "Fruiting") is None
     assert pipeline.next_stage("Materials", "Post-treatment") is None
@@ -405,7 +407,7 @@ def test_monitor_page_environment_boxes_stages_and_sample_photo():
     assert [s.value for s in at.subheader] == ["Tent or Cabinet"]
     assert at.selectbox(key="sample_Tent or Cabinet").options == ["B1-01", "B1-02"]
     html_ = " ".join(m.value for m in at.markdown)
-    assert all(word in html_ for word in ("Inoculated", "Colonising", "Fruiting", "Harvested", "Contaminated"))
+    assert "Spawn run" in html_ and "Harvested" not in html_
     assert any(b.label == "Save" for b in at.button)
 
 

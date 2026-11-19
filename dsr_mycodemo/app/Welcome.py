@@ -32,5 +32,5 @@ st.image(str(IMAGES / "app_overview.png"), width="stretch")
 
 st.subheader("Data collection")
 st.markdown("We do not collect any personal data.")
-st.markdown("We collect data directly related to mycelium cultivation to improve how Mycelly assists. "
+st.markdown("We collect data directly related to mycelium cultivation to improve how Mycelly assists. \n"
             "Examples: environmental conditions, growing parameters and photos, and product results.")

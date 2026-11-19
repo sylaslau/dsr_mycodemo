@@ -37,18 +37,27 @@ def _box_of_batch(at):
 
 
 def _current(at):
+    """Stage bubbles shown (11-19: only the current one, left of the batch name)."""
     import re
     html_ = " ".join(m.value for m in at.markdown)
-    return re.findall(r"#fff;[^>]*><b>([^<]+)</b>", html_)
+    return re.findall(r"#fff;[^>]*><b>([^<]+)</b></span><b>[^<]+</b>", html_)
 
 
 # --- stage only through the confirm button --------------------------------------------------------
-def test_stage_starts_colonising_and_does_not_follow_the_dates():
+def test_stage_starts_spawn_run_and_does_not_follow_the_dates():
     at = _monitor(plan={**FOOD_PLAN, "inoc_date": START - timedelta(days=200)},
                   residences={"next": "Tent or Cabinet"})       # dates say long past harvest
-    assert at.session_state["batch_stage"] == "Colonising" and _current(at) == ["Colonising"]
+    assert at.session_state["batch_stage"] == "Spawn run" and _current(at) == ["Spawn run"]
     assert "next_start" not in at.session_state
-    assert any("Dates say: ready for induction since" in c.value for c in at.caption)
+    html_ = " ".join(m.value for m in at.markdown)
+    assert "Fruiting" not in html_ and "Harvested" not in html_          # only the current stage is a bubble
+    assert not any("Dates say" in c.value for c in at.caption)           # no grey hint lines
+
+
+def test_old_stage_words_load_as_the_new_ones():
+    assert _current(_monitor(batch_stage="Colonising")) == ["Spawn run"]
+    assert _current(_monitor(residences={"next": "Tent or Cabinet"}, batch_stage="Harvested",
+                             next_start=date(2026, 10, 30))) == ["Fruiting"]
 
 
 def test_confirm_button_sets_stage_date_and_moves_the_bubble():
@@ -56,40 +65,39 @@ def test_confirm_button_sets_stage_date_and_moves_the_bubble():
     assert _subheaders(at)[:2] == ["Monotub or Plastic Container", "Tent or Cabinet"]
     assert _box_of_batch(at) == ["Plastic container"]
     btn = at.button(key="confirm_next")
-    assert btn.label == "Confirm induction started"
+    assert btn.label == "Induction done"
     at.date_input(key="confirm_date").set_value(date(2026, 10, 30))
     btn.click().run()
     s = at.session_state
     assert s["batch_stage"] == "Fruiting" and s["next_start"] == date(2026, 10, 30)
     assert _box_of_batch(at) == ["Tent or Cabinet"] and _current(at) == ["Fruiting"]
-    assert not any(b.key == "confirm_next" for b in at.button)
-    at.button(key="mark_harvested").click().run()
-    assert at.session_state["batch_stage"] == "Harvested"
+    assert not any(b.key in ("confirm_next", "mark_harvested") for b in at.button)
+    assert any(b.key == "mark_contaminated" for b in at.button)
 
 
 def test_without_a_next_residence_the_button_opens_the_steps():
     at = _monitor()
-    assert at.button(key="confirm_next").label == "Confirm induction started"
+    assert at.button(key="confirm_next").label == "Induction done"
     assert not any(d.key == "confirm_date" for d in at.date_input)
-    assert any("Recipe and actions" in c.value for c in at.caption)
+    assert not any("Recipe and actions" in c.value for c in at.caption)
     at.button(key="confirm_next").click().run()
-    assert at.session_state["batch_stage"] == "Colonising" and "next_start" not in at.session_state
+    assert at.session_state["batch_stage"] == "Spawn run" and "next_start" not in at.session_state
     assert at.session_state["show_next_steps"] is True
 
 
 def test_contaminated_at_any_stage():
     at = _monitor()
     at.button(key="mark_contaminated").click().run()
-    assert at.session_state["batch_stage"] == "Contaminated"
+    assert at.session_state["batch_stage"] == "Contaminated" and _current(at) == ["Contaminated"]
     assert not any(b.key in ("mark_contaminated", "confirm_next") for b in at.button)
 
 
 def test_materials_confirm_post_treatment():
     at = _monitor("Materials", MAT_PLAN, residences={"next": "Oven"})
-    html_ = " ".join(m.value for m in at.markdown)
-    assert all(w in html_ for w in ("Colonisation", "Post-treatment", "Contaminated"))
+    assert _current(at) == ["Spawn run"]
     at.button(key="confirm_next").click().run()
     assert at.session_state["batch_stage"] == "Post-treatment" and _box_of_batch(at) == ["Oven"]
+    assert _current(at) == ["Post-treatment"]
     assert not any(b.key == "mark_harvested" for b in at.button)
 
 

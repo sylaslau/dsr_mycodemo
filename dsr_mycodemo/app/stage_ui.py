@@ -479,16 +479,12 @@ def dot(colour):
     return f'<span style="color:{LIGHTS[colour]}">●</span>'
 
 
-def stage_labels(stages, current):
-    """The batch stage as a row of labels; the current one filled in chestnut."""
-    out = []
-    for name in stages:
-        on = name == current
-        style = (f"background:{EVENT_COLOR};color:#fff;border:2px solid {EVENT_COLOR}" if on else
-                 f"border:2px solid {LIGHTS['grey']};color:{LIGHTS['grey']}")
-        out.append(f'<span style="{style};border-radius:999px;padding:0.15rem 0.8rem;margin-right:0.3rem;'
-                   f'display:inline-block">{"<b>" if on else ""}{html.escape(name)}{"</b>" if on else ""}</span>')
-    return "".join(out)
+def stage_badge(current, label):
+    """The current stage as one filled bubble (chestnut; red when contaminated), then the batch name."""
+    colour = LIGHTS["red"] if current == "Contaminated" else EVENT_COLOR
+    return (f'<span style="background:{colour};color:#fff;border:2px solid {colour};border-radius:999px;'
+            f'padding:0.15rem 0.8rem;margin-right:0.5rem;display:inline-block"><b>{html.escape(current)}</b></span>'
+            f'<b>{html.escape(label)}</b>')
 
 
 def bubble(colour, icon, label, text):

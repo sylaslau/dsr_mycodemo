@@ -51,7 +51,7 @@ ENVIRONMENT_SIZES = ["Small plastic box", "Tub", "Tent", "Shelf", "Room"]
 MEASURED_BY = ["Thermometer", "Sensor device", "Guess"]
 # stage that ends colonisation -> where "Next stage" goes, per goal (Food: Fruiting, Materials: Post-treatment).
 # Words stay as the grower sees them; the logic runs on stage_ids from stage.csv (dsr_mycodemo.stages).
-COLONISING_STAGES = {"Food": ("Inoculated", "Colonising"), "Materials": ("Colonisation",)}
+COLONISING_STAGES = {"Food": ("Spawn run", "Inoculated", "Colonising"), "Materials": ("Spawn run", "Colonisation")}
 AFTER_COLONISATION = {"Food": "Fruiting", "Materials": "Post-treatment"}
 COLONISING_STAGE_ID = "ST4"
 NEXT_STAGE_ID = {"Food": "ST5", "Materials": "ST6"}

@@ -47,8 +47,9 @@ def stage_from_backup(text):
     if not text.lstrip().startswith("{"):
         return {}
     doc, out = json.loads(text), {}
-    if doc.get("batch_stage") in flow.STAGES_FOOD + flow.STAGES_MATERIAL:
-        out["batch_stage"] = doc["batch_stage"]
+    word = flow.OLD_STAGE_WORDS.get(doc.get("batch_stage"), doc.get("batch_stage"))
+    if word in flow.STAGES_FOOD + flow.STAGES_MATERIAL:
+        out["batch_stage"] = word
     if doc.get("next_start"):
         out["next_start"] = date.fromisoformat(str(doc["next_start"])[:10])
     return out
@@ -97,9 +98,9 @@ def apply_restore(p, stage=None):
 CO2_COLONISING = (0.0, 20000.0)
 MATERIALS = flow.is_materials()
 STAGES = flow.STAGES_MATERIAL if MATERIALS else flow.STAGES_FOOD
-FIRST_STAGE = "Colonisation" if MATERIALS else "Colonising"
-# mode -> (stage after colonisation, confirm button)
-NEXT_STAGE = {False: ("Fruiting", "Confirm induction started"),
+FIRST_STAGE = "Spawn run"
+# mode -> (stage after the spawn run, confirm button)
+NEXT_STAGE = {False: ("Fruiting", "Induction done"),
               True: ("Post-treatment", "Confirm post-treatment started")}[MATERIALS]
 
 SHOWN = stage_ui.SHOWN       # shown name; the saved value stays the same (old batches load)
@@ -119,7 +120,8 @@ def residences():
 
 
 def batch_stage():
-    """The stage the grower confirmed (session_state['batch_stage']); colonisation until a confirm button is pressed."""
+    """The stage the grower confirmed (session_state['batch_stage']); Spawn run until a confirm button is pressed."""
+    ss["batch_stage"] = flow.OLD_STAGE_WORDS.get(ss.get("batch_stage"), ss.get("batch_stage"))
     if ss.get("batch_stage") not in STAGES:
         ss["batch_stage"] = FIRST_STAGE
     return ss["batch_stage"]
@@ -129,20 +131,6 @@ def batch_residence():
     """Where the batch is: the next residence once the next stage was confirmed (if one was chosen), else the
     colonisation residence."""
     return next_residence() if ss.get("next_start") and next_residence() else ss.get("env_where")
-
-
-def stage_hint(batch, today=None):
-    """What the dates suggest, as a hint only (the stage never follows the dates)."""
-    today = today or date.today()
-    if MATERIALS:
-        typed, _ = stage_ui.colonised_date(PLAN["batch_label"])
-        return (f"Your record says: fully colonised on {typed:%d %b}." if typed else
-                "No colonisation dates for materials yet: confirm when the blocks are fully colonised.")
-    ev = {name: (a, b) for name, a, b in pipeline.run(batch).dates.value}
-    if pipeline.MARKER_LABEL not in ev:
-        return "No dates for this mushroom: confirm by eye."
-    marker = ev[pipeline.MARKER_LABEL][0]
-    return f"Dates say: ready for induction {'from' if today < marker else 'since'} {marker:%d %b}."
 
 
 def wanted_ranges(batch):
@@ -246,29 +234,27 @@ with st.sidebar:
             st.success(f"Restored from {restore_file.name}.")
 
 # --- main area: one box per residence ----------------------------------------------------
-def stage_controls(batch, stage):
-    """Confirm buttons: colonisation -> next stage (with its date), Food fruiting -> harvested, contaminated any time."""
-    if not ss.get("next_start") and stage != "Contaminated":
+def stage_controls(stage):
+    """One row: the confirm button on the left (Spawn run -> next stage, with its date), Contaminated on the right."""
+    if stage == "Contaminated":
+        return
+    left, right = st.columns([3, 1], vertical_alignment="bottom")
+    if not ss.get("next_start"):
         nxt_stage, label = NEXT_STAGE
-        if next_residence():
-            d_col, b_col = st.columns([1, 2], vertical_alignment="bottom")
-            on = d_col.date_input("Started on", date.today(), key="confirm_date")
-            if b_col.button(label, key="confirm_next", type="primary"):
-                ss["batch_stage"], ss["next_start"] = nxt_stage, on
-                st.rerun()
-        else:
-            if st.button(label, key="confirm_next", type="primary"):
+        with left:
+            if next_residence():
+                d_col, b_col = st.columns([1, 2], vertical_alignment="bottom")
+                on = d_col.date_input("Started on", date.today(), key="confirm_date")
+                if b_col.button(label, key="confirm_next", type="primary"):
+                    ss["batch_stage"], ss["next_start"] = nxt_stage, on
+                    st.rerun()
+            elif st.button(label, key="confirm_next", type="primary"):     # no next residence yet: choose it there
                 ss["show_next_steps"] = True
                 st.switch_page("pages/2_Recipe_and_actions.py")
-            st.caption(f"Choose where the batch goes next in the {stage_ui.next_titles(MATERIALS).lower()} steps on "
-                       "Recipe and actions first.")
-        st.caption(stage_hint(batch))
-    if stage == "Fruiting" and st.button("Mark harvested", key="mark_harvested"):
-        ss["batch_stage"] = "Harvested"
-        st.rerun()
-    if stage != "Contaminated" and st.button("Contaminated", key="mark_contaminated"):
-        ss["batch_stage"] = "Contaminated"
-        st.rerun()
+    with right.container(horizontal_alignment="right"):
+        if st.button("Contaminated", key="mark_contaminated"):
+            ss["batch_stage"] = "Contaminated"
+            st.rerun()
 
 
 def coverage_photo(name, sample):
@@ -298,12 +284,12 @@ def coverage_photo(name, sample):
 
 
 def batch_bubble(batch, name):
-    """The plan batch in its residence: the stage as a row of labels, the confirm buttons, one sample's record."""
+    """The plan batch in its residence: the current stage bubble left of the batch name, the buttons, one sample's
+    record."""
     stage = batch_stage()
     with st.container(border=True):
-        st.markdown(f"**{PLAN['batch_label']}**")
-        st.markdown(stage_ui.stage_labels(STAGES, stage), unsafe_allow_html=True)
-        stage_controls(batch, stage)
+        st.markdown(stage_ui.stage_badge(stage, PLAN["batch_label"]), unsafe_allow_html=True)
+        stage_controls(stage)
         samples = stage_ui.plan_samples(PLAN)
         sample = st.selectbox("Sample (one bag, jar or mould)", samples, key=f"sample_{name}")
         if ss.get("next_start"):                 # fruiting / harvested, or post-treatment
