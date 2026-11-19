@@ -15,7 +15,7 @@ python -m pytest -q
 
 ## Layout
 
-- `dsr_mycodemo/app/`: the Streamlit app (Welcome and pages).
+- `dsr_mycodemo/app/`: the Streamlit app: Welcome and 5 pages (Start a batch, Recipe and actions, Timeline, Monitor, Check image).
 - `dsr_mycodemo/pipeline.py`: one batch in, recipe, dates, warnings and outcome out.
 - `dsr_mycodemo/cultivation/`: the consensus table lookup (`baseline_guide.py`) and recipe maths (`recipe.py`).
 - `dsr_mycodemo/growth/`: colonisation estimate, photo coverage and forecast.
