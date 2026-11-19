@@ -37,7 +37,7 @@ MATERIAL_RECIPE_SPECIES = {"Trametes versicolor": "Pleurotus ostreatus", "Ganode
 MATERIALS_PREVIEW = "preview: materials"
 MATERIALS_PREVIEW_NOTE = "Not available for materials yet: needs material colonisation data."
 STRENGTH_LABEL = "range from 7 lab studies; between labs typically off by x1.5 to x2.8"
-PRODUCTS = ["Foam", "Acoustic board", "Game pieces"]
+PRODUCTS = ["Packaging foam", "Acoustic panel", "Bricks or blocks", "Game pieces"]
 # environment: label -> (containers, dry substrate per container in kg); sizes are our pretend defaults
 ENVIRONMENTS = {
     "Small plastic container (about 1 L)": (1, 0.2),

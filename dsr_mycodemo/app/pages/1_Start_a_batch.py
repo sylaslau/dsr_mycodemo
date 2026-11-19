@@ -11,8 +11,7 @@ ss = st.session_state
 # shown name -> consensus-table common name
 FOODS = {"Pearl or Blue Oyster": "Pearl Oyster", "King Oyster": "King Oyster", "Shiitake": "Shiitake",
          "Lion's mane": "Lion's Mane", "Enoki": "Enoki"}
-THINGS = ["Packaging foam", "Acoustic panel",
-          "Bricks or blocks", "Game pieces"]
+THINGS = pipeline.PRODUCTS                  # one product list (pipeline.py)
 FOOD_OWN, THING_OWN = "Another Mushroom", "Your next thingiverse invention"
 SPECIES_BY_COMMON_NAME = {s["common_name"]: s["species"]
                           for s in baseline_guide.species_list()}

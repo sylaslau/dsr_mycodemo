@@ -33,7 +33,7 @@ def food(**kw):
 
 def materials(**kw):
     kw.setdefault("temp_c", 24.0)
-    return Batch(goal="Materials", choice="Foam", environment="Grow bag (about 3 kg)", inoc_date=START, **kw)
+    return Batch(goal="Materials", choice="Packaging foam", environment="Grow bag (about 3 kg)", inoc_date=START, **kw)
 
 
 def photos(n, k=0.8, t50=6.0, days=(1, 3, 5, 7, 9, 11)):

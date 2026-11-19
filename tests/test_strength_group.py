@@ -9,7 +9,7 @@ from dsr_mycodemo.pipeline import Batch, run
 
 def materials(main=None, species=None):
     recipe = {"main": main} if main else None
-    return Batch(goal="Materials", choice="Foam", material_species=species, recipe=recipe)
+    return Batch(goal="Materials", choice="Packaging foam", material_species=species, recipe=recipe)
 
 
 def strength(main=None, species=None):

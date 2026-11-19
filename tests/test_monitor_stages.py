@@ -16,7 +16,7 @@ def _monitor(goal="Food", plan=FOOD_PLAN, **state):
     from streamlit.testing.v1 import AppTest
     at = AppTest.from_file(str(APP / "pages/4_Monitor.py"), default_timeout=60)
     s = at.session_state
-    s["goal"], s["choice"], s["temp_c"], s["inoc_date"] = goal, "Pleurotus ostreatus" if goal == "Food" else "Foam", 24.0, START
+    s["goal"], s["choice"], s["temp_c"], s["inoc_date"] = goal, "Pleurotus ostreatus" if goal == "Food" else "Packaging foam", 24.0, START
     s["material_species"] = "Trametes versicolor"
     s["environment"], s["env_where"] = "Small plastic container (about 1 L)", "Plastic container"
     s["batch"] = plan

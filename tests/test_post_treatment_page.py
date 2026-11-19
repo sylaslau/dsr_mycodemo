@@ -22,7 +22,7 @@ def _page(name, **state):
     from streamlit.testing.v1 import AppTest
     at = AppTest.from_file(str(APP / "pages" / name), default_timeout=60)
     s = at.session_state
-    s["goal"], s["choice"], s["material_species"], s["temp_c"] = "Materials", "Foam", "Trametes versicolor", 24.0
+    s["goal"], s["choice"], s["material_species"], s["temp_c"] = "Materials", "Packaging foam", "Trametes versicolor", 24.0
     s["environment"], s["env_where"] = "Small plastic container (about 1 L)", "Plastic container"
     s["recipe"] = {"main": "hemp_hurd", "substrate": "straw", "spawn_pct": 10.0}
     for k, v in state.items():
