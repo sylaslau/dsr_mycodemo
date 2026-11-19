@@ -162,6 +162,11 @@ def test_grams_switch_to_kg_at_1000():
     assert ING.fmt_weight(1490, ING.unit_for(1490)) == "1.49 kg"
 
 
+def test_water_in_ml_then_litres():
+    assert ING.fmt_water(630.4) == "630 ml"
+    assert ING.fmt_water(1490) == "1.49 L"
+
+
 @pytest.mark.parametrize("method", list(ING.METHODS))
 def test_steps_follow_the_method(method):
     keys = [k for k, _ in ING.STEPS[method]]

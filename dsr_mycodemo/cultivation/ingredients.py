@@ -330,6 +330,11 @@ def fmt_weight(grams: float, unit) -> str:
     return f"{grams / div:.2f} kg" if name_ == "kg" else f"{grams:.0f} g"
 
 
+def fmt_water(grams: float) -> str:
+    """Water as a volume (1 g water = 1 ml): ml below 1000 ml, else L."""
+    return f"{grams / 1000:.2f} L" if grams >= 1000 else f"{grams:.0f} ml"
+
+
 def mix_cn(parts: dict[str, float]):
     """C:N of a dry mix {ingredient: dry weight} = sum(w x C%) / sum(w x N%); minerals add weight only.
     Unknown ingredients add nothing. None when the mix has no nitrogen."""

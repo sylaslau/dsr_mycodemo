@@ -57,6 +57,9 @@ def test_grow_bag_table_switches_to_kg():
     assert weights and all(w.strip("*").endswith(" kg") for w in weights)
     small = run_page("STER", "Glass Jar", 0.5)
     assert all(w.strip("*").endswith(" g") for w in texts(small) if re.fullmatch(r"\*{0,2}[\d.]+ k?g\*{0,2}", w))
+    assert any(re.fullmatch(r"[\d.]+ L", t) for t in texts(at))       # water in litres from 1000 ml
+    assert any(re.fullmatch(r"\d+ ml", t) for t in texts(small))
+    assert "**Total**" in texts(at) and "**Total weight**" not in texts(at)
 
 
 def test_lime_soak_starts_with_main_bulk_only():

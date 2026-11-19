@@ -71,9 +71,9 @@ with st.container(border=True):
         st.markdown(f"#### {no}. {title}")
 
 
-    # recipe table (Ingredient | choice | Include | % of dry weight | Total weight); step 1 of the actions below
+    # recipe table (Ingredient | choice | Include | % of dry weight | Total); step 1 of the actions below
     COLS = [1.6, 2.6, 0.8, 1.3, 1.3]
-    for c, label in zip(st.columns(COLS), ["Ingredient", "Choice", "Include", "% of dry weight", "Total weight"]):
+    for c, label in zip(st.columns(COLS), ["Ingredient", "Choice", "Include", "% of dry weight", "Total"]):
         c.markdown(f"**{label}**")
 
     OTHER = "__other__"
@@ -163,7 +163,7 @@ with st.container(border=True):
         c = st.columns(COLS, vertical_alignment="center")
         c[0].write("Water")
         c[1].caption(f"to {moisture:g} % moisture")
-        c[4].write(w(amt["water_total"]))
+        c[4].write(ING.fmt_water(amt["water_total"]))     # ml or L; dry ingredients stay in g or kg
     c = st.columns(COLS, vertical_alignment="center")
     c[0].markdown("**Sum**")
     c[1].caption("dry ingredients + water" if amt["water_total"]
@@ -185,16 +185,18 @@ with st.container(border=True):
         notes.append(ING.UNSTERILISED_NOTE)
     if method == "COLD":
         notes.append(ING.COLD_NOTE)
-    if notes:
-        st.info("\n\n".join(notes))
     parts = {**({main: 100 - supp_pct} if main != OTHER else {}),
              **{c["ingredient"]: c["pct"] for c in chosen}}
     # without the bulk the ratio would mislead
     cn = ING.mix_cn(parts) if main != OTHER else None
-    st.metric("Mix C:N (estimate)", "n/a" if cn is None else f"{cn:.0f}:1",
-              help="Sum of weight × C% over sum of weight × N% of the dry ingredients; spawn not counted.")
+    # what the ingredients do on the left, a narrow C:N box on the right
+    note_col, cn_col = st.columns([3, 1])
+    if notes:
+        note_col.info("\n\n".join(notes))
+    cn_col.metric("Mix C:N (estimate)", "n/a" if cn is None else f"{cn:.0f}:1",
+                  help="Sum of weight × C% over sum of weight × N% of the dry ingredients; spawn not counted.")
     if ING.uses_category_values(parts):
-        st.caption("(some values are typical for their category)")
+        cn_col.caption("(some values are typical for their category)")
 
 # --- Step 4: inoculation, in a box ---------------------------------------------------------------------
 with st.container(border=True):
