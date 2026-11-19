@@ -40,9 +40,23 @@ def test_figure_bubbles_and_dates_on_timeline():
     assert [re.search(r"<b>(\w+)</b>", b).group(1) for b in bubbles] == [
         "Inoculation", "Colonising", "Induction", "Fruiting", "Harvest"]
     assert all("🌡️" in b and "💧" in b and "🌬️" in b and "💡" in b for b in bubbles)
-    assert pipeline.ENDPOINT_LABEL in [m.label for m in at.metric]
+    assert "Current estimated timeline" in [s.value for s in at.subheader]
+    # under the bubbles (11-19): Induction planning marker and duration only; no 90% box, bar, notes or warnings
+    labels = [m.label for m in at.metric]
+    assert pipeline.MARKER_LABEL in labels and pipeline.ENDPOINT_LABEL not in labels
+    assert not at.get("progress") and not at.warning and not at.button
+    assert not any("Project assumption" in c.value or "Your photos in Monitor" in c.value for c in at.caption)
+    assert not any("colonisation range" in t for t in _md(at))
     assert "Fruiting dates" not in [s.value for s in at.subheader]
-    assert any("Calendar" in t and "PREVIEW" in t for t in _md(at))
+    cal = [t for t in _md(at) if "Calendar" in t and "PREVIEW" in t]
+    assert len(cal) == 1 and cal[0].rstrip().endswith("</table></div>")
+    assert not any("Tasks and reminders" in t or "Warnings" in t for t in _md(at))
+
+
+def test_cold_plan_shows_no_temperature_line_or_warning():
+    at = _page(temp_c=14.0, batch={**PLAN, "temp_c": 14.0})
+    assert not at.warning and not at.success
+    assert not any("colonisation range" in t for t in _md(at))
 
 
 def test_fruiting_dates_once_induction_is_confirmed():

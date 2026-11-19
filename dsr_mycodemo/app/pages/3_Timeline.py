@@ -1,5 +1,5 @@
 """Timeline: the colonisation curve and stage timeline in one figure, the stage bubbles and the dates (moved from
-Recipe), the fruiting dates once induction is confirmed on Monitor; below, the calendar and tasks previews."""
+Recipe), the fruiting dates once induction is confirmed on Monitor; below, the greyed calendar preview."""
 
 import math
 
@@ -136,15 +136,14 @@ elif base is None:
     stage_ui.colonisation_days(result)
 else:
     r, _ = base
-    st.subheader("Colonisation and stage timeline")
-    stage_ui.temperature_line(r, batch.temp_c)
+    st.subheader("Current estimated timeline")
     tl = bg.stages(r).set_index("stage")
     draw(col_setup, (tl.loc["Start induction", "typical_day"], tl.loc["First harvest", "typical_day"]))
     stage_ui.stage_cards(r)           # stage bubbles, one row: name · days, then temperature, humidity, CO2, light
     if r["species"] == "Lentinula edodes":
         t = bg.load_text()
         st.info(f"Unresolved: {t[t['ref_id'] == r['ref_id']].iloc[0]['requirements_unresolved']}")
-    stage_ui.colonisation_days(result)
+    stage_ui.colonisation_days(result, compact=True)      # Induction planning marker and duration only (11-19)
 
 # --- fruiting dates once induction is confirmed on Monitor (consensus days, not a model) -------------------
 start = stage_ui.confirmed_start()
@@ -156,21 +155,14 @@ if start and not flow.is_materials():
             col.metric(label, day.strftime("%d %b"), help="Consensus days from the guide, not a model")
     st.caption(fd.note)
 
-# --- calendar and tasks (previews) -----------------------------------------------------------------
+# --- calendar (preview); nothing below it (11-19) -----------------------------------------------------------------
 st.divider()
 dates = result.dates
 if dates.value:
     rows = "".join(f"<tr><td>{a.strftime('%a %d %b')}"
                    f"{'' if a == b else ' – ' + b.strftime('%a %d %b')}</td><td>{name}</td></tr>"
                    for name, a, b in dates.value)
-    body = f"Predicted dates from your plan:<table>{rows}</table>Source: {dates.source}. {dates.note}"
+    body = f"Predicted dates from your plan:<table>{rows}</table>"
 else:
     body = dates.note
 flow.preview("Calendar", body)
-if result.warnings.is_preview:
-    flow.preview(result.warnings.name, result.warnings.note)
-for w in result.warnings.value:
-    st.warning(w)
-flow.preview("Tasks and reminders", "Watering, checking the photos, starting post-treatment: reminders on your phone.")
-st.button("Add to my calendar", disabled=True)
-st.button("Send me reminders", disabled=True)

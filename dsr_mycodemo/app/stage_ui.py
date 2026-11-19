@@ -283,15 +283,6 @@ def stage_cards(r, names=STAGE_CARDS):
 
 
 # --- days to the next step (moved from Recipe and timeline; Timeline shows the same metrics) ------------------
-def temperature_line(r, temp):
-    """The batch temperature against the guide's colonisation range, above the days."""
-    inc = bg.colonisation(r)["incubation_temp_C"]
-    state = bg.temp_check(temp, inc["min"], inc["max"])
-    (st.success if state == "inside" else st.warning)(
-        f"{temp:g} °C is {state} the colonisation range ({inc['min']}–{inc['max']} °C)."
-        + ("" if state == "inside" else " The days below assume the guide's own conditions."))
-
-
 def colonisation_days(result, source=True, compact=False):
     """Food: the Colonisation time estimate as dates (90% day, Induction planning marker) and the duration, or its
     greyed box when there is no estimate. source=False leaves out the source caption (Recipe page clean-up, 11-10).
